@@ -1,24 +1,24 @@
-# 121-Final-project# Devlog Entry - [11/13/2024]
+# 121-Final-project# Devlog Entry - [11/14/2024]
 
 ## Introducing the team
-Tools Lead:
-Engine Lead:
-Design Lead:
+Tools Lead: Elliot Ahlstroem
+Engine Lead: Raven Cruz
+Design Lead: Liza Gitelman & Jackie Sanchez
 
 ## Tools and materials
-Tell us about what engines, libraries, frameworks, and or platforms you intend to use, and give us a tiny bit of detail about why your team chose those.
+The team will be developing a webgame using TypeScript .  This engine used will be the Phaser3 Engine.  We are choosing this engine because we are most comfortable with the libraries and capabilities of Phaser3.  Typescript is utilized in Phaser3, thus why we are using it.  
 
-Tell us programming languages (e.g. TypeScript) and data languages (e.g. JSON) you team expects to use and why you chose them. Presumably you’ll just be using the languages expected by your previously chosen engine/platform.
+The team will be utilizing VSCode for all code writing.  Visual assets are made with Asesprite and/or will get assets from public domains.  We will be using Tiled for level design.  We chose these due to our familiarity of the tools and compatibility with Phaser3.
+Public Domain Credits: TBD
 
-Tell us about which tools you expect to use in the process of authoring your project. You might name the IDE for writing code, the image editor for creating visual assets, or the 3D editor you will use for building your scene. Again, briefly tell us why you made these choices. Maybe one of your teammates feels especially skilled in that tool or it represents something you all want to learn about.
-
-Tell us about your alternate platform choice. Remember, your alternate platform must differ from your primary platform by either changing the primary primarily language used or the engine/library/framework used for building your user interface.
+Alternatively, our second platform of choice is Godot.  This will change the language used to C#.  Assets can still be made with the previously stated tools for this platform as well.
 
 ## Outlook
-Give us a short section on your outlook on the project. You might cover one or more of these topics:
-
 What is your team hoping to accomplish that other teams might not attempt?
+Our team is hoping to be able to create a game that is more easily deployed and accessible to us as the developers.  This will also allow for quicker playtesting because of the quick turn around for deployment.  
 
 What do you anticipate being the hardest or riskiest part of the project?
+The riskiest part of the project is potentially having to switch to a different platform that none of us have too much experience with.
 
 What are you hoping to learn by approaching the project with the tools and materials you selected above?
+The team is hoping to expand their limited knowledge of Phaser3 and also learn to make cleaner code while working with a team.
