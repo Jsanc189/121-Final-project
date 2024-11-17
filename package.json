@@ -1,5 +1,5 @@
 {
-  "name": "z3-web-browser",
+  "name": "121-final-game",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -12,8 +12,6 @@
     "vite": "^5.4.10"
   },
   "dependencies": {
-    "easystarjs": "^0.4.4",
-    "phaser": "^3.87.0",
-    "z3-solver": "^4.13.3"
+    "phaser": "^3.87.0"
   }
 }
