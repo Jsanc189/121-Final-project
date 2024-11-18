@@ -50,7 +50,7 @@ export class PlayScene extends Phaser.Scene {
 
         } else {
             console.log("Game Over");
-            //this.scene.start("playScene");
+            this.scene.start("playScene");
 
         }
     }
