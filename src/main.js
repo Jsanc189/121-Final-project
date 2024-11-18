@@ -1,6 +1,7 @@
 import { Game, } from "phaser";
 import { Load } from "./Scenes/Load.js";
 import { blankScene } from "./Scenes/Scene.js";
+import { PlayScene } from "./Scenes/Play.js";
 
 // game config
 let config = {
@@ -11,7 +12,7 @@ let config = {
     },
     width: 1280,
     height: 800,
-    scene: [Load, blankScene]
+    scene: [Load, PlayScene]
 }
 
 const game = new Game(config);

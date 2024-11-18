@@ -1,8 +1,8 @@
 import { Scene } from "phaser";
-import { blankScene } from "./Scene";
+//import { playScene } from "./Scene";
 
 // this is where we'll init and load assets (like tilemaps, tilesets, etc.)
-export class Load extends Scene {
+export class Load extends Phaser.Scene {
     constructor() {
         super("loadScene");
     }
@@ -28,6 +28,6 @@ export class Load extends Scene {
 
     create() {
         console.log("Load finished...");
-        this.scene.start("blankScene"); // start next scene
+        this.scene.start("playScene"); // start next scene
     }
 }
