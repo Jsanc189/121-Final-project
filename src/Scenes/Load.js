@@ -8,7 +8,22 @@ export class Load extends Scene {
     }
 
     preload() {
-        this.load.setPath("./assets/");
+
+        //loading bar to show progress
+        let loadingBar = this.add.graphics();
+        this.load.on('progress', (value) => {
+            loadingBar.clear(); // reset fill style
+            loadingBar.fillStyle(0xFFFFFF, 1); // (color, alpha)
+            loadingBar.fillRect(0, this.sys.game.config.height / 2, this.sys.game.config.width * value, 50);
+        });
+
+        this.load.on('complete', () =>{
+            loadingBar.destroy();
+        });
+
+        // load assets here
+        //this.load.setPath("./assets/");
+        
     }
 
     create() {
