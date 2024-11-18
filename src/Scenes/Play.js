@@ -34,9 +34,15 @@ export class PlayScene extends Phaser.Scene {
         if (!this.gameOver) {
             //console.log("Game is running...");
 
+            //check if end conditions are met
+            this.checkWin();
+
             if(this.endOfDay) {
                 console.log("End of day...");
-                this.gameOver = false;
+                this.plantOneCount += 1;
+                this.plantTwoCount += 1;
+                this.plantThreeCount += 1;
+                this.endOfDay = false;
             } else {
                 console.log("Day is running...");
                 //this.endOfDay = true;
@@ -49,5 +55,11 @@ export class PlayScene extends Phaser.Scene {
         }
     }
 
+    checkWin() {
+        if(this.plantOneCount >= 10 && this.plantTwoCount >= 10 && this.plantThreeCount >= 10) {
+            console.log("You win!");
+            this.gameOver = true;
+        }
+    }
 
 }
