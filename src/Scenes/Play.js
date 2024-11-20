@@ -8,15 +8,27 @@ export class PlayScene extends Phaser.Scene {
 
 
     create() {
-        //create tilemap
+        this.graphics = this.add.graphics();
+
+        //create tilemap & grid
+        this.GRID_WIDTH = 32;
+        this.GRID_HEIGHT = 20;
+        this.GRID_SCALE = 2.5; //og tilemap size: 512x320
+        this.width = 1280
+        this.height = 800
+
         this.tilemap = this.make.tilemap({ key: "tilemap" });
         this.tileset = this.tilemap.addTilesetImage("tileset");
         this.layer = this.tilemap.createLayer("Main", this.tileset)
-        this.layer.setScale(2.5);
-
-        this.gridWidth = 32;    // temporary values!
-        this.gridHeight = 20;
-        this.grid = new Grid(32, 20)
+        this.layer.setScale(this.GRID_SCALE);
+        this.grid = new Grid(this.GRID_WIDTH, this.GRID_HEIGHT, this)
+        this.grid.makeGridLines();
+        this.graphics.lineStyle(1, 0xffffff, 1);
+        this.graphics.beginPath();
+        for(let line in this.grid_lines){
+          this.graphics.strokeLineShape(line);
+        }
+        this.graphics.strokeLineShape(0, 0, 1280, 800);
 
         //set game condition
         this.gameOver = false;
@@ -26,7 +38,7 @@ export class PlayScene extends Phaser.Scene {
         this.plantThreeCount = 0;
 
         // weather grid that updates at end of day
-        this.weather = this.getWeather(this.gridWidth, this.gridHeight);
+        this.weather = this.getWeather(this.GRID_WIDTH, this.GRID_HEIGHT);
 
         const dayButton = this.add.text(
             100, 
@@ -59,7 +71,7 @@ export class PlayScene extends Phaser.Scene {
                 this.plantTwoCount += 1;
                 this.plantThreeCount += 1;
 
-                this.weather = this.getWeather(this.gridWidth, this.gridHeight);
+                this.weather = this.getWeather(this.GRID_WIDTH, this.GRID_HEIGHT);
                 console.log(`sun:\n${this.weather.sun.toString()}`);
                 console.log(`rain:\n${this.weather.rain.toString()}`);
 
