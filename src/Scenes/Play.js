@@ -1,4 +1,5 @@
 import { weather } from "../Scripts/Weather";
+import { Grid } from "../Scripts/Grid";
 
 export class PlayScene extends Phaser.Scene {
     constructor() {
@@ -7,8 +8,15 @@ export class PlayScene extends Phaser.Scene {
 
 
     create() {
+        //create tilemap
+        this.tilemap = this.make.tilemap({ key: "tilemap" });
+        this.tileset = this.tilemap.addTilesetImage("tileset");
+        this.layer = this.tilemap.createLayer("Main", this.tileset)
+        this.layer.setScale(2.5);
+
         this.gridWidth = 32;    // temporary values!
         this.gridHeight = 20;
+        this.grid = new Grid(32, 20)
 
         //set game condition
         this.gameOver = false;
@@ -57,7 +65,7 @@ export class PlayScene extends Phaser.Scene {
 
                 this.endOfDay = false;
             } else {
-                console.log("Day is running...");
+                // console.log("Day is running...");
                 //this.endOfDay = true;
             };
 
