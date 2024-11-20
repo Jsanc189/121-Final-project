@@ -22,3 +22,6 @@ The riskiest part of the project is potentially having to switch to a different 
 
 What are you hoping to learn by approaching the project with the tools and materials you selected above?
 The team is hoping to expand their limited knowledge of Phaser3 and also learn to make cleaner code while working with a team.
+
+## Resources
+In creating the tilemap & tileset, we used the Tiled software (https://www.mapeditor.org/) and Kenney's Tiny Town tileset (https://kenney.nl/assets/tiny-town)
