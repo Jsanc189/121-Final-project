@@ -1,3 +1,5 @@
+import { weather } from "../Scripts/Weather";
+
 export class PlayScene extends Phaser.Scene {
     constructor() {
        super("playScene");
@@ -5,12 +7,18 @@ export class PlayScene extends Phaser.Scene {
 
 
     create() {
+        this.gridWidth = 32;    // temporary values!
+        this.gridHeight = 20;
+
         //set game condition
         this.gameOver = false;
         this.endOfDay = false;
         this.plantOneCount = 0;
         this.plantTwoCount = 0;
         this.plantThreeCount = 0;
+
+        // weather grid that updates at end of day
+        this.weather = this.getWeather(this.gridWidth, this.gridHeight);
 
         const dayButton = this.add.text(
             100, 
@@ -42,6 +50,11 @@ export class PlayScene extends Phaser.Scene {
                 this.plantOneCount += 1;
                 this.plantTwoCount += 1;
                 this.plantThreeCount += 1;
+
+                this.weather = this.getWeather(this.gridWidth, this.gridHeight);
+                console.log(`sun:\n${this.weather.sun.toString()}`);
+                console.log(`rain:\n${this.weather.rain.toString()}`);
+
                 this.endOfDay = false;
             } else {
                 console.log("Day is running...");
@@ -61,5 +74,11 @@ export class PlayScene extends Phaser.Scene {
             this.gameOver = true;
         }
     }
-
+    
+    getWeather(w, h){
+        return weather({
+            width: w,
+            height: h
+        });
+    }
 }
