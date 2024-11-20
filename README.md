@@ -6,7 +6,7 @@ Engine Lead: Raven Cruz
 Design Lead: Liza Gitelman & Jackie Sanchez
 
 ## Tools and materials
-The team will be developing a webgame using TypeScript .  This engine used will be the Phaser3 Engine.  We are choosing this engine because we are most comfortable with the libraries and capabilities of Phaser3.  Typescript is utilized in Phaser3, thus why we are using it.  
+The team will be developing a webgame using JavaScript.  This engine used will be the Phaser3 Engine.  We are choosing this engine because we are most comfortable with the libraries and capabilities of Phaser3.  Javasript is utilized in Phaser3, thus why we are using it.  
 
 The team will be utilizing VSCode for all code writing.  Visual assets are made with Asesprite and/or will get assets from public domains.  We will be using Tiled for level design.  We chose these due to our familiarity of the tools and compatibility with Phaser3.
 Public Domain Credits: TBD
