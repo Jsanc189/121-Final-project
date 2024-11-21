@@ -1,3 +1,5 @@
+import { Weather, TileWeather } from "./Weather.js";
+
 export class Grid {
   width; //not pixels. Number of tiles
   height;
@@ -8,12 +10,17 @@ export class Grid {
     this.width = width;
     this.height = height;
     this.tiles = [];
-    for(let x = 0; x < width; x++){
-      for(let y = 0; y < height; y++){
-        this.tiles.push({
-          x: x,
-          y: y
-        })
+    
+    this.seed = Math.random();
+    this.weather = new Weather({ seed: this.seed });
+
+    for(let x = 0; x < height; x++){
+      this.tiles[x] = [];
+      for(let y = 0; y < width; y++){
+        let tileWeather = new TileWeather(x, y, this.weather).generate();
+        this.tiles[x].push(new Cell(
+          x, y, tileWeather.sun, tileWeather.rain
+        ));
       }
     }
     this.scene = scene;
@@ -31,5 +38,53 @@ export class Grid {
       grid_lines.push(line);
     }
     this.scene.grid_lines = grid_lines;
+  }
+
+  updateWeather(seed = Math.random()){
+    let width = this.width;
+    let height = this.height;
+    this.weather = new Weather({ seed: seed });
+
+    for(let x = 0; x < height; x++){
+      for(let y = 0; y < width; y++){
+        let tileWeather = new TileWeather(x, y, this.weather).generate();
+        this.tiles[x][y].updateWeatherAtCell(tileWeather.sun, tileWeather.rain);
+      }
+    }
+  }
+
+  printAttribute(attribute){
+    let width = this.width;
+    let height = this.height;
+
+    let result = "";
+    for(let x = 0; x < height; x++){
+      for(let y = 0; y < width; y++){
+        let tile = this.tiles[x][y];
+          if(!tile[attribute]){
+              result += `   `;
+          } else {
+              result += `${tile[attribute]}`.padStart(2, " ");
+              result += ` `;
+          }
+        }
+        result += `\n`;
+    }
+    return result;
+  }
+}
+
+class Cell {
+  constructor(x, y, sun_lvl, rain_lvl, plant){
+    this.x = x;
+    this.y = y;
+    this.sun_lvl = sun_lvl;
+    this.rain_lvl = rain_lvl;
+    this.plant = plant;
+  }
+
+  updateWeatherAtCell(sun_lvl, rain_lvl){
+    this.sun_lvl = sun_lvl;
+    this.rain_lvl = rain_lvl;
   }
 }
