@@ -37,7 +37,8 @@ export class PlayScene extends Phaser.Scene {
         this.upKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
         this.downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
 
-        this.player = new Player(this, 40, 40, 'player', 8, 40);
+        this.player = new Player(this, 140, 140, 'player', 8, 5);
+        this.player.scale = 2.5;
         console.log(this.player.y)
 
         //set game condition
