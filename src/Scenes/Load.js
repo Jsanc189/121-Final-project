@@ -22,8 +22,14 @@ export class Load extends Phaser.Scene {
         });
 
         // load assets here
-        //this.load.setPath("./assets/");
-        
+        this.load.setPath("./assets/");
+        this.load.image("tileset", "tilemap_packed.png");
+        this.load.tilemapTiledJSON("tilemap", "tilemap.json")
+        this.load.spritesheet('player', 'idle.png', {
+            frameWidth: 75,
+            frameHeight: 75,
+            margin: 32
+        })
     }
 
     create() {
