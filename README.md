@@ -24,4 +24,4 @@ What are you hoping to learn by approaching the project with the tools and mater
 The team is hoping to expand their limited knowledge of Phaser3 and also learn to make cleaner code while working with a team.
 
 ## Resources
-In creating the tilemap & tileset, we used the Tiled software (https://www.mapeditor.org/) and Kenney's Tiny Town tileset (https://kenney.nl/assets/tiny-town)
+In creating the tilemap & tileset, we used the Tiled software (https://www.mapeditor.org/) and Kenney's Tiny Town tileset (https://kenney.nl/assets/tiny-town). The player was created from the Hana Caraka Base Character tileset (https://bagong-games.itch.io/hana-caraka-base-character).

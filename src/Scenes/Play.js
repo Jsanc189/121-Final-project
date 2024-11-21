@@ -1,5 +1,6 @@
 import { weather } from "../Scripts/Weather";
 import { Grid } from "../Scripts/Grid";
+import { Player } from "../Scripts/Player";
 
 export class PlayScene extends Phaser.Scene {
     constructor() {
@@ -29,6 +30,15 @@ export class PlayScene extends Phaser.Scene {
           this.graphics.strokeLineShape(line);
         }
         this.graphics.strokeLineShape(0, 0, 1280, 800);
+
+        //player movement keys
+        this.leftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+        this.rightKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+        this.upKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+        this.downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+
+        this.player = new Player(this, 40, 40, 'player', 8, 40)
+        console.log(this.player.y)
 
         //set game condition
         this.gameOver = false;
