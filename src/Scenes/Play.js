@@ -37,7 +37,7 @@ export class PlayScene extends Phaser.Scene {
         this.upKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
         this.downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
 
-        this.player = new Player(this, 40, 40, 'player', 8, 40)
+        this.player = new Player(this, 40, 40, 'player', 8, 40);
         console.log(this.player.y)
 
         //set game condition
@@ -69,6 +69,7 @@ export class PlayScene extends Phaser.Scene {
     }
 
     update() {
+        this.player.update();
         if (!this.gameOver) {
             //console.log("Game is running...");
 

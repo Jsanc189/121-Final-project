@@ -9,29 +9,29 @@ export class Player extends Phaser.GameObjects.Sprite {
   update(){
     if(this.ableToMove){
       let moved = false;
-      if(this.scene.leftKey && this.x > 40) {
-        this.x -= movementSpeed;
+      if(this.scene.leftKey.isDown && this.x > 40) {
+        this.x -= this.movementSpeed;
         moved = true;
       }
-      if(this.scene.rightKey && this.x < this.scene.GRID_WIDTH-40) {
-        this.x += movementSpeed;
+      if(this.scene.rightKey.isDown && this.x < this.scene.width-40) {
+        this.x += this.movementSpeed;
         moved = true;
       }
-      if(this.scene.upKey && this.y > 40) {
-        this.y -= movementSpeed;
+      if(this.scene.upKey.isDown && this.y > 40) {
+        this.y -= this.movementSpeed;
         moved = true;
       }
-      if(this.scene.downKey && this.y < this.scene.GRID_HEIGHT-40) {
-        this.y += movementSpeed;
+      if(this.scene.downKey.isDown && this.y < this.scene.height-40) {
+        this.y += this.movementSpeed;
         moved = true;
       }
 
-      if(moved){
-        this.ableToMove = false;
-        this.time.delayedCall(500, () => {
-          this.ableToMove = true;
-        });
-      }
+      //if(moved){
+      //  this.ableToMove = false;
+      //  this.time.delayedCall(500, () => {
+      //    this.ableToMove = true;
+      //  });
+      //}
     }
   }
 }

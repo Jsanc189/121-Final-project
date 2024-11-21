@@ -26,10 +26,10 @@ export class Load extends Phaser.Scene {
         this.load.image("tileset", "tilemap_packed.png");
         this.load.tilemapTiledJSON("tilemap", "tilemap.json")
         this.load.spritesheet('player', 'idle.png', {
-            frameWidth: 16,
-            frameHeight: 16,
+            frameWidth: 100,
+            frameHeight: 100,
+            margin: 32
         })
-        
     }
 
     create() {
