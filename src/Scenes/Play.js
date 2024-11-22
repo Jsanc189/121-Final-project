@@ -81,7 +81,18 @@ export class PlayScene extends Phaser.Scene {
             let cell = this.grid.getCellAt(ptr.x, ptr.y, this.tile_size);
             let player_cell = this.grid.getCellAt(this.player.x, this.player.y, this.tile_size);
             if(this.grid.isAdjacentCell(cell, player_cell)){
-              console.log("Is adjacent")
+                console.log("Is adjacent");
+                if (cell.plant == undefined) {
+                    let randomType = Math.floor(Math.random() * 3 + 1);
+                    cell.plant = new Plant(randomType, cell); 
+                    console.log(cell.plant);
+                } else if (cell.plant) {
+                    if (cell.plant.growth_lvl == 3) {
+                        cell.plant.harvest();
+                        console.log(cell.plant);
+                    }
+                }
+
             }
         });
         
@@ -95,24 +106,13 @@ export class PlayScene extends Phaser.Scene {
             //check if end conditions are met
             this.checkWin();
 
-            // check for player clicking tile to plant/harvest 
-            // for (let x = 0; x < this.grid.height; x++) {
-            //     for (let y = 0; y < this.grid.width; y++) {
-            //         console.log(this.grid.tiles[x][y])
-            //         let Tile = this.grid.tiles[x][y];
-            //         console.log(Tile);
-            //         // clicking on the tile ????
-            //         Tile.rect.on("pointerdown", () => {
-            //             // if there isn't already a plant on the tile
-            //             if (Tile.plant != undefined) {
-            //                 let randomType = (Math.random() * 3) + 1;
-            //                 Tile.plant = new Plant(randomType, Tile); 
-            //             } else if (Tile.plant.growthLevel == 3) {
-                            
-            //             }
-            //         });
-            //     }
-            // }
+            for (let x = 0; x < this.grid.height; x++) {
+                for (let y = 0; y < this.grid.width; y++) {
+                    if (this.grid.tiles[x][y].plant) {
+                        this.grid.tiles[x][y].plant.update();
+                    }
+                 }
+            }
         
             if(this.endOfDay) {
                 console.log("End of day...");
