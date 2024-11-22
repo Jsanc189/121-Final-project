@@ -1,4 +1,3 @@
-import { weather } from "../Scripts/Weather";
 import { Grid } from "../Scripts/Grid";
 import { Player } from "../Scripts/Player";
 
@@ -37,7 +36,7 @@ export class PlayScene extends Phaser.Scene {
         this.upKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
         this.downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
 
-        this.player = new Player(this, 140, 140, 'player', 8, 5);
+        this.player = new Player(this, 140, 140, 'idle', 8, 5);
         this.player.scale = 2.5;
         console.log(this.player.y)
 
@@ -47,9 +46,6 @@ export class PlayScene extends Phaser.Scene {
         this.plantOneCount = 0;
         this.plantTwoCount = 0;
         this.plantThreeCount = 0;
-
-        // weather grid that updates at end of day
-        this.weather = this.getWeather(this.GRID_WIDTH, this.GRID_HEIGHT);
 
         const dayButton = this.add.text(
             100, 
@@ -83,9 +79,9 @@ export class PlayScene extends Phaser.Scene {
                 this.plantTwoCount += 1;
                 this.plantThreeCount += 1;
 
-                this.weather = this.getWeather(this.GRID_WIDTH, this.GRID_HEIGHT);
-                console.log(`sun:\n${this.weather.sun.toString()}`);
-                console.log(`rain:\n${this.weather.rain.toString()}`);
+                this.grid.updateWeather();
+                console.log(`sun\n${this.grid.printAttribute("sun_lvl")}`);
+                console.log(`rain\n${this.grid.printAttribute("rain_lvl")}`);
 
                 this.endOfDay = false;
             } else {
