@@ -14,7 +14,8 @@ export class PlayScene extends Phaser.Scene {
         //create tilemap & grid
         this.GRID_WIDTH = 10;
         this.GRID_HEIGHT = 10;
-        this.GRID_SCALE = 5;
+        this.GRID_SCALE = 5; //og tilemap size: 512x320
+        this.tile_size = 16 * this.GRID_SCALE
         this.width = 1280
         this.height = 800
 
@@ -64,7 +65,7 @@ export class PlayScene extends Phaser.Scene {
             fontSize: 32
         })
         this.input.on('pointermove', (ptr) => {
-            let cell = this.grid.getCellAt(ptr.x, ptr.y);
+            let cell = this.grid.getCellAt(ptr.x, ptr.y, this.tile_size);
             let [x, y] = [ptr.x, ptr.y];
             let [w, h] = [this.levelsText.width, this.levelsText.height];
             if(x < w) w = 0;
