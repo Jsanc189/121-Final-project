@@ -77,6 +77,13 @@ export class PlayScene extends Phaser.Scene {
                 `sun: ${cell.sun_lvl}\nrain: ${cell.rain_lvl}`
             )
         });
+        this.input.on('pointerdown', (ptr) => {
+            let cell = this.grid.getCellAt(ptr.x, ptr.y, this.tile_size);
+            let player_cell = this.grid.getCellAt(this.player.x, this.player.y, this.tile_size);
+            if(this.grid.isAdjacentCell(cell, player_cell)){
+              console.log("Is adjacent")
+            }
+        });
         
     }
 
