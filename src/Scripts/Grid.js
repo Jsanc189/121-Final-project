@@ -1,5 +1,23 @@
 import { Weather, TileWeather } from "./Weather.js";
 
+class Cell {
+  constructor(x, y, sun_lvl, rain_lvl, plant) {
+    this.x = x;
+    this.y = y;
+    this.sun_lvl = sun_lvl;
+    this.rain_lvl = rain_lvl;
+    this.plant = plant;
+    // this.rect = new Phaser.Geom.Rectangle(x * 40, y * 40, 40, 40);
+  }
+
+  updateWeatherAtCell(sun_lvl, rain_lvl) {
+    this.sun_lvl = sun_lvl;
+    this.rain_lvl += Math.floor(rain_lvl / 2);
+    this.rain_lvl -= Math.floor(sun_lvl);
+    if (this.rain_lvl < 0) this.rain_lvl = 0;
+  }
+}
+
 export class Grid {
   width; //not pixels. Number of tiles
   height;
@@ -14,9 +32,13 @@ export class Grid {
     this.seed = Math.random();
     this.weather = new Weather({ seed: this.seed });
 
-    for(let x = 0; x < height; x++){
+    for(let x = 0; x < height; x ++){
       this.tiles[x] = [];
+<<<<<<< HEAD
       for(let y = 0; y < width; y++){
+=======
+      for(let y = 0; y < width; y ++){
+>>>>>>> d7d26353d9566ceb94b9393d2227e48b89d1b6c9
         const tileWeather = new TileWeather(x, y, this.weather).generate();
         const newTile = new Cell(x, y, tileWeather.sun, tileWeather.rain);
         this.tiles[x].push(newTile);
@@ -67,6 +89,7 @@ export class Grid {
   getCellAt(x, y, tile_size){
     return this.tiles[Math.floor(y / tile_size)][Math.floor(x / tile_size)];
   }
+<<<<<<< HEAD
 
   isAdjacentCell(cell1, cell2){
     console.log(cell1.x - cell2.x);
@@ -95,4 +118,6 @@ class Cell {
     this.rain_lvl -= Math.floor(sun_lvl); 
     if(this.rain_lvl < 0) this.rain_lvl = 0;
   }
+=======
+>>>>>>> d7d26353d9566ceb94b9393d2227e48b89d1b6c9
 }

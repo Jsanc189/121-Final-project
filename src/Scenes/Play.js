@@ -33,7 +33,7 @@ export class PlayScene extends Phaser.Scene {
         this.downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
 
         // this.time = new Clock(this);
-        this.player = new Player(this, 140, 140, 'idle', 8, 40);
+        this.player = new Player(this, 140, 140, 'idle', 8, this.tile_size);
         this.player.scale = this.GRID_SCALE;
         console.log(this.player.y)
 
@@ -94,7 +94,6 @@ export class PlayScene extends Phaser.Scene {
 
             //check if end conditions are met
             this.checkWin();
-
             if(this.endOfDay) {
                 console.log("End of day...");
                 this.plantOneCount += 1;
