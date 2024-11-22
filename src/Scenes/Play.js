@@ -1,5 +1,6 @@
 import { Grid } from "../Scripts/Grid";
 import { Player } from "../Scripts/Player";
+import { Plant } from "../Scripts/Plant";
 
 export class PlayScene extends Phaser.Scene {
     constructor() {
@@ -11,8 +12,8 @@ export class PlayScene extends Phaser.Scene {
         this.graphics = this.add.graphics();
 
         //create tilemap & grid
-        this.GRID_WIDTH = 32;
-        this.GRID_HEIGHT = 20;
+        this.GRID_WIDTH = 10;
+        this.GRID_HEIGHT = 10;
         this.GRID_SCALE = 2.5; //og tilemap size: 512x320
         this.width = 1280
         this.height = 800
