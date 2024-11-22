@@ -14,7 +14,7 @@ export class PlayScene extends Phaser.Scene {
         //create tilemap & grid
         this.GRID_WIDTH = 10;
         this.GRID_HEIGHT = 10;
-        this.GRID_SCALE = 2.5; //og tilemap size: 512x320
+        this.GRID_SCALE = 5;
         this.width = 1280
         this.height = 800
 
@@ -86,7 +86,6 @@ export class PlayScene extends Phaser.Scene {
 
             //check if end conditions are met
             this.checkWin();
-
             if(this.endOfDay) {
                 console.log("End of day...");
                 this.plantOneCount += 1;

@@ -1,5 +1,23 @@
 import { Weather, TileWeather } from "./Weather.js";
 
+class Cell {
+  constructor(x, y, sun_lvl, rain_lvl, plant) {
+    this.x = x;
+    this.y = y;
+    this.sun_lvl = sun_lvl;
+    this.rain_lvl = rain_lvl;
+    this.plant = plant;
+    // this.rect = new Phaser.Geom.Rectangle(x * 40, y * 40, 40, 40);
+  }
+
+  updateWeatherAtCell(sun_lvl, rain_lvl) {
+    this.sun_lvl = sun_lvl;
+    this.rain_lvl += Math.floor(rain_lvl / 2);
+    this.rain_lvl -= Math.floor(sun_lvl);
+    if (this.rain_lvl < 0) this.rain_lvl = 0;
+  }
+}
+
 export class Grid {
   width; //not pixels. Number of tiles
   height;
@@ -14,13 +32,17 @@ export class Grid {
     this.seed = Math.random();
     this.weather = new Weather({ seed: this.seed });
 
-    for(let x = 0; x < height; x++){
+    for(let x = 0; x < height; x ++){
       this.tiles[x] = [];
-      for(let y = 0; y < width; y++){
-        let tileWeather = new TileWeather(x, y, this.weather).generate();
-        this.tiles[x].push(new Cell(
-          x, y, tileWeather.sun, tileWeather.rain
-        ));
+      for(let y = 0; y < width; y ++){
+        const tileWeather = new TileWeather(x, y, this.weather).generate();
+        const newTile = new Cell(x, y, tileWeather.sun, tileWeather.rain);
+        this.tiles[x].push(newTile);
+
+        // scene.graphics.setInteractive({ useHandCursor: true, 
+        //     hitArea: newTile.rect,
+        //     hitAreaCallback: Phaser.Geom.Rectangle.Contains,
+        // })
       }
     }
     this.scene = scene;
@@ -60,24 +82,8 @@ export class Grid {
   }
 
   getCellAt(x, y){
+    console.log(x)
+    console.log(y)
     return this.tiles[Math.floor(y / 40)][Math.floor(x / 40)];
-  }
-}
-
-class Cell {
-  constructor(x, y, sun_lvl, rain_lvl, plant){
-    this.x = x;
-    this.y = y;
-    this.sun_lvl = sun_lvl;
-    this.rain_lvl = rain_lvl;
-    this.plant = plant;
-  }
-
-  updateWeatherAtCell(sun_lvl, rain_lvl){
-    this.sun_lvl = sun_lvl;
-
-    this.rain_lvl += Math.floor(rain_lvl/2);
-    this.rain_lvl -= Math.floor(sun_lvl); 
-    if(this.rain_lvl < 0) this.rain_lvl = 0;
   }
 }
