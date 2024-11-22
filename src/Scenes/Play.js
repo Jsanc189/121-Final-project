@@ -22,13 +22,7 @@ export class PlayScene extends Phaser.Scene {
         this.layer = this.tilemap.createLayer("Main", this.tileset)
         this.layer.setScale(this.GRID_SCALE);
         this.grid = new Grid(this.GRID_WIDTH, this.GRID_HEIGHT, this)
-        this.grid.makeGridLines();
-        this.graphics.lineStyle(1, 0xffffff, 1);
-        this.graphics.beginPath();
-        for(let line in this.grid_lines){
-          this.graphics.strokeLineShape(line);
-        }
-        this.graphics.strokeLineShape(0, 0, 1280, 800);
+        this.makeGridLines();
 
         //player movement keys
         this.leftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
@@ -36,7 +30,8 @@ export class PlayScene extends Phaser.Scene {
         this.upKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
         this.downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
 
-        this.player = new Player(this, 140, 140, 'idle', 8, 5);
+        // this.time = new Clock(this);
+        this.player = new Player(this, 140, 140, 'idle', 8, 40);
         this.player.scale = this.GRID_SCALE;
         console.log(this.player.y)
 
@@ -120,5 +115,18 @@ export class PlayScene extends Phaser.Scene {
             this.gameOver = true;
         }
     }
+
+    makeGridLines(){
+    this.grid_lines = []
+    //Draw vertical lines
+    for(let x = 40; x < this.scene.width; x += 40){
+      // let line = new Phaser.Geom.Line(x, 0, x, this.scene.height);
+      this.add.line(x, 0, x, this.scene.height)
+    }
+    for(let y = 40; y < this.scene.height; y += 40){
+      // let line = new Phaser.Geom.Line(0, y, this.scene.height, y);
+      this.add.line(0, y, this.scene.height, y);
+    }
+  }
     
 }

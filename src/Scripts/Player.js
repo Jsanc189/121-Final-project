@@ -26,12 +26,12 @@ export class Player extends Phaser.GameObjects.Sprite {
         moved = true;
       }
 
-      //if(moved){
-      //  this.ableToMove = false;
-      //  this.time.delayedCall(500, () => {
-      //    this.ableToMove = true;
-      //  });
-      //}
+      if(moved){
+       this.ableToMove = false;
+       this.scene.time.delayedCall(200, () => {
+         this.ableToMove = true;
+       });
+      }
     }
   }
 }

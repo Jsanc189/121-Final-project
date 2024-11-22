@@ -26,20 +26,6 @@ export class Grid {
     this.scene = scene;
   }
 
-  makeGridLines(){
-    let grid_lines = []
-    //Draw vertical lines
-    for(let x = 40; x < this.scene.width; x += 40){
-      let line = new Phaser.Geom.Line(x, 0, x, this.scene.height);
-      grid_lines.push(line);
-    }
-    for(let y = 40; y < this.scene.height; y += 40){
-      let line = new Phaser.Geom.Line(0, y, this.scene.height, y);
-      grid_lines.push(line);
-    }
-    this.scene.grid_lines = grid_lines;
-  }
-
   updateWeather(seed = Math.random()){
     let width = this.width;
     let height = this.height;
