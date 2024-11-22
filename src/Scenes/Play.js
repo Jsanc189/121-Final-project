@@ -37,7 +37,7 @@ export class PlayScene extends Phaser.Scene {
         this.downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
 
         this.player = new Player(this, 140, 140, 'idle', 8, 5);
-        this.player.scale = 2.5;
+        this.player.scale = this.GRID_SCALE;
         console.log(this.player.y)
 
         //set game condition
@@ -62,7 +62,25 @@ export class PlayScene extends Phaser.Scene {
        
         });
 
+        this.levelsText = this.add.text(0,0, "", {
+            color: "black", 
+            backgroundColor: "#64ffc4",
+            fontSize: 32
+        })
+        this.input.on('pointermove', (ptr) => {
+            let cell = this.grid.getCellAt(ptr.x, ptr.y);
+            let [x, y] = [ptr.x, ptr.y];
+            let [w, h] = [this.levelsText.width, this.levelsText.height];
+            if(x < w) w = 0;
+            if(y < h) h = 0;
+            this.levelsText.x = x - w;
+            this.levelsText.y = y - h;
 
+            this.levelsText.setText(
+                `sun: ${cell.sun_lvl}\nrain: ${cell.rain_lvl}`
+            )
+        });
+        
     }
 
     update() {
@@ -103,10 +121,4 @@ export class PlayScene extends Phaser.Scene {
         }
     }
     
-    getWeather(w, h){
-        return weather({
-            width: w,
-            height: h
-        });
-    }
 }

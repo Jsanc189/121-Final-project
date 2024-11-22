@@ -72,6 +72,10 @@ export class Grid {
     }
     return result;
   }
+
+  getCellAt(x, y){
+    return this.tiles[Math.floor(y / 40)][Math.floor(x / 40)];
+  }
 }
 
 class Cell {
@@ -85,6 +89,9 @@ class Cell {
 
   updateWeatherAtCell(sun_lvl, rain_lvl){
     this.sun_lvl = sun_lvl;
-    this.rain_lvl = rain_lvl;
+
+    this.rain_lvl += Math.floor(rain_lvl/2);
+    this.rain_lvl -= Math.floor(sun_lvl); 
+    if(this.rain_lvl < 0) this.rain_lvl = 0;
   }
 }
