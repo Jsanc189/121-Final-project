@@ -7,7 +7,7 @@ class Cell {
     this.sun_lvl = sun_lvl;
     this.rain_lvl = rain_lvl;
     this.plant = plant;
-    // this.rect = new Phaser.Geom.Rectangle(x * 40, y * 40, 40, 40);
+    this.rect = new Phaser.Geom.Rectangle(x * 40, y * 40, 40, 40);
   }
 
   updateWeatherAtCell(sun_lvl, rain_lvl) {
