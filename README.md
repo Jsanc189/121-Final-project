@@ -32,7 +32,7 @@ The player is controlled through arrow keys.  The player moved to each tile with
 The time is advanced for the player by ending the day.  There is a text button towards the top of the screen that can be clicked and advances the day forward.  This will trigger other processes to happen for the day.
 
 # F0c. You can reap or sow plants on a grid cells only when you are near them
-The player reaps or sows plants withing a 
+The player reaps or sows plants within a 1 tile radius.  The player can click on a tile and the tile will be sown depending on if the tile has specific requirements met.
 
 # F0d. Grid cells have sun and water levels
 The grid cells have sun and water levels that are determined by a random seed.  Thes values are placed into a double array that will update the sun levels to the new values, while adding to the water values from the previous day.  
