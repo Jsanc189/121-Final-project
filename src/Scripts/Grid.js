@@ -89,7 +89,6 @@ export class Grid {
   getCellAt(x, y, tile_size){
     return this.tiles[Math.floor(y / tile_size)][Math.floor(x / tile_size)];
   }
-<<<<<<< HEAD
 
   isAdjacentCell(cell1, cell2){
     console.log(cell1.x - cell2.x);
@@ -118,6 +117,4 @@ class Cell {
     this.rain_lvl -= Math.floor(sun_lvl); 
     if(this.rain_lvl < 0) this.rain_lvl = 0;
   }
-=======
->>>>>>> d7d26353d9566ceb94b9393d2227e48b89d1b6c9
 }
