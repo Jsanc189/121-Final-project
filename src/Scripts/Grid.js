@@ -23,6 +23,7 @@ export class Grid {
         ));
       }
     }
+    console.log(this.tiles)
     this.scene = scene;
   }
 
@@ -59,8 +60,8 @@ export class Grid {
     return result;
   }
 
-  getCellAt(x, y){
-    return this.tiles[Math.floor(y / 40)][Math.floor(x / 40)];
+  getCellAt(x, y, tile_size){
+    return this.tiles[Math.floor(y / tile_size)][Math.floor(x / tile_size)];
   }
 }
 
