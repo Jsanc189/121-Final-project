@@ -25,25 +25,25 @@ The team is hoping to expand their limited knowledge of Phaser3 and also learn t
 
 
 ## How we satisfied the software requirements
-# FOa. Control a character moving in a 2D grid
+### FOa. Control a character moving in a 2D grid
 The player is controlled through arrow keys.  The player moved to each tile with one press of any of the arrow keys by that direction.
 
-# F0b. You advance time manually in the turn- based simulation
+### F0b. You advance time manually in the turn- based simulation
 The time is advanced for the player by ending the day.  There is a text button towards the top of the screen that can be clicked and advances the day forward.  This will trigger other processes to happen for the day.
 
-# F0c. You can reap or sow plants on a grid cells only when you are near them
+### F0c. You can reap or sow plants on a grid cells only when you are near them
 The player reaps or sows plants within a 1 tile radius.  The player can click on a tile and the tile will be sown depending on if the tile has specific requirements met.
 
-# F0d. Grid cells have sun and water levels
+### F0d. Grid cells have sun and water levels
 The grid cells have sun and water levels that are determined by a random seed.  Thes values are placed into a double array that will update the sun levels to the new values, while adding to the water values from the previous day.  
 
-# F0e. Each plant on the grid has a distinct type and growth level
+### F0e. Each plant on the grid has a distinct type and growth level
 There are 3 types of plants currently in the game.  They are currently placeholders for the player to interact with.  The growth rate are dependant on how much water is in a tile and how much sun they accumulate. 
 
-# F0f. Simple spatial rules govern plant growth based on sun, water, and nearby plants
+### F0f. Simple spatial rules govern plant growth based on sun, water, and nearby plants
 For now, plants will be able to be planted when water has achieved a certain level.
 
-# F0g. A play scenario is completed when some condition is satified
+### F0g. A play scenario is completed when some condition is satified
 Once the player accumulates 10 of each plant, they "win" and the play scene starts over.
 
 ## Reflection
