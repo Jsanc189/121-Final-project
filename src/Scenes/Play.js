@@ -1,5 +1,6 @@
 import { Grid } from "../Scripts/Grid";
 import { Player } from "../Scripts/Player";
+import { Plant } from "../Scripts/Plant";
 
 export class PlayScene extends Phaser.Scene {
     constructor() {
