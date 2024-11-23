@@ -154,7 +154,7 @@ export class PlayScene extends Phaser.Scene {
     }
 
     checkWin() {
-        if(this.plantOneCount >= 10 && this.plantTwoCount >= 10 && this.plantThreeCount >= 10) {
+        if(this.plantOneCount >= 3 && this.plantTwoCount >= 3 && this.plantThreeCount >= 3) {
             console.log("You win!");
             this.gameOver = true;
         }
