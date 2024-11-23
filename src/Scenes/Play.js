@@ -16,14 +16,14 @@ export class PlayScene extends Phaser.Scene {
         this.GRID_HEIGHT = 10;
         this.GRID_SCALE = 5; //og tilemap size: 512x320
         this.tile_size = 16 * this.GRID_SCALE
-        this.width = 1280
+        this.width = 800
         this.height = 800
 
         this.tilemap = this.make.tilemap({ key: "tilemap" });
         this.tileset = this.tilemap.addTilesetImage("tileset");
-        this.layer = this.tilemap.createLayer("Main", this.tileset)
+        this.layer = this.tilemap.createLayer("Main", this.tileset);
         this.layer.setScale(this.GRID_SCALE);
-        this.grid = new Grid(this.GRID_WIDTH, this.GRID_HEIGHT, this)
+        this.grid = new Grid(this.GRID_WIDTH, this.GRID_HEIGHT, this);
         this.makeGridLines();
 
         //player movement keys
@@ -62,7 +62,8 @@ export class PlayScene extends Phaser.Scene {
             color: "black", 
             backgroundColor: "#64ffc4",
             fontSize: 32
-        })
+        });
+
         this.input.on('pointermove', (ptr) => {
             let cell = this.grid.getCellAt(ptr.x, ptr.y, this.tile_size);
             let [x, y] = [ptr.x, ptr.y];
@@ -79,13 +80,16 @@ export class PlayScene extends Phaser.Scene {
         this.input.on('pointerdown', (ptr) => {
             let cell = this.grid.getCellAt(ptr.x, ptr.y, this.tile_size);
             let player_cell = this.grid.getCellAt(this.player.x, this.player.y, this.tile_size);
+            console.log(cell);
+            console.log(player_cell);
             if(this.grid.isAdjacentCell(cell, player_cell)){
+                console.log("adjacent!")
                 if (cell.plant == undefined) {
                     let randomType = Math.floor(Math.random() * 3 + 1);
 
                     console.log(cell.x, cell.y, cell.x * this.tile_size, cell.y * this.tile_size);
 
-                    let plantSprite = this.add.sprite((cell.x * this.tile_size), (cell.y * this.tile_size), "plant" + randomType + "_1").setScale(this.GRID_SCALE - 2);
+                    let plantSprite = this.add.sprite(((cell.y) * this.tile_size), ((cell.x + 0.5) * this.tile_size), "plant" + randomType + "_1").setScale(this.GRID_SCALE - 2);
 
                     cell.plant = new Plant(plantSprite, randomType, cell); 
                     
@@ -147,16 +151,19 @@ export class PlayScene extends Phaser.Scene {
     }
 
     makeGridLines(){
-    this.grid_lines = []
-    //Draw vertical lines
-    for(let x = 40; x < this.scene.width; x += 40){
-      // let line = new Phaser.Geom.Line(x, 0, x, this.scene.height);
-      this.add.line(x, 0, x, this.scene.height)
-    }
-    for(let y = 40; y < this.scene.height; y += 40){
-      // let line = new Phaser.Geom.Line(0, y, this.scene.height, y);
-      this.add.line(0, y, this.scene.height, y);
-    }
+        console.log(this.width);
+        // this.grid_lines = [];
+        //Draw vertical line
+        for(let x = 40; x < this.width; x += 40){
+            console.log("hi");
+            // let line = new Phaser.Geom.Line(x, 0, x, this.scene.height);
+            //this.add.line(x, 0, x, this.width, , );
+        }
+        for(let y = 40; y < this.height; y += 40){
+            console.log("heyo");
+            // let line = new Phaser.Geom.Line(0, y, this.scene.height, y);
+            //this.add.line(0, y, this.height, y);
+        }
   }
     
 }
