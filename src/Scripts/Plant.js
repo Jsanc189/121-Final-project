@@ -12,12 +12,10 @@ export class Plant {
         this.cell = cell;
 
         this.sprite = sprite;
-    } 
 
-    init() {
         this.growth_lvl = 1;
-        this.waterDiffusionRate = 0;     
-    }
+        this.waterDiffusionRate = 0;  
+    } 
 
     // in play scene, iterate through
     update() {
@@ -33,21 +31,21 @@ export class Plant {
                 if (this.cell.sun_lvl >= 10 && this.cell.rain_lvl >= 10) {
                     this.growth_lvl++;
                 }
-                //this.setTexture("plant1_" + this.growth_lvl);
+                this.sprite.setTexture("plant1_" + this.growth_lvl);
                 break;
             case TYPE2:
                 // check for plant type 2 growth conditions
                 if (this.cell.sun_lvl >= 20 && this.cell.rain_lvl >= 20) {
                     this.growth_lvl++;
                 }
-                //this.cell.rect.setTexture("plant2_" + this.growth_lvl);
+                this.sprite.setTexture("plant2_" + this.growth_lvl);
                 break;
             case TYPE3: 
                 // check for plant type 3 growth conditions
                 if (this.cell.sun_lvl >= 30 && this.cell.rain_lvl >= 30) {
                     this.growth_lvl++;
                 }
-                //this.cell.rect.setTexture("plant3_" + this.growth_lvl);
+                this.sprite.setTexture("plant3_" + this.growth_lvl);
                 break;
             default:
                 // throw error?

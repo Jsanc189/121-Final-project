@@ -11,7 +11,7 @@ let config = {
         pixelArt: true  // prevent pixel art from getting blurred when scaled
     },
     width: 800,
-    height: 800,
+    height: 900,
     scene: [Load, PlayScene]
 }
 

@@ -33,7 +33,7 @@ export class PlayScene extends Phaser.Scene {
         this.downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
 
         // this.time = new Clock(this);
-        this.player = new Player(this, 140, 140, 'idle', 8, this.tile_size);
+        this.player = new Player(this, .5*this.tile_size, .5*this.tile_size, 'idle', 8, this.tile_size);
         this.player.scale = this.GRID_SCALE;
 
         //set game condition
@@ -43,11 +43,12 @@ export class PlayScene extends Phaser.Scene {
         this.plantTwoCount = 0;
         this.plantThreeCount = 0;
 
+        const buttonBG = this.add.rectangle(705, 860, 150, 50, 0xffffff, 1);
         const dayButton = this.add.text(
-            100, 
-            100, 
+            650, 
+            850, 
             'End Day', 
-            { fontSize: '28px', fill: '#0F0' 
+            { fontSize: '28px', fill: '#000' 
             }).setInteractive();
 
         dayButton.on('pointerover', () => {
@@ -65,6 +66,8 @@ export class PlayScene extends Phaser.Scene {
         });
 
         this.input.on('pointermove', (ptr) => {
+            if (!(ptr.x >= 800 || ptr.y >= 800)) {
+                
             let cell = this.grid.getCellAt(ptr.x, ptr.y, this.tile_size);
             let [x, y] = [ptr.x, ptr.y];
             let [w, h] = [this.levelsText.width, this.levelsText.height];
@@ -76,23 +79,18 @@ export class PlayScene extends Phaser.Scene {
             this.levelsText.setText(
                 `sun: ${cell.sun_lvl}\nrain: ${cell.rain_lvl}`
             )
+        }
         });
         this.input.on('pointerdown', (ptr) => {
             let cell = this.grid.getCellAt(ptr.x, ptr.y, this.tile_size);
             let player_cell = this.grid.getCellAt(this.player.x, this.player.y, this.tile_size);
-            console.log(cell);
-            console.log(player_cell);
+
+            if (!(ptr.x >= 800 || ptr.y >= 800)) {
             if(this.grid.isAdjacentCell(cell, player_cell)){
-                console.log("adjacent!")
                 if (cell.plant == undefined) {
                     let randomType = Math.floor(Math.random() * 3 + 1);
-
-                    console.log(cell.x, cell.y, cell.x * this.tile_size, cell.y * this.tile_size);
-
-                    let plantSprite = this.add.sprite(((cell.y) * this.tile_size), ((cell.x + 0.5) * this.tile_size), "plant" + randomType + "_1").setScale(this.GRID_SCALE - 2);
-
+                    let plantSprite = this.add.sprite((cell.y * this.tile_size + .5*this.tile_size), (cell.x * this.tile_size + .5*this.tile_size), "plant" + randomType + "_1").setScale(this.GRID_SCALE - 2);
                     cell.plant = new Plant(plantSprite, randomType, cell); 
-                    
                 } else if (cell.plant) {
                     if (cell.plant.growth_lvl == 3) {
                         cell.plant.harvest();
@@ -100,6 +98,7 @@ export class PlayScene extends Phaser.Scene {
                 }
 
             }
+        }
         });
         
     }
@@ -111,20 +110,31 @@ export class PlayScene extends Phaser.Scene {
 
             //check if end conditions are met
             this.checkWin();
-
-            for (let x = 0; x < this.grid.height; x++) {
-                for (let y = 0; y < this.grid.width; y++) {
-                    if (this.grid.tiles[x][y].plant) {
-                        this.grid.tiles[x][y].plant.update();
-                    }
-                 }
-            }
         
             if(this.endOfDay) {
+                for (let x = 0; x < this.grid.height; x++) {
+                    for (let y = 0; y < this.grid.width; y++) {
+                        if (this.grid.tiles[x][y].plant) {
+                            this.grid.tiles[x][y].plant.update();
+                            if (this.grid.tiles[x][y].plant.growth_lvl > 3) {
+                                switch (this.grid.tiles[x][y].plant.type) {
+                                    case 1:
+                                        this.plantOneCount++;
+                                        break;
+                                    case 2:
+                                        this.plantTwoCount++;
+                                        break;
+                                    case 3:
+                                        this.plantThreeCount++;
+                                        break;
+                                }
+                                this.grid.tiles[x][y].plant.sprite.destroy(true);
+                                delete this.grid.tiles[x][y].plant;
+                            }
+                        }
+                     }
+                }
                 console.log("End of day...");
-                this.plantOneCount += 1;
-                this.plantTwoCount += 1;
-                this.plantThreeCount += 1;
 
                 this.grid.updateWeather();
                 console.log(`sun\n${this.grid.printAttribute("sun_lvl")}`);
@@ -151,18 +161,16 @@ export class PlayScene extends Phaser.Scene {
     }
 
     makeGridLines(){
-        console.log(this.width);
         // this.grid_lines = [];
         //Draw vertical line
-        for(let x = 40; x < this.width; x += 40){
-            console.log("hi");
+        for(let x = (this.tile_size); x < this.width; x += (this.tile_size)){
             // let line = new Phaser.Geom.Line(x, 0, x, this.scene.height);
-            //this.add.line(x, 0, x, this.width, , );
+            this.add.line(0, 0, x, 0, x, 2 * this.height, 0xffffff);
         }
-        for(let y = 40; y < this.height; y += 40){
-            console.log("heyo");
+        // horizontal lines 
+        for(let y = (this.tile_size); y < this.height; y += (this.tile_size)){
             // let line = new Phaser.Geom.Line(0, y, this.scene.height, y);
-            //this.add.line(0, y, this.height, y);
+            this.add.line(0, 0, 0, y, 2 * this.height, y, 0xffffff);
         }
   }
     

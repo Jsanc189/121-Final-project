@@ -7,6 +7,8 @@ export class Player extends Phaser.GameObjects.Sprite {
   }
 
   update(){
+    this.setDepth(10);
+    
     if(this.ableToMove){
       let moved = false;
       if(this.scene.leftKey.isDown && this.x > 40) {
