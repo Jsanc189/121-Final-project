@@ -1,6 +1,6 @@
-import { Grid } from "../Scripts/Grid";
-import { Player } from "../Scripts/Player";
-import { Plant } from "../Scripts/Plant";
+import { Grid } from "../Scripts/Grid.js";
+import { Player } from "../Scripts/Player.js";
+import { Plant } from "../Scripts/Plant.js";
 
 export class PlayScene extends Phaser.Scene {
     constructor() {
@@ -35,7 +35,6 @@ export class PlayScene extends Phaser.Scene {
         // this.time = new Clock(this);
         this.player = new Player(this, 140, 140, 'idle', 8, this.tile_size);
         this.player.scale = this.GRID_SCALE;
-        console.log(this.player.y)
 
         //set game condition
         this.gameOver = false;
@@ -81,15 +80,18 @@ export class PlayScene extends Phaser.Scene {
             let cell = this.grid.getCellAt(ptr.x, ptr.y, this.tile_size);
             let player_cell = this.grid.getCellAt(this.player.x, this.player.y, this.tile_size);
             if(this.grid.isAdjacentCell(cell, player_cell)){
-                console.log("Is adjacent");
                 if (cell.plant == undefined) {
                     let randomType = Math.floor(Math.random() * 3 + 1);
-                    cell.plant = new Plant(randomType, cell); 
-                    console.log(cell.plant);
+
+                    console.log(cell.x, cell.y, cell.x * this.tile_size, cell.y * this.tile_size);
+
+                    let plantSprite = this.add.sprite((cell.x * this.tile_size), (cell.y * this.tile_size), "plant" + randomType + "_1").setScale(this.GRID_SCALE - 2);
+
+                    cell.plant = new Plant(plantSprite, randomType, cell); 
+                    
                 } else if (cell.plant) {
                     if (cell.plant.growth_lvl == 3) {
                         cell.plant.harvest();
-                        console.log(cell.plant);
                     }
                 }
 

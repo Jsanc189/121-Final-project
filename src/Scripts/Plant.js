@@ -4,19 +4,19 @@ const TYPE2 = 2;
 const TYPE3 = 3;
 
 export class Plant {
-    constructor(type, cell) {
-        // super("plantSprite");
-
+    constructor(sprite, type, cell) {
         // initialize type of plant and initial growth level
         this.type = type;
 
         // store 8 tiles adjacent to the plant 
         this.cell = cell;
+
+        this.sprite = sprite;
     } 
 
     init() {
         this.growth_lvl = 1;
-        this.waterDiffusionRate = 0;
+        this.waterDiffusionRate = 0;     
     }
 
     // in play scene, iterate through
@@ -33,7 +33,6 @@ export class Plant {
                 if (this.cell.sun_lvl >= 10 && this.cell.rain_lvl >= 10) {
                     this.growth_lvl++;
                 }
-                //console.log(this.cell.rect);
                 //this.setTexture("plant1_" + this.growth_lvl);
                 break;
             case TYPE2:
