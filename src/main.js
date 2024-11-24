@@ -7,7 +7,7 @@ import { MenuScene } from "./Scenes/Menu.js";
 // game config
 let config = {
     parent: 'phaser-game',
-    type: Phaser.CANVAS,
+    type: Phaser.AUTO,
     render: {
         pixelArt: true  // prevent pixel art from getting blurred when scaled
     },
@@ -16,6 +16,7 @@ let config = {
     scene: [Load, MenuScene, PlayScene]
 }
 
-
-
 const game = new Game(config);
+
+//grid to hold the Play scene's grid of tiles
+game.saveFile1 = null;

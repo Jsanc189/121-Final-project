@@ -26,6 +26,15 @@ export class MenuScene extends Phaser.Scene {
 
     }
 
+    makeButton(x, y, width, height, text, color, tint, functionCall) {
+        this.add.rectangle(x, y, width, height, '#ff0000');
+        const button = this.add.text(x, y, text, color, tint);
+        button.setInteractive();
+        button.on('pointerover',() => {button.fill = '#000000'})
+        button.on('pointerout',() => {button.fill = '#ffffff'})
+        button.on('pointerup', functionCall());
+      }
+
 
 
 
