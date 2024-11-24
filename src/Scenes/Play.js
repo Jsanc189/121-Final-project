@@ -43,21 +43,12 @@ export class PlayScene extends Phaser.Scene {
         this.plantTwoCount = 0;
         this.plantThreeCount = 0;
 
-        const buttonBG = this.add.rectangle(705, 860, 150, 50, 0xffffff, 1);
-        const dayButton = this.add.text(
-            650, 
-            850, 
-            'End Day', 
-            { fontSize: '28px', fill: '#000' 
-            }).setInteractive();
+        //buttons
+        // this.makeButton(100, 860, 150, 50, 'Save', 0xffffff, 1, () => this.saveFile());
+        // this.makeButton(350, 860, 150, 50, 'Load', 0xffffff, 1, () => this.loadFile());
+        this.makeButton(705, 860, 150, 50, 'End Day', 0xffffff, 1, () => this.endDay.bind(this));
 
-        dayButton.on('pointerover', () => {
-            console.log('pointerOver!')
-        });
-        dayButton.on('pointerup', () => {
-            this.endOfDay = true;
-       
-        });
+
 
         this.levelsText = this.add.text(0,0, "", {
             color: "black", 
@@ -106,12 +97,14 @@ export class PlayScene extends Phaser.Scene {
     update() {
         this.player.update();
         if (!this.gameOver) {
-            //console.log("Game is running...");
+            console.log("Game is running... checking EOD...", + this.endOfDay);
+
 
             //check if end conditions are met
             this.checkWin();
         
             if(this.endOfDay) {
+                console.log("checking grid");
                 for (let x = 0; x < this.grid.height; x++) {
                     for (let y = 0; y < this.grid.width; y++) {
                         if (this.grid.tiles[x][y].plant) {
@@ -173,5 +166,71 @@ export class PlayScene extends Phaser.Scene {
             this.add.line(0, 0, 0, y, 2 * this.height, y, 0xffffff);
         }
   }
-    
+
+  endDay() {
+    console.log(this.endOfDay);
+    this.endOfDay = true;
+    console.log(this.endOfDay);
+    console.log("ending day");
+  };
+
+
+
+//   function setGrid() {
+
+//   }
+
+//   function saveFile() {
+//     const gameState = this.grid.tiles.map(row => 
+//         row.map(tile => ({
+//             hasPlant: !!tile.plant,
+//             plantType: tile.plant?.type || null,
+//             growthLevel: tile.plant?.growth_lvl || 0
+//         }))
+//     );
+
+//     const saveData = JSON.stringify({ gameState });
+
+//     localStorage.setItem('gameSave', saveData);
+//     console.log('Game saved:', saveData);
+
+
+//   }
+
+//   function loadFile() {
+//     const saveData = localStorage.getItem('gameSave');
+//     if (!saveData) {
+//         console.log('No save data found!');
+//         return;
+//     }
+
+//     // Parse the JSON string
+//     const { gameState } = JSON.parse(saveData);
+
+//     // Repopulate the 2D array
+//     this.grid.tiles = gameState.map((row, x) =>
+//         row.map((tileData, y) => {
+//             const tile = {}; // Create a new tile object
+//             if (tileData.hasPlant) {
+//                 tile.plant = {
+//                     type: tileData.plantType,
+//                     growth_lvl: tileData.growthLevel,
+//                     // Add additional properties if needed
+//                 };
+//             }
+//             return tile;
+//         })
+//     );
+
+//     console.log('Game loaded:', this.grid.tiles);
+//   }
+
+ makeButton(x, y, width, height, text, color, tint, functionCall) {
+    this.add.rectangle(x, y, width, height, 'white');
+    const button = this.add.text(x, y, text, color, tint);
+    button.setInteractive();
+    button.on('pointerover',() => {button.fill = '#000000'})
+    button.on('pointerout',() => {button.fill = '#ffffff'})
+    button.on('pointerup', functionCall());
+  }
 }

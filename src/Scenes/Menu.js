@@ -18,12 +18,7 @@ export class MenuScene extends Phaser.Scene {
         this.newGameButton.setInteractive();
         this.newGameButton.on('pointerover', () => { this.newGameButton.setStyle({ fill: 'green' }) });
         this.newGameButton.on('pointerout', () => { this.newGameButton.setStyle({ fill: 'darkgreen' }) });
-        this.newGameButton.on('pointerup', () => { this.scene.start('playScene') });
-
-
-
-
-        
+        this.newGameButton.on('pointerup', () => { this.scene.start('playScene') });        
 
     }
 
@@ -33,4 +28,9 @@ export class MenuScene extends Phaser.Scene {
 
 
 
+
+
 }
+
+
+

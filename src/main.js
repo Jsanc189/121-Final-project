@@ -16,4 +16,6 @@ let config = {
     scene: [Load, MenuScene, PlayScene]
 }
 
+
+
 const game = new Game(config);
