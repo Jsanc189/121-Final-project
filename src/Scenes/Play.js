@@ -97,47 +97,44 @@ export class PlayScene extends Phaser.Scene {
     update() {
         this.player.update();
         if (!this.gameOver) {
-            console.log("Game is running... checking EOD...", + this.endOfDay);
-
-
             //check if end conditions are met
             this.checkWin();
         
+            //check plants for growth in each tile
             if(this.endOfDay) {
                 console.log("checking grid");
                 for (let x = 0; x < this.grid.height; x++) {
                     for (let y = 0; y < this.grid.width; y++) {
-                        if (this.grid.tiles[x][y].plant) {
-                            this.grid.tiles[x][y].plant.update();
-                            if (this.grid.tiles[x][y].plant.growth_lvl > 3) {
-                                switch (this.grid.tiles[x][y].plant.type) {
-                                    case 1:
-                                        this.plantOneCount++;
-                                        break;
-                                    case 2:
-                                        this.plantTwoCount++;
-                                        break;
-                                    case 3:
-                                        this.plantThreeCount++;
-                                        break;
-                                }
-                                this.grid.tiles[x][y].plant.sprite.destroy(true);
-                                delete this.grid.tiles[x][y].plant;
+                        const tile = this.grid.tiles[x][y];
+                        const plant = tile.plant;
+
+                        if(!plant) continue;
+
+                        plant.update();
+
+                        if (plant.growth_lvl > 3) {
+                            switch (plant.type) {
+                                case 1:
+                                    this.plantOneCount++
+                                    break;
+                                case 2:
+                                    this.plantTwoCount++;
+                                    break;
+                                case 3:
+                                    this.plantThreeCount++;
+                                    break;
                             }
+                            plant.sprite.destroy(true);
+                            delete tile.plant;
                         }
                      }
                 }
-                console.log("End of day...");
-
                 this.grid.updateWeather();
                 console.log(`sun\n${this.grid.printAttribute("sun_lvl")}`);
                 console.log(`rain\n${this.grid.printAttribute("rain_lvl")}`);
 
                 this.endOfDay = false;
-            } else {
-                // console.log("Day is running...");
-                //this.endOfDay = true;
-            };
+            }
 
         } else {
             console.log("Game Over");
@@ -154,7 +151,6 @@ export class PlayScene extends Phaser.Scene {
     }
 
     makeGridLines(){
-        // this.grid_lines = [];
         //Draw vertical line
         for(let x = (this.tile_size); x < this.width; x += (this.tile_size)){
             // let line = new Phaser.Geom.Line(x, 0, x, this.scene.height);
