@@ -36,13 +36,13 @@ export class Grid {
         const tileWeather = new TileWeather(x, y, this.weather).generate();
         let offset = (x * this.bytesPerCell * height) + (y * this.bytesPerCell)
 
-        view.setFloat32(offset, x, true);
+        this.view.setFloat32(offset, x, true);
         offset += this.bytes;
-        view.getFloat32(offset, y, true);
+        this.view.getFloat32(offset, y, true);
         offset += this.bytes;
-        view.setFloat32(offset, tileWeather.sun, true);
+        this.view.setFloat32(offset, tileWeather.sun, true);
         offset += this.bytes;
-        view.setFloat32(offset, tileWeather.rain, true)
+        this.view.setFloat32(offset, tileWeather.rain, true)
         offset += this.bytes;
       }
     }
@@ -61,7 +61,7 @@ export class Grid {
 
     //set new rain level
     cellOffset += this.bytes;
-    let rain_lvl = this.view.getFloat32(cellOffset)
+    rain_lvl = this.view.getFloat32(cellOffset)
     const newRainLvl = Math.floor(rain_lvl / 2);
     if (newRainLvl < 0) newRainLvl = 0;
     this.view.setFloat32(cellOffset, newRainLvl);
