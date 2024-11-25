@@ -9,12 +9,12 @@ class Cell {
     this.plant = plant;
   }
 
-  updateWeatherAtCell(sun_lvl, rain_lvl) {
-    this.sun_lvl = sun_lvl;
-    this.rain_lvl += Math.floor(rain_lvl / 2);
-    //this.rain_lvl -= Math.floor(sun_lvl);
-    if (this.rain_lvl < 0) this.rain_lvl = 0;
-  }
+  //updateWeatherAtCell(sun_lvl, rain_lvl) {
+  //  this.sun_lvl = sun_lvl;
+  //  this.rain_lvl += Math.floor(rain_lvl / 2);
+  //  //this.rain_lvl -= Math.floor(sun_lvl);
+  //  if (this.rain_lvl < 0) this.rain_lvl = 0;
+  //}
 }
 
 export class Grid {
@@ -56,7 +56,7 @@ export class Grid {
 
   updateWeatherAtCell(x, y, sun_lvl, rain_lvl) {
     //set new sun level
-    let cellOffset = getCellOffset(x, y) + (2 * this.bytesPerCell);
+    let cellOffset = this.getCellOffset(x, y);// + (2 * this.bytesPerCell);
     this.view.setFloat32(cellOffset, sun_lvl);
 
     //set new rain level
@@ -106,7 +106,7 @@ export class Grid {
     if (!(phaserX >= 800 || phaserY >= 800)) {
       const bufferX = Math.floor(phaserX / tile_size);
       const bufferY = Math.floor(phaserY / tile_size);
-      return getCellOffset(bufferX, bufferY);
+      return this.getCellOffset(bufferX, bufferY);
     } 
     return false;
   }

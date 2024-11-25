@@ -105,7 +105,8 @@ export class PlayScene extends Phaser.Scene {
                 console.log("checking grid");
                 for (let x = 0; x < this.grid.height; x++) {
                     for (let y = 0; y < this.grid.width; y++) {
-                        const tile = this.grid.tiles[x][y];
+                        const tile = this.grid.getCellAt(x,y,this.tile_size);
+                        // DEBUG: tile is just '0' for the whole grid
                         const plant = tile.plant;
 
                         if(!plant) continue;
@@ -127,12 +128,13 @@ export class PlayScene extends Phaser.Scene {
                             plant.sprite.destroy(true);
                             delete tile.plant;
                         }
-                     }
+                    
+                    }
+
                 }
                 this.grid.updateWeather();
                 // console.log(`sun\n${this.grid.printAttribute("sun_lvl")}`);
                 // console.log(`rain\n${this.grid.printAttribute("rain_lvl")}`);
-
                 this.endOfDay = false;
             }
 
