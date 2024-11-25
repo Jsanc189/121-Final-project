@@ -59,7 +59,7 @@ export class PlayScene extends Phaser.Scene {
         this.input.on('pointermove', (ptr) => {
             if (!(ptr.x >= 800 || ptr.y >= 800)) {
                 
-            let cell = this.grid.getCellAt(ptr.x, ptr.y, this.tile_size);
+            let cellOffset = this.grid.getCellAt(ptr.x, ptr.y, this.tile_size);
             let [x, y] = [ptr.x, ptr.y];
             let [w, h] = [this.levelsText.width, this.levelsText.height];
             if(x < w) w = 0;
@@ -68,28 +68,28 @@ export class PlayScene extends Phaser.Scene {
             this.levelsText.y = y - h;
 
             this.levelsText.setText(
-                `sun: ${cell.sun_lvl}\nrain: ${cell.rain_lvl}`
+                `sun: ${this.grid.getSunAtCell(cellOffset)}\nrain: ${this.grid.getRainAtCell(cellOffset)}`
             )
         }
         });
         this.input.on('pointerdown', (ptr) => {
-            let cell = this.grid.getCellAt(ptr.x, ptr.y, this.tile_size);
-            let player_cell = this.grid.getCellAt(this.player.x, this.player.y, this.tile_size);
+          let cellOffset = this.grid.getCellAt(ptr.x, ptr.y, this.tile_size);
+          let playerCellOffset = this.grid.getCellAt(this.player.x, this.player.y, this.tile_size);
 
-            if (!(ptr.x >= 800 || ptr.y >= 800)) {
-            if(this.grid.isAdjacentCell(cell, player_cell)){
-                if (cell.plant == undefined) {
-                    let randomType = Math.floor(Math.random() * 3 + 1);
-                    let plantSprite = this.add.sprite((cell.y * this.tile_size + .5*this.tile_size), (cell.x * this.tile_size + .5*this.tile_size), "plant" + randomType + "_1").setScale(this.GRID_SCALE - 2);
-                    cell.plant = new Plant(plantSprite, randomType, cell); 
-                } else if (cell.plant) {
-                    if (cell.plant.growth_lvl == 3) {
-                        cell.plant.harvest();
-                    }
-                }
-
+          if (!(ptr.x >= 800 || ptr.y >= 800)) {
+            if(this.grid.isAdjacentCell(cellOffset, playerCellOffset)){
+              const cellPlant = this.grid.getPlant;
+              if (cell.plant == undefined) {
+                  let randomType = Math.floor(Math.random() * 3 + 1);
+                  let plantSprite = this.add.sprite((cell.y * this.tile_size + .5*this.tile_size), (cell.x * this.tile_size + .5*this.tile_size), "plant" + randomType + "_1").setScale(this.GRID_SCALE - 2);
+                  cell.plant = new Plant(plantSprite, randomType, cell); 
+              } else if (cell.plant) {
+                  if (cell.plant.growth_lvl == 3) {
+                      cell.plant.harvest();
+                  }
+              }
             }
-        }
+          }
         });
         
     }
@@ -130,8 +130,8 @@ export class PlayScene extends Phaser.Scene {
                      }
                 }
                 this.grid.updateWeather();
-                console.log(`sun\n${this.grid.printAttribute("sun_lvl")}`);
-                console.log(`rain\n${this.grid.printAttribute("rain_lvl")}`);
+                // console.log(`sun\n${this.grid.printAttribute("sun_lvl")}`);
+                // console.log(`rain\n${this.grid.printAttribute("rain_lvl")}`);
 
                 this.endOfDay = false;
             }
