@@ -44,11 +44,15 @@ export class PlayScene extends Phaser.Scene {
         this.plantThreeCount = 0;
 
         //buttons
-        this.makeButton(100, 860, 150, 50, 'Save', 0xffffff, '16px', () => this.saveFile.bind(this));
-        this.makeButton(350, 860, 150, 50, 'Quit', 0xffffff, '16px', () => this.quit.bind(this));
-        this.makeButton(705, 860, 150, 50, 'End Day', 0xffffff, '16px', () => this.endDay.bind(this));
+        this.makeButton(75, 860, 100, 50, 'Undo', 0xffffff, '16px', () => this.undo.bind(this));
+        this.makeButton(225, 860, 100, 50, 'Redo', 0xffffff, '16px', () => this.redo.bind(this));
+        this.makeButton(375, 860, 100, 50, 'End Day', 0xffffff, '16px', () => this.endDay.bind(this));
+        this.makeButton(575, 860, 100, 50, 'Save', 0xffffff, '16px', () => this.saveFile.bind(this));
+        this.makeButton(725, 860, 100, 50, 'Quit', 0xffffff, '16px', () => this.quit.bind(this));
 
-
+        // event handling
+        this.undoStack = [];
+        this.redoStack = [];
 
         this.levelsText = this.add.text(0,0, "", {
             color: "black", 
@@ -170,17 +174,35 @@ export class PlayScene extends Phaser.Scene {
   }
 
   endDay() {
+    let state = this.grid.copyAttributesToArray(["sun_lvl", "rain_lvl"]);
+    this.undoStack.push(state);
+    this.redoStack = [];
+
     console.log(this.endOfDay);
     this.endOfDay = true;
     console.log(this.endOfDay);
     console.log("ending day");
   };
 
+  undo(){
+    let popped = this.undoStack.pop();
+    if(popped){
+        this.redoStack.push(popped);
+        this.grid.setStateFromArray(popped);
+        console.log(popped[1].sun_lvl, popped[1].rain_lvl)
+        console.log("undone")
+    } else { console.log("undo failed: nothing to undo"); }
+  }
 
-
-//   function setGrid() {
-
-//   }
+  redo(){
+    let popped = this.redoStack.pop();
+    if(popped){
+        this.undoStack.push(popped);
+        this.grid.setStateFromArray(popped);
+        console.log(popped[1].sun_lvl, popped[1].rain_lvl)
+        console.log("redone")
+    } else { console.log("redo failed: nothing to redo"); }
+  }
 
   saveFile() {
     console.log('Saving game...');

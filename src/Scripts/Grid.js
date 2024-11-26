@@ -150,5 +150,27 @@ export class Grid {
     return false;
   }
 
+  copyAttributesToArray(data){
+    let array = [];
+    
+    for (let x = 0; x < this.height; x++) {
+      for (let y = 0; y < this.width; y++) {
+        let cell = this.getCell(x, y);
+        let attributesToArray = {x: x, y: y};
+        for(let attribute of data){
+          attributesToArray[attribute] = cell[attribute]
+        }
+        array.push(attributesToArray);
+      }
+    }
+
+    return array;
+  }
+
+  setStateFromArray(array){
+    for(let cellData of array){
+      this.setCell(cellData.x, cellData.y, cellData);
+    }
+  }
 
 }
