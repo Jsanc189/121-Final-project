@@ -27,6 +27,7 @@ export class PlayScene extends Phaser.Scene {
         this.grid = new Grid(this.GRID_WIDTH, this.GRID_HEIGHT, this);
         this.makeGridLines();
         this.weatherMap = this.grid.render(this.tile_size);
+        this.plantHandler = this.updateWorldPlants();
 
         //player movement keys
         this.leftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
@@ -70,7 +71,9 @@ export class PlayScene extends Phaser.Scene {
 
         this.input.on('pointermove', (ptr) => this.cellPreview(ptr));
         this.input.on('pointerdown', (ptr) => {
-            this.putPlant(ptr);
+            if (!(ptr.x >= this.width || ptr.y >= this.width)) {
+                this.plantHandler.put(ptr);
+            }
         });
         
     }
@@ -89,18 +92,16 @@ export class PlayScene extends Phaser.Scene {
                         const tile = this.grid.getCellAt(x,y,this.tile_size);
                         const plant = tile.plant;
                         if(!plant) continue;
-                        this.updatePlantCounts(plant)
+                        this.plantHandler.updateCount(plant)
                     }
                 }
                 this.updateWorldWeather();
-
                 this.endOfDay = false;
             }
 
         } else {
             console.log("Game Over");
             this.scene.start("playScene");
-
         }
     }
 
@@ -202,49 +203,49 @@ export class PlayScene extends Phaser.Scene {
         }
     }
 
-    putPlant(ptr){
-        // TODO: make functional again
-        //let cellOffset = this.grid.getCellAt(ptr.x, ptr.y, this.tile_size);
-        //let playerCellOffset = this.grid.getCellAt(this.player.x, this.player.y, this.tile_size);
-        //
-        if (!(ptr.x >= this.width || ptr.y >= this.width)) {
+    // TODO: make these functional again
+    updateWorldPlants(){
+        function put(ptr){         
+            //let cellOffset = this.grid.getCellAt(ptr.x, ptr.y, this.tile_size);
+            //let playerCellOffset = this.grid.getCellAt(this.player.x, this.player.y, this.tile_size);
+            //
             console.log(`putting a plant at (${ptr.x}, ${ptr.y})...`);
+    
+            //if(this.grid.isAdjacentCell(cellOffset, playerCellOffset)){
+            //    const cellPlant = this.grid.getPlant;
+            //    if (cellPlant == undefined) {
+            //        let randomType = Math.floor(Math.random() * 3 + 1);
+            //        let plantSprite = this.add.sprite((cellOffset.y * this.tile_size + .5*this.tile_size), (cellOffset.x * this.tile_size + .5*this.tile_size), "plant" + randomType + "_1").setScale(this.GRID_SCALE - 2);
+            //        cell.plant = new Plant(plantSprite, randomType, cellOffset); 
+            //    } else if (cellPlant) {
+            //        if (cellPlant.growth_lvl == 3) {
+            //            cellPlant.harvest();
+            //        }
+            //    }
+            //}
+        }
 
-        //    if(this.grid.isAdjacentCell(cellOffset, playerCellOffset)){
-        //        const cellPlant = this.grid.getPlant;
-        //        if (cellPlant == undefined) {
-        //            let randomType = Math.floor(Math.random() * 3 + 1);
-        //            let plantSprite = this.add.sprite((cellOffset.y * this.tile_size + .5*this.tile_size), (cellOffset.x * this.tile_size + .5*this.tile_size), "plant" + randomType + "_1").setScale(this.GRID_SCALE - 2);
-        //            cell.plant = new Plant(plantSprite, randomType, cellOffset); 
-        //        } else if (cellPlant) {
-        //            if (cellPlant.growth_lvl == 3) {
-        //            cellPlant.harvest();
-        //            }
-        //        }
-        //    }
+        function updateCount(plant){
+            console.log(`updating plants counts...`)
+            //plant.update();
+            //if (plant.growth_lvl > 3) {
+            //    switch (plant.type) {
+            //        case 1:
+            //            this.plantOneCount++
+            //            break;
+            //        case 2:
+            //            this.plantTwoCount++;
+            //            break;
+            //        case 3:
+            //            this.plantThreeCount++;
+            //            break;
+            //    }
+            //    plant.sprite.destroy(true);
+            //    delete tile.plant;
+            //}
         }
         this.notify("plant-changed");
-    }
-
-    updatePlantCounts(plant){                        
-        console.log(`updating plants counts...`)
-        //plant.update();
-        //if (plant.growth_lvl > 3) {
-        //    switch (plant.type) {
-        //        case 1:
-        //            this.plantOneCount++
-        //            break;
-        //        case 2:
-        //            this.plantTwoCount++;
-        //            break;
-        //        case 3:
-        //            this.plantThreeCount++;
-        //            break;
-        //    }
-        //    plant.sprite.destroy(true);
-        //    delete tile.plant;
-        //}
-        this.notify("plant-changed");
+        return { put, updateCount }
     }
 
     updateWorldWeather(arr){
