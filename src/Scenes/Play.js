@@ -27,7 +27,7 @@ export class PlayScene extends Phaser.Scene {
         this.grid = new Grid(this.GRID_WIDTH, this.GRID_HEIGHT, this);
         this.makeGridLines();
         this.weatherMap = this.grid.render(this.tile_size);
-        this.plantHandler = this.updateWorldPlants();
+        this.plantHandler = this.updateWorldPlants(this);
 
         //player movement keys
         this.leftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
@@ -204,7 +204,9 @@ export class PlayScene extends Phaser.Scene {
     }
 
     // TODO: make these functional again
-    updateWorldPlants(){
+    updateWorldPlants(init){
+        const scene = init;
+
         function put(ptr){         
             //let cellOffset = this.grid.getCellAt(ptr.x, ptr.y, this.tile_size);
             //let playerCellOffset = this.grid.getCellAt(this.player.x, this.player.y, this.tile_size);
@@ -223,6 +225,7 @@ export class PlayScene extends Phaser.Scene {
             //        }
             //    }
             //}
+            scene.notify("plant-changed")
         }
 
         function updateCount(plant){
@@ -243,9 +246,10 @@ export class PlayScene extends Phaser.Scene {
             //    plant.sprite.destroy(true);
             //    delete tile.plant;
             //}
-        }
-        this.notify("plant-changed");
-        return { put, updateCount }
+            scene.notify("plant-changed")
+
+        }       
+        return { put, updateCount } 
     }
 
     updateWorldWeather(arr){
