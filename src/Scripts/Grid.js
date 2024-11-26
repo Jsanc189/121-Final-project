@@ -126,6 +126,10 @@ export class Grid {
     return this.view.getFloat32(cellOffset + (3 * this.bytes));
   }
 
+  getPlantAtCell(cellOffset) {
+    // ?
+  }
+
   isAdjacentCell(cell1Offset, cell2Offset){
     const cell1X = this.view.getFloat32(cell1Offset);
     const cell1Y = this.view.getFloat32(cell1Offset + this.bytes);
@@ -140,6 +144,4 @@ export class Grid {
     }
     return false;
   }
-
-
 }
