@@ -59,16 +59,20 @@ export class PlayScene extends Phaser.Scene {
         this.input.on('pointermove', (ptr) => {
             if (!(ptr.x >= 800 || ptr.y >= 800)) {
                 
-            let cellOffset = this.grid.getCellAt(ptr.x, ptr.y, this.tile_size);
             let [x, y] = [ptr.x, ptr.y];
             let [w, h] = [this.levelsText.width, this.levelsText.height];
             if(x < w) w = 0;
             if(y < h) h = 0;
             this.levelsText.x = x - w;
             this.levelsText.y = y - h;
-
+            
+            let [gridX, gridY] = [
+                Math.floor(x / this.tile_size),
+                Math.floor(y / this.tile_size),
+            ]
+            let cell = this.grid.getCell(gridX, gridY);
             this.levelsText.setText(
-                `sun: ${this.grid.getSunAtCell(cellOffset)}\nrain: ${this.grid.getRainAtCell(cellOffset)}`
+                `sun: ${cell.sun_lvl}\nrain: ${cell.rain_lvl}`
             )
         }
         });
