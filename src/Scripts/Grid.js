@@ -107,7 +107,8 @@ export class Grid {
     }
   }
 
-  render() {
+  render(tile_size) {
+    let rendered = [];
     for (let x = 0; x < this.height; x++) {
       for (let y = 0; y < this.width; y++) {
         const cell = this.getCell(x, y);
@@ -116,9 +117,17 @@ export class Grid {
           cell.rain_lvl * 2.55,
           0
         );
-        this.scene.add.rectangle(cell.x * 40, cell.y * 40, 40, 40, color);
+        let rect =  this.scene.add.rectangle(
+          cell.x * tile_size, 
+          cell.y * tile_size, 
+          tile_size, tile_size, color, 0.5
+        ).setOrigin(0);
+
+        rendered.push(rect);
       }
     }
+
+    return rendered;
   }
 
   getCellOffset(x, y) {
@@ -126,7 +135,7 @@ export class Grid {
   }
 
   getCellAt(phaserX, phaserY, tile_size){
-    if (!(phaserX >= 800 || phaserY >= 800)) {
+    if (!(phaserX >= this.scene.width || phaserY >= this.scene.height)) {
       const bufferX = Math.floor(phaserX / tile_size);
       const bufferY = Math.floor(phaserY / tile_size);
       return this.getCellOffset(bufferX, bufferY);

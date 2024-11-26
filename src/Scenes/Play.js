@@ -19,12 +19,14 @@ export class PlayScene extends Phaser.Scene {
         this.width = 800
         this.height = 800
 
+        // init game world
         this.tilemap = this.make.tilemap({ key: "tilemap" });
         this.tileset = this.tilemap.addTilesetImage("tileset");
         this.layer = this.tilemap.createLayer("Main", this.tileset);
         this.layer.setScale(this.GRID_SCALE);
         this.grid = new Grid(this.GRID_WIDTH, this.GRID_HEIGHT, this);
         this.makeGridLines();
+        this.weatherMap = this.grid.render(this.tile_size);
 
         //player movement keys
         this.leftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
@@ -50,54 +52,25 @@ export class PlayScene extends Phaser.Scene {
         this.makeButton(575, 860, 100, 50, 'Save', 0xffffff, '16px', () => this.saveFile.bind(this));
         this.makeButton(725, 860, 100, 50, 'Quit', 0xffffff, '16px', () => this.quit.bind(this));
 
-        // event handling
-        this.undoStack = [];
-        this.redoStack = [];
-
+        // weather levels label on hover
         this.levelsText = this.add.text(0,0, "", {
             color: "black", 
             backgroundColor: "#64ffc4",
             fontSize: 32
         });
 
-        this.input.on('pointermove', (ptr) => {
-            if (!(ptr.x >= 800 || ptr.y >= 800)) {
-                
-            let [x, y] = [ptr.x, ptr.y];
-            let [w, h] = [this.levelsText.width, this.levelsText.height];
-            if(x < w) w = 0;
-            if(y < h) h = 0;
-            this.levelsText.x = x - w;
-            this.levelsText.y = y - h;
-            
-            let [gridX, gridY] = [
-                Math.floor(x / this.tile_size),
-                Math.floor(y / this.tile_size),
-            ]
-            let cell = this.grid.getCell(gridX, gridY);
-            this.levelsText.setText(
-                `sun: ${cell.sun_lvl}\nrain: ${cell.rain_lvl}`
-            )
-        }
-        });
-        this.input.on('pointerdown', (ptr) => {
-          let cellOffset = this.grid.getCellAt(ptr.x, ptr.y, this.tile_size);
-          let playerCellOffset = this.grid.getCellAt(this.player.x, this.player.y, this.tile_size);
+        // event handling
+        this.undoStack = [];
+        this.redoStack = [];
 
-          if (!(ptr.x >= 800 || ptr.y >= 800)) {
-            if(this.grid.isAdjacentCell(cellOffset, playerCellOffset)){
-              const cellPlant = this.grid.getPlant;
-              if (cellPlant == undefined) {
-                  let randomType = Math.floor(Math.random() * 3 + 1);
-                  let plantSprite = this.add.sprite((cellOffset.y * this.tile_size + .5*this.tile_size), (cellOffset.x * this.tile_size + .5*this.tile_size), "plant" + randomType + "_1").setScale(this.GRID_SCALE - 2);
-                  cell.plant = new Plant(plantSprite, randomType, cellOffset); 
-              } else if (cellPlant) {
-                  if (cellPlant.growth_lvl == 3) {
-                    cellPlant.harvest();
-                  }
-              }
-            }
-          }
+        this.bus = new EventTarget();
+        this.bus.addEventListener("weather-changed", () => this.gridChanged());
+        this.bus.addEventListener("plant-changed", () => this.gridChanged());
+        console.log(this.bus)
+
+        this.input.on('pointermove', (ptr) => this.cellPreview(ptr));
+        this.input.on('pointerdown', (ptr) => {
+            this.putPlant(ptr);
         });
         
     }
@@ -110,39 +83,17 @@ export class PlayScene extends Phaser.Scene {
         
             //check plants for growth in each tile
             if(this.endOfDay) {
-                console.log("checking grid");
+                //console.log("checking grid");
                 for (let x = 0; x < this.grid.height; x++) {
                     for (let y = 0; y < this.grid.width; y++) {
                         const tile = this.grid.getCellAt(x,y,this.tile_size);
-                        // DEBUG: tile is just '0' for the whole grid
                         const plant = tile.plant;
-
                         if(!plant) continue;
-
-                        plant.update();
-
-                        if (plant.growth_lvl > 3) {
-                            switch (plant.type) {
-                                case 1:
-                                    this.plantOneCount++
-                                    break;
-                                case 2:
-                                    this.plantTwoCount++;
-                                    break;
-                                case 3:
-                                    this.plantThreeCount++;
-                                    break;
-                            }
-                            plant.sprite.destroy(true);
-                            delete tile.plant;
-                        }
-                    
+                        this.updatePlantCounts(plant)
                     }
-
                 }
-                this.grid.updateWeather();
-                // console.log(`sun\n${this.grid.printAttribute("sun_lvl")}`);
-                // console.log(`rain\n${this.grid.printAttribute("rain_lvl")}`);
+                this.updateWorldWeather();
+
                 this.endOfDay = false;
             }
 
@@ -178,18 +129,18 @@ export class PlayScene extends Phaser.Scene {
     this.undoStack.push(state);
     this.redoStack = [];
 
-    console.log(this.endOfDay);
+    //console.log(this.endOfDay);
     this.endOfDay = true;
-    console.log(this.endOfDay);
-    console.log("ending day");
+    //console.log(this.endOfDay);
+    console.log("end day");
   };
 
   undo(){
     let popped = this.undoStack.pop();
     if(popped){
         this.redoStack.push(popped);
-        this.grid.setStateFromArray(popped);
-        console.log(popped[1].sun_lvl, popped[1].rain_lvl)
+        this.updateWorldWeather(popped);
+
         console.log("undone")
     } else { console.log("undo failed: nothing to undo"); }
   }
@@ -198,8 +149,8 @@ export class PlayScene extends Phaser.Scene {
     let popped = this.redoStack.pop();
     if(popped){
         this.undoStack.push(popped);
-        this.grid.setStateFromArray(popped);
-        console.log(popped[1].sun_lvl, popped[1].rain_lvl)
+        this.updateWorldWeather(popped);
+
         console.log("redone")
     } else { console.log("redo failed: nothing to redo"); }
   }
@@ -230,4 +181,92 @@ export class PlayScene extends Phaser.Scene {
     button.on('pointerup', functionCall());
     buttonBG.on('pointerup', functionCall());
   }
+
+    cellPreview(ptr){
+        if (!(ptr.x >= 800 || ptr.y >= 800)) {
+            let [x, y] = [ptr.x, ptr.y];
+            let [w, h] = [this.levelsText.width, this.levelsText.height];
+            if(x < w) w = 0;
+            if(y < h) h = 0;
+            this.levelsText.x = x - w;
+            this.levelsText.y = y - h;
+            
+            let [gridX, gridY] = [
+                Math.floor(x / this.tile_size),
+                Math.floor(y / this.tile_size),
+            ];
+            let cell = this.grid.getCell(gridX, gridY);
+            this.levelsText.setText(
+                `sun: ${cell.sun_lvl}\nrain: ${cell.rain_lvl}`
+            );
+        }
+    }
+
+    putPlant(ptr){
+        // TODO: make functional again
+        //let cellOffset = this.grid.getCellAt(ptr.x, ptr.y, this.tile_size);
+        //let playerCellOffset = this.grid.getCellAt(this.player.x, this.player.y, this.tile_size);
+        //
+        if (!(ptr.x >= this.width || ptr.y >= this.width)) {
+            console.log(`putting a plant at (${ptr.x}, ${ptr.y})...`);
+
+        //    if(this.grid.isAdjacentCell(cellOffset, playerCellOffset)){
+        //        const cellPlant = this.grid.getPlant;
+        //        if (cellPlant == undefined) {
+        //            let randomType = Math.floor(Math.random() * 3 + 1);
+        //            let plantSprite = this.add.sprite((cellOffset.y * this.tile_size + .5*this.tile_size), (cellOffset.x * this.tile_size + .5*this.tile_size), "plant" + randomType + "_1").setScale(this.GRID_SCALE - 2);
+        //            cell.plant = new Plant(plantSprite, randomType, cellOffset); 
+        //        } else if (cellPlant) {
+        //            if (cellPlant.growth_lvl == 3) {
+        //            cellPlant.harvest();
+        //            }
+        //        }
+        //    }
+        }
+        this.notify("plant-changed");
+    }
+
+    updatePlantCounts(plant){                        
+        console.log(`updating plants counts...`)
+        //plant.update();
+        //if (plant.growth_lvl > 3) {
+        //    switch (plant.type) {
+        //        case 1:
+        //            this.plantOneCount++
+        //            break;
+        //        case 2:
+        //            this.plantTwoCount++;
+        //            break;
+        //        case 3:
+        //            this.plantThreeCount++;
+        //            break;
+        //    }
+        //    plant.sprite.destroy(true);
+        //    delete tile.plant;
+        //}
+        this.notify("plant-changed");
+    }
+
+    updateWorldWeather(arr){
+        // destroy old heatmap
+        for(const rect of this.weatherMap){ rect.destroy(); }
+        this.weatherMap = [];
+
+        // check for an array to determine generation
+        if(!arr){ this.grid.updateWeather(); }      // new random
+        else{ this.grid.setStateFromArray(arr); }   // set from array
+
+        // re-render heatmap
+        this.weatherMap = this.grid.render(this.tile_size); 
+
+        this.notify("weather-changed");
+    }
+
+    gridChanged(){
+        console.log("new grid state")
+    }
+
+    notify(name) { 
+        this.bus.dispatchEvent(new Event(name)); 
+    }
 }
