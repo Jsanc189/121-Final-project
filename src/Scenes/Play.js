@@ -87,13 +87,13 @@ export class PlayScene extends Phaser.Scene {
           if (!(ptr.x >= 800 || ptr.y >= 800)) {
             if(this.grid.isAdjacentCell(cellOffset, playerCellOffset)){
               const cellPlant = this.grid.getPlant;
-              if (cell.plant == undefined) {
+              if (cellPlant == undefined) {
                   let randomType = Math.floor(Math.random() * 3 + 1);
-                  let plantSprite = this.add.sprite((cell.y * this.tile_size + .5*this.tile_size), (cell.x * this.tile_size + .5*this.tile_size), "plant" + randomType + "_1").setScale(this.GRID_SCALE - 2);
-                  cell.plant = new Plant(plantSprite, randomType, cell); 
-              } else if (cell.plant) {
-                  if (cell.plant.growth_lvl == 3) {
-                      cell.plant.harvest();
+                  let plantSprite = this.add.sprite((cellOffset.y * this.tile_size + .5*this.tile_size), (cellOffset.x * this.tile_size + .5*this.tile_size), "plant" + randomType + "_1").setScale(this.GRID_SCALE - 2);
+                  cell.plant = new Plant(plantSprite, randomType, cellOffset); 
+              } else if (cellPlant) {
+                  if (cellPlant.growth_lvl == 3) {
+                    cellPlant.harvest();
                   }
               }
             }
