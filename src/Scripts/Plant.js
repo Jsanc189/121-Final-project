@@ -3,63 +3,74 @@ const TYPE1 = 1;
 const TYPE2 = 2;
 const TYPE3 = 3;
 
-export class Plant {
-    constructor(sprite, type, cell) {
-        // initialize type of plant and initial growth level
-        this.type = type;
+// import { Grid } from "./Grid.js";
 
-        // store 8 tiles adjacent to the plant 
-        this.cell = cell;
+export class Plants {
+  constructor(scene) {
+    // pass in scene from Play.js
+    this.scene = scene;
 
-        this.sprite = sprite;
+    // pass in grid to reference and edit
+    this.grid = scene.grid;
 
-        this.growth_lvl = 1;
-        this.waterDiffusionRate = 0;  
-    } 
+    // create image reference
+    this.image;
+  }
 
-    // in play scene, iterate through
-    update() {
-        if (this.cell.rain_lvl >= 50) {
-            this.waterDiffusionRate = this.cell.rain_lvl % 10;
-        } else {
-            this.waterDiffusionRate = 0;
+  plant(cell) {
+    // phaser xy coordinates of tile
+    this.x = cell.x;
+    this.y = cell.y;
+
+    // add an image to represent the plant
+    this.image = this.scene.add.image(
+      this.x * this.scene.tile_size,
+      this.y * this.scene.tile_size,
+      "plant" + this.plant_type + "_" + this.growth_lvl,
+    ).setScale(this.scene.GRID_SCALE);
+  }
+
+  endDay() {
+    for (let x = 0; x < this.grid.height; x++) {
+      for (let y = 0; y < this.grid.width; y++) {
+        let cell = this.grid.getCellAt(x, y);
+        switch (cell.plant_type) {
+          case TYPE1:
+            // check for plant type 1 growth conditions
+            if (cell.sun_lvl >= 10 && cell.rain_lvl >= 10) {
+                cell.growth_lvl++;
+            }
+            this.image.setTexture("plant1_" + cell.growth_lvl);
+            break;
+          case TYPE2:
+            // check for plant type 2 growth conditions
+            if (cell.sun_lvl >= 20 && cell.rain_lvl >= 20) {
+                cell.growth_lvl++;
+            }
+            this.image.setTexture("plant2_" + cell.growth_lvl);
+            break;
+          case TYPE3:
+            // check for plant type 3 growth conditions
+            if (cell.sun_lvl >= 30 && cell.rain_lvl >= 30) {
+                cell.growth_lvl++;
+            }
+            this.image.setTexture("plant3_" + cell.growth_lvl);
+            break;
+          default:
+            // throw error?
+            break;
         }
-
-        switch(this.type) {
-            case TYPE1:
-                // check for plant type 1 growth conditions
-                if (this.cell.sun_lvl >= 10 && this.cell.rain_lvl >= 10) {
-                    this.growth_lvl++;
-                }
-                this.sprite.setTexture("plant1_" + this.growth_lvl);
-                break;
-            case TYPE2:
-                // check for plant type 2 growth conditions
-                if (this.cell.sun_lvl >= 20 && this.cell.rain_lvl >= 20) {
-                    this.growth_lvl++;
-                }
-                this.sprite.setTexture("plant2_" + this.growth_lvl);
-                break;
-            case TYPE3: 
-                // check for plant type 3 growth conditions
-                if (this.cell.sun_lvl >= 30 && this.cell.rain_lvl >= 30) {
-                    this.growth_lvl++;
-                }
-                this.sprite.setTexture("plant3_" + this.growth_lvl);
-                break;
-            default:
-                // throw error?
-                break;
-        }
-
-        // this.grid.array.forEach(tile => {
-        //     // update water level in adjacent tiles according to diffusion rate 
-        //     tile.rain_lvl += this.waterDiffusionRate;
-        // });
+      }
     }
+  }
 
-    harvest() {
-        this.destroy();
-    }
+  diffuseWater() {
+  }
 
+  updateGrid() {
+  }
+
+  harvest() {
+
+  }
 }

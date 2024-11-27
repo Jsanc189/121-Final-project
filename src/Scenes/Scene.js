@@ -1,19 +1,18 @@
 export class blankScene extends Phaser.Scene {
-    constructor() {
-        super("blankScene");
-    }
+  constructor() {
+    super("blankScene");
+  }
 
-    preload() {
-    }
+  preload() {
+  }
 
-    init() {
-    }
+  init() {
+  }
 
-    create() {
-        console.log("Scene loaded");
-    }
+  create() {
+    console.log("Scene loaded");
+  }
 
-    update() {
-    }
-
+  update() {
+  }
 }
