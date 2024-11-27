@@ -1,6 +1,5 @@
 import { Game, } from "phaser";
 import { Load } from "./Scenes/Load.js";
-import { blankScene } from "./Scenes/Scene.js";
 import { PlayScene } from "./Scenes/Play.js";
 import { MenuScene } from "./Scenes/Menu.js";
 
