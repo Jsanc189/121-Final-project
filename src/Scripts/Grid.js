@@ -191,24 +191,18 @@ export class Grid {
   }
 
   isAdjacentCell(cell1Offset, cell2Offset) {
-    const cell1X = this.view.getInt32(cell1Offset);
-    const cell1Y = this.view.getInt32(cell1Offset + this.bytes);
-    const cell2X = this.view.getInt32(cell2Offset);
-    const cell2Y = this.view.getInt32(cell2Offset + this.bytes);
+    const cell1X = this.view.getInt32(cell1Offset, true);
+    const cell1Y = this.view.getInt32(cell1Offset + 4, true);
+    const cell2X = this.view.getInt32(cell2Offset, true);
+    const cell2Y = this.view.getInt32(cell2Offset + 4, true);
 
-    if (
-      Math.abs(cell1X - cell2X) == 1 &&
-      (0 <= Math.abs(cell1Y - cell2Y) && Math.abs(cell1Y - cell2Y) <= 1)
-    ) {
-      return true;
-    } else if (
-      Math.abs(cell1Y - cell2Y) == 1 &&
-      (0 <= Math.abs(cell1Y - cell2Y) && Math.abs(cell1X - cell2X) <= 1)
-    ) {
-      return true;
-    }
-    return false;
-  }
+    // Check if cells are within one unit in both x and y coordinates
+    const deltaX = Math.abs(cell1X - cell2X);
+    const deltaY = Math.abs(cell1Y - cell2Y);
+
+    return deltaX <= 1 && deltaY <= 1; // Includes horizontal, vertical, and diagonal neighbors
+}
+
 
   copyAttributesToArray(data) {
     let array = [];
