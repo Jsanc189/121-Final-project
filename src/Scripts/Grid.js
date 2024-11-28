@@ -70,7 +70,6 @@ export class Grid {
   }
 
   getCell(x, y) {
-    console.log(this.view.getInt32(this.offsetByAttribute(x,y,"rain_lvl"), true))
     return {
       x: this.view.getInt32(this.offsetByAttribute(x, y, "x"), true),
       y: this.view.getInt32(this.offsetByAttribute(x, y, "y"), true),
@@ -102,7 +101,6 @@ export class Grid {
     if(data.plant_type) this.view.setUint8(this.offsetByAttribute(x,y,"plant_type"), data.plant_type);
     if(data.growth_lvl) this.view.setUint8(this.offsetByAttribute(x,y,"growth_lvl"), data.growth_lvl);
     if(data.water_diffusion_rate) this.view.setUint8(this.offsetByAttribute(x,y,"water_diffusion_rate"), data.water_diffusion_rate);
-    console.log(`${data.x}, ${data.y}, ${data.sun_lvl}, ${data.rain_lvl}`)
   }
 
   updateWeather(seed = Math.random()) {
@@ -142,10 +140,6 @@ export class Grid {
     for (let x = 0; x < this.height; x++) {
       for (let y = 0; y < this.width; y++) {
         const cell = this.getCell(x, y);
-        // console.log(``);
-        console.log(`${x}, ${y}, ${cell.sun_lvl}, ${cell.rain_lvl}`);
-        // console.log(`${cell.sun_lvl * 2.55}, ${cell.rain_lvl * 2.55}`);
-        // console.log();
         const color = Phaser.Display.Color.GetColor(
           cell.sun_lvl * 2.55,
           cell.rain_lvl * 2.55,
@@ -164,7 +158,6 @@ export class Grid {
       }
     }
 
-    console.log(rendered);
     return rendered;
   }
 
