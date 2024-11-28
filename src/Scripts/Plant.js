@@ -13,7 +13,6 @@ export class Plants {
     // pass in grid to reference and edit
     this.grid = scene.grid;
 
-    // create image reference
     this.image;
   }
 
@@ -22,12 +21,16 @@ export class Plants {
     this.x = cell.x;
     this.y = cell.y;
 
+    cell.plant_img = "plant" + this.plant_type + "_" + this.growth_lvl;
+
     // add an image to represent the plant
     this.image = this.scene.add.image(
       this.x * this.scene.tile_size,
       this.y * this.scene.tile_size,
-      "plant" + this.plant_type + "_" + this.growth_lvl,
+      cell.plant_img,
     ).setScale(this.scene.GRID_SCALE);
+
+    this.grid.setCell(this.x, this.y, plant_img)
   }
 
   endDay() {
@@ -67,7 +70,7 @@ export class Plants {
   diffuseWater() {
   }
 
-  updateGrid() {
+  populateGrid() {
   }
 
   harvest() {

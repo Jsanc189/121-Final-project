@@ -52,7 +52,7 @@ export class PlayScene extends Phaser.Scene {
     this.player.scale = this.GRID_SCALE;
 
     // create plants
-    this.plants = new Plants(this);
+    //this.plants = new Plants(this);
 
     //set game condition
     this.gameOver = false;
@@ -356,14 +356,14 @@ loadFile() {
                 const randomType = Math.floor(Math.random() * 3) + 1;
     
                 // Create a sprite for the new plant
-                const plantSprite = scene.add.sprite(
-                    (Math.floor(ptr.x / tileSize) + 0.5) * tileSize,
-                    (Math.floor(ptr.y / tileSize) + 0.5) * tileSize,
-                    `plant${randomType}_1`
-                ).setScale(scene.GRID_SCALE - 2);
+                // const plantSprite = scene.add.sprite(
+                //     (Math.floor(ptr.x / tileSize) + 0.5) * tileSize,
+                //     (Math.floor(ptr.y / tileSize) + 0.5) * tileSize,
+                //     `plant${randomType}_1`
+                // ).setScale(scene.GRID_SCALE - 2);
     
                 // Create a new Plant instance
-                const newPlant = new Plant(plantSprite, randomType, clickedCell);
+                // const newPlant = new Plant(plantSprite, randomType, clickedCell);
     
                 // Update the grid cell with the plant data
                 scene.grid.setCell(

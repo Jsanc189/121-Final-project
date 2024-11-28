@@ -7,7 +7,7 @@ export class Grid {
     this.scene = scene;
 
     // 19 bytes per cell: x, y, sun_lvl, rain_lvl, plant_type, growth_lvl, water_diffusion_rate
-    this.bytesPerCell = 19;
+    this.bytesPerCell = 20;
     this.byteArray = new ArrayBuffer(width * height * this.bytesPerCell);
     this.view = new DataView(this.byteArray);
 
@@ -34,6 +34,7 @@ export class Grid {
           plant_type: 0,
           growth_lvl: 1,
           water_diffusion_rate: 0,
+          plant_img: null,
         };
 
         this.setCell(x, y, cellData);
@@ -145,6 +146,20 @@ export class Grid {
         const cell = this.getCell(x, y);
         cell.sun_lvl = tileWeather.sun;
         cell.rain_lvl += tileWeather.rain;
+        this.setCell(x, y, cell);
+      }
+    }
+  }
+
+  updatePlants() {
+    this.plants = new Plants(this);
+
+    for (let x = 0; x < this.height; x++) {
+      for (let y = 0; y < this.width; y++) {
+        const cell = this.getCell(x, y);
+
+        // TODO: ?????
+        
         this.setCell(x, y, cell);
       }
     }
