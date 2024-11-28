@@ -39,9 +39,6 @@ export class Grid {
           this.setCell(x, y, cellData);
         }
       }
-
-      // Initialize plant sprite array; maps grid coords to sprites (not meaningfully saved data)
-      // this.plantSprites = new Map();
     }
   }
 
@@ -118,43 +115,6 @@ export class Grid {
         const cell = this.getCell(x, y);
         cell.sun_lvl = tileWeather.sun;
         cell.rain_lvl += tileWeather.rain;
-        this.setCell(x, y, cell);
-      }
-    }
-  }
-
-  updatePlants() {
-    this.plants = new Plants(this);
-
-    for (let x = 0; x < this.height; x++) {
-      for (let y = 0; y < this.width; y++) {
-        const cell = this.getCell(x, y);
-
-        //update plant info, and sprites
-        switch (cell.plant_type) {
-          case TYPE1:
-            // check for plant type 1 growth conditions
-            if (cell.sun_lvl >= 10 && cell.rain_lvl >= 10) {
-                cell.growth_lvl++;
-            }
-            this.image.setTexture("plant1_" + cell.growth_lvl);
-            break;
-          case TYPE2:
-            // check for plant type 2 growth conditions
-            if (cell.sun_lvl >= 20 && cell.rain_lvl >= 20) {
-                cell.growth_lvl++;
-            }
-            this.image.setTexture("plant2_" + cell.growth_lvl);
-            break;
-          case TYPE3:
-            // check for plant type 3 growth conditions
-            if (cell.sun_lvl >= 30 && cell.rain_lvl >= 30) {
-                cell.growth_lvl++;
-            }
-            this.image.setTexture("plant3_" + cell.growth_lvl);
-            break;
-        }
-
         this.setCell(x, y, cell);
       }
     }

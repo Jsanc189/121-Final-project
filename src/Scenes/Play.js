@@ -55,9 +55,6 @@ export class PlayScene extends Phaser.Scene {
     );
     this.player.scale = this.GRID_SCALE;
 
-    // create plants
-    //this.plants = new Plants(this);
-
     //set game condition
     this.gameOver = false;
     this.endOfDay = false;
@@ -154,13 +151,8 @@ export class PlayScene extends Phaser.Scene {
       //check plants for growth in each tile
       if (this.endOfDay) {
         //console.log("checking grid");
-        for (let x = 0; x < this.grid.height; x++) {
-          for (let y = 0; y < this.grid.width; y++) {
-            const tile = this.grid.getCellAt(x, y, this.tile_size);
-            const plant = tile.plant;
-            if (!plant) continue;
-          }
-        }
+        
+        this.updateWorld("plant");
         this.updateWorld("weather");
         this.endOfDay = false;
       }
@@ -352,77 +344,77 @@ loadFile() {
     }
   }
 
-    plantHandler(ptr) {
-        const tileSize = this.tile_size;
+  plantHandler(ptr) {
+    const tileSize = this.tile_size;
 
-        // Get the cell offset for the player's current position
-        const playerCellOffset = this.grid.getCellAt(this.player.x, this.player.y, tileSize);
-        if (playerCellOffset === false) {
-            console.log("Player is out of bounds!");
-            return;
-        }
+    // Get the cell offset for the player's current position
+    const playerCellOffset = this.grid.getCellAt(this.player.x, this.player.y, tileSize);
+    if (playerCellOffset === false) {
+        console.log("Player is out of bounds!");
+        return;
+    }
 
-        // Get the cell offset for the clicked position
-        const clickedCellOffset = this.grid.getCellAt(ptr.x, ptr.y, tileSize);
-        if (clickedCellOffset === false) {
-            console.log("Clicked position is out of bounds!");
-            return;
-        }
+    // Get the cell offset for the clicked position
+    const clickedCellOffset = this.grid.getCellAt(ptr.x, ptr.y, tileSize);
+    if (clickedCellOffset === false) {
+        console.log("Clicked position is out of bounds!");
+        return;
+    }
 
-        // Check if the clicked cell is adjacent to the player's cell
-        if (!this.grid.isAdjacentCell(playerCellOffset, clickedCellOffset)) {
-            console.log("Clicked cell is not adjacent to the player's cell!");
-            return;
-        }
+    // Check if the clicked cell is adjacent to the player's cell
+    if (!this.grid.isAdjacentCell(playerCellOffset, clickedCellOffset)) {
+        console.log("Clicked cell is not adjacent to the player's cell!");
+        return;
+    }
 
-        // Retrieve the clicked cell's data
-        const clickedCell = this.grid.getCell(
+    // Retrieve the clicked cell's data
+    const clickedCell = this.grid.getCell(
+        Math.floor(ptr.x / tileSize),
+        Math.floor(ptr.y / tileSize)
+    );
+
+    // Check if the cell already has a plant
+    if (clickedCell.plant_type === 0) {
+        // No plant exists, plant a new one
+        const randomType = Math.floor(Math.random() * 3) + 1;
+
+        // Create a sprite for the new plant
+        let plantX = (Math.floor(ptr.x / tileSize) + 0.5) * tileSize;
+        let plantY = (Math.floor(ptr.y / tileSize) + 0.5) * tileSize;
+        const plantSprite = this.add.sprite(
+            plantX, 
+            plantY, 
+            `plant${randomType}_1`
+        ).setScale(this.GRID_SCALE - 2)
+        .setName("plant");;
+        
+        this.plantSprites.push({
+          x: plantX,
+          y: plantY,
+          img: `plant${randomType}_1`
+        }); 
+
+        // save grid state before changing
+        let plantState = this.grid.copyAttributesToArray(["plant_type"]);
+        this.undoStack.push({plant: plantState});
+
+        // Update the grid cell with the plant data
+        this.grid.setCell(
             Math.floor(ptr.x / tileSize),
-            Math.floor(ptr.y / tileSize)
+            Math.floor(ptr.y / tileSize),
+            {
+                ...clickedCell,
+                plant_type: randomType,
+                growth_lvl: 1,
+            }
         );
 
-        // Check if the cell already has a plant
-        if (clickedCell.plant_type === 0) {
-            // No plant exists, plant a new one
-            const randomType = Math.floor(Math.random() * 3) + 1;
-
-            // Create a sprite for the new plant
-            let plantX = (Math.floor(ptr.x / tileSize) + 0.5) * tileSize;
-            let plantY = (Math.floor(ptr.y / tileSize) + 0.5) * tileSize;
-            const plantSprite = this.add.sprite(
-                plantX, 
-                plantY, 
-                `plant${randomType}_1`
-            ).setScale(this.GRID_SCALE - 2)
-            .setName("plant");;
-            
-            this.plantSprites.push({
-              x: plantX,
-              y: plantY,
-              img: `plant${randomType}_1`
-            }); 
-
-            // save grid state before changing
-            let plantState = this.grid.copyAttributesToArray(["plant_type"]);
-            this.undoStack.push({plant: plantState});
-
-            // Update the grid cell with the plant data
-            this.grid.setCell(
-                Math.floor(ptr.x / tileSize),
-                Math.floor(ptr.y / tileSize),
-                {
-                    ...clickedCell,
-                    plant_type: randomType,
-                    growth_lvl: 1,
-                }
-            );
-
-            console.log(`Planted a type ${randomType} plant at (${ptr.x}, ${ptr.y}).`);
-            clickedCell.plant_type = randomType;
-        } else {
-            console.log("Cell already has a plant!");
-        }
+        console.log(`Planted a type ${randomType} plant at (${ptr.x}, ${ptr.y}).`);
+        clickedCell.plant_type = randomType;
+    } else {
+        console.log("Cell already has a plant!");
     }
+  }
   
     /*
   setPlantsFromData() {
@@ -463,7 +455,12 @@ loadFile() {
         this.weatherMap = this.grid.render(this.tile_size);
         break;
       case "plant":
-        this.grid.setStateFromArray(arr);
+        if(arr) {
+          this.grid.setStateFromArray(arr);
+        }
+        else {
+          this.updatePlants(); //end of day growth
+        }
         break;
       default:
         throw new Error(`Unkown target: ${target}`)
@@ -474,13 +471,65 @@ loadFile() {
   findSpriteAt(x, y) {
     // get scene children and filter by name (plant)
     const objects = this.children.getAll().filter(child => child.name === "plant");
-
     for (let obj of objects) {
         if (obj.x === x && obj.y === y) {
             return obj; // return the plant at x y
         }
     }
-
     return null; // If no object matches
-}
+  }
+
+  findSpriteInArray(x, y, arr) {
+    for(const sprite of arr) {
+      console.log(sprite.x, sprite.y)
+      if(sprite.x == x && sprite.y == y) {
+        return sprite;
+      }
+    }
+    return null;
+  }
+
+  updateSprite(x, y, arr, newSprite) {
+    for(let i = 0; i < arr.length; i++) {
+      if(arr[i].x == x && arr[i].y == y) {
+        arr[i] = newSprite;
+        return arr[i];
+      }
+    }
+    return null;
+  }
+
+  updatePlants() {
+    for (let x = 0; x < this.grid.height; x++) {
+      for (let y = 0; y < this.grid.width; y++) {
+        const cell = this.grid.getCell(x, y); //get the tile of the plant
+        const plant = cell.plant_type;
+        if (plant == 0 ||  cell.growth_lvl >= 3) continue;
+
+        const plantSprite = this.findSpriteInArray( (x + 0.5) * this.tile_size, (y + 0.5) * this.tile_size, this.plantSprites);
+        switch (cell.plant_type) {
+          case 1:
+            if (cell.sun_lvl >= 10 && cell.rain_lvl >= 10) { // check for plant type 1 growth conditions
+                cell.growth_lvl++; 
+                plantSprite.img = "plant1_" + cell.growth_lvl;
+            }
+            break;
+          case 2:
+            if (cell.sun_lvl >= 20 && cell.rain_lvl >= 20) { // check for plant type 2 growth conditions
+                cell.growth_lvl++; 
+                plantSprite.img = "plant2_" + cell.growth_lvl;
+            }
+            break;
+          case 3:
+            if (cell.sun_lvl >= 30 && cell.rain_lvl >= 30) { // check for plant type 3 growth conditions
+                cell.growth_lvl++; 
+                plantSprite.img = "plant3_" + cell.growth_lvl;
+            }
+            break;
+        }
+        this.updateSprite(plantSprite.x, plantSprite.y, this.plantSprites, plantSprite);
+      }
+    }
+    this.renderPlantSprites(this.plantSprites);
+  }
 }
