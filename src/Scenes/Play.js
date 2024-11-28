@@ -59,11 +59,11 @@ export class PlayScene extends Phaser.Scene {
     //this.plants = new Plants(this);
 
     //Load save file data before we render the heatmap
+    this.plantHandler = this.plantHandler(this);
     if(this.load){
       this.loadFile();
     }
     this.weatherMap = this.grid.render(this.tile_size);
-    this.plantHandler = this.updateWorldPlants(this);
 
     //set game condition
     this.gameOver = false;
@@ -143,7 +143,8 @@ export class PlayScene extends Phaser.Scene {
     this.input.on("pointermove", (ptr) => this.cellPreview(ptr));
     this.input.on("pointerdown", (ptr) => {
       if (!(ptr.x >= this.width || ptr.y >= this.width)) {
-        this.plantHandler.put(ptr);
+        console.log("doot")
+        this.plantHandler.plant(ptr);
       }
     });
   }
@@ -231,7 +232,9 @@ export class PlayScene extends Phaser.Scene {
   saveFile() {
     console.log('Saving game...');
     
-    const gridState = this.grid.copyAttributesToArray(["sun_lvl", "rain_lvl"]); // Assuming this returns the grid state as an array
+    const gridState = this.grid.copyAttributesToArray(["sun_lvl", "rain_lvl", "plant_type", "growth_lvl"]); // Assuming this returns the grid state as an array
+    console.log("Grid state:")
+    console.log(gridState)
     const playerState = {
         x: this.player.x,
         y: this.player.y,
@@ -262,6 +265,7 @@ loadFile() {
 
         // Restore grid state
         this.grid.setStateFromArray(parsedData.grid);
+        this.setPlantsFromData(); //untested
 
         // Restore player state
         this.player.setPosition(parsedData.player.x, parsedData.player.y);
@@ -285,6 +289,7 @@ loadFile() {
 
   quit() {
     console.log("Quitting game...");
+    this.scene.stop();
     this.scene.start("menuScene");
   }
 
@@ -329,10 +334,10 @@ loadFile() {
     }
   }
 
-    updateWorldPlants(init) {
+    plantHandler(init) {
         const scene = init;
     
-        function put(ptr) {
+        function plant(ptr) {
             const tileSize = scene.tile_size;
     
             // Get the cell offset for the player's current position
@@ -365,16 +370,13 @@ loadFile() {
             if (clickedCell.plant_type === 0) {
                 // No plant exists, plant a new one
                 const randomType = Math.floor(Math.random() * 3) + 1;
-    
+
                 // Create a sprite for the new plant
-                // const plantSprite = scene.add.sprite(
-                //     (Math.floor(ptr.x / tileSize) + 0.5) * tileSize,
-                //     (Math.floor(ptr.y / tileSize) + 0.5) * tileSize,
-                //     `plant${randomType}_1`
-                // ).setScale(scene.GRID_SCALE - 2);
-    
-                // Create a new Plant instance
-                // const newPlant = new Plant(plantSprite, randomType, clickedCell);
+                const plantSprite = scene.add.sprite(
+                    (Math.floor(ptr.x / tileSize) + 0.5) * tileSize,
+                    (Math.floor(ptr.y / tileSize) + 0.5) * tileSize,
+                    `plant${randomType}_1`
+                ).setScale(scene.GRID_SCALE - 2);
     
                 // Update the grid cell with the plant data
                 scene.grid.setCell(
@@ -383,7 +385,7 @@ loadFile() {
                     {
                         ...clickedCell,
                         plant_type: randomType,
-                        growth_lvl: newPlant.growth_lvl, // Starts at 1 by default
+                        growth_lvl: 1,
                     }
                 );
     
@@ -396,75 +398,24 @@ loadFile() {
             scene.notify("plant-changed");
         }
     
-        return { put };
+        return { plant };
     }
-    
-    // TODO: make these functional again
-//     updateWorldPlants(init){
-//         const scene = init;
-        
 
-//         function put(ptr){   
-//             const tileSize = scene.tile_size;     
-//             let playerCellOffset = scene.grid.getCellAt(scene.player.x, scene.player.y, tileSize);
-//             const clickedCellOffset = scene.grid.getCellAt(ptr.x, ptr.y, tileSize);
-//             console.log(`putting a plant at (${ptr.x}, ${ptr.y})...`);
-            
-            
-
-//             if(scene.grid.isAdjacentCell(clickedCellOffset, playerCellOffset)){
-//                 const cellPlant = scene.grid.getCell(ptr.x, ptr.y);
-// Z
-//                 if (cellPlant == undefined) {
-//                      const randomType = Math.floor(Math.random() * 3 )+ 1;
-//                      const plantSprite = scene.add.sprite((clickedCellOffset.y * this.tile_size + .5 * this.tile_size), (clickedCellOffset.x * this.tile_size + .5*this.tile_size), "plant" + randomType + "_1").setScale(this.GRID_SCALE - 2)
-//                      const newPlant = new Plant(plantSprite, randomType, )
-//                      grid.setCell(ptr.x, ptr.y, {
-//                         ...cellPlant,
-//                         plant_type: randomType,
-//                         growth_lvl: newGrowthLevel
-//                      });
-
-//                 }
-//             }
-
-
-//             //    if (cellPlant == undefined) {
-//             //        let randomType = Math.floor(Math.random() * 3 + 1);
-//             //        let plantSprite = this.add.sprite((cellOffset.y * this.tile_size + .5*this.tile_size), (cellOffset.x * this.tile_size + .5*this.tile_size), "plant" + randomType + "_1").setScale(this.GRID_SCALE - 2);
-//             //        cell.plant = new Plant(plantSprite, randomType, cellOffset); 
-//             //    } else if (cellPlant) {
-//             //        if (cellPlant.growth_lvl == 3) {
-//             //            cellPlant.harvest();
-//             //        }
-//             //    }
-//             //}
-//             scene.notify("plant-changed")
-//         }
-
-//         function updateCount(plant){
-//             console.log(`updating plants counts...`)
-//             //plant.update();
-//             //if (plant.growth_lvl > 3) {
-//             //    switch (plant.type) {
-//             //        case 1:
-//             //            this.plantOneCount++
-//             //            break;
-//             //        case 2:
-//             //            this.plantTwoCount++;
-//             //            break;
-//             //        case 3:
-//             //            this.plantThreeCount++;
-//             //            break;
-//             //    }
-//             //    plant.sprite.destroy(true);
-//             //    delete tile.plant;
-//             //}
-//             scene.notify("plant-changed")
-
-//         }       
-//         return { put, updateCount } 
-//     }
+  setPlantsFromData() {
+    for (let x = 0; x < this.grid.height; x++) {
+      for (let y = 0; y < this.grid.width; y++) {
+        let cell = this.grid.getCell(x, y);
+        //Create a sprite at the x,y location
+        if(cell.plant_type != 0) {
+          this.add.sprite(
+            x * this.tileSize,
+            y * this.tileSize,
+            `plant${cell.plant_type}_${cell.growth_lvl}` //ie: plant1_1
+          ).setScale(this.GRID_SCALE - 2);
+        }
+      }
+    }
+  }
 
   updateWorldWeather(arr) {
     // destroy old heatmap
