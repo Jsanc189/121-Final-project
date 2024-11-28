@@ -59,7 +59,6 @@ export class PlayScene extends Phaser.Scene {
     //this.plants = new Plants(this);
 
     //Load save file data before we render the heatmap
-    this.plantHandler = this.plantHandler(this);
     if(this.load){
       this.loadFile();
     }
@@ -144,7 +143,7 @@ export class PlayScene extends Phaser.Scene {
     this.input.on("pointerdown", (ptr) => {
       if (!(ptr.x >= this.width || ptr.y >= this.width)) {
         console.log("doot")
-        this.plantHandler.plant(ptr);
+        this.plantHandler(ptr);
       }
     });
   }
@@ -163,7 +162,6 @@ export class PlayScene extends Phaser.Scene {
             const tile = this.grid.getCellAt(x, y, this.tile_size);
             const plant = tile.plant;
             if (!plant) continue;
-            this.plantHandler.updateCount(plant);
           }
         }
         this.updateWorldWeather();
@@ -334,73 +332,68 @@ loadFile() {
     }
   }
 
-    plantHandler(init) {
-        const scene = init;
-    
-        function plant(ptr) {
-            const tileSize = scene.tile_size;
-    
-            // Get the cell offset for the player's current position
-            const playerCellOffset = scene.grid.getCellAt(scene.player.x, scene.player.y, tileSize);
-            if (playerCellOffset === false) {
-                console.log("Player is out of bounds!");
-                return;
-            }
-    
-            // Get the cell offset for the clicked position
-            const clickedCellOffset = scene.grid.getCellAt(ptr.x, ptr.y, tileSize);
-            if (clickedCellOffset === false) {
-                console.log("Clicked position is out of bounds!");
-                return;
-            }
-    
-            // Check if the clicked cell is adjacent to the player's cell
-            if (!scene.grid.isAdjacentCell(playerCellOffset, clickedCellOffset)) {
-                console.log("Clicked cell is not adjacent to the player's cell!");
-                return;
-            }
-    
-            // Retrieve the clicked cell's data
-            const clickedCell = scene.grid.getCell(
-                Math.floor(ptr.x / tileSize),
-                Math.floor(ptr.y / tileSize)
-            );
-    
-            // Check if the cell already has a plant
-            if (clickedCell.plant_type === 0) {
-                // No plant exists, plant a new one
-                const randomType = Math.floor(Math.random() * 3) + 1;
+    plantHandler(ptr) {
+        let scene = this;
+        const tileSize = this.tile_size;
 
-                // Create a sprite for the new plant
-                const plantSprite = scene.add.sprite(
-                    (Math.floor(ptr.x / tileSize) + 0.5) * tileSize,
-                    (Math.floor(ptr.y / tileSize) + 0.5) * tileSize,
-                    `plant${randomType}_1`
-                ).setScale(scene.GRID_SCALE - 2);
-    
-                // Update the grid cell with the plant data
-                scene.grid.setCell(
-                    Math.floor(ptr.x / tileSize),
-                    Math.floor(ptr.y / tileSize),
-                    {
-                        ...clickedCell,
-                        plant_type: randomType,
-                        growth_lvl: 1,
-                    }
-                );
-    
-                console.log(`Planted a type ${randomType} plant at (${ptr.x}, ${ptr.y}).`);
-            } else {
-                console.log("Cell already has a plant!");
-            }
-    
-            // Notify the scene of a plant update
-            scene.notify("plant-changed");
+        // Get the cell offset for the player's current position
+        const playerCellOffset = this.grid.getCellAt(this.player.x, this.player.y, tileSize);
+        if (playerCellOffset === false) {
+            console.log("Player is out of bounds!");
+            return;
         }
-    
-        return { plant };
-    }
 
+        // Get the cell offset for the clicked position
+        const clickedCellOffset = this.grid.getCellAt(ptr.x, ptr.y, tileSize);
+        if (clickedCellOffset === false) {
+            console.log("Clicked position is out of bounds!");
+            return;
+        }
+
+        // Check if the clicked cell is adjacent to the player's cell
+        if (!this.grid.isAdjacentCell(playerCellOffset, clickedCellOffset)) {
+            console.log("Clicked cell is not adjacent to the player's cell!");
+            return;
+        }
+
+        // Retrieve the clicked cell's data
+        const clickedCell = this.grid.getCell(
+            Math.floor(ptr.x / tileSize),
+            Math.floor(ptr.y / tileSize)
+        );
+
+        // Check if the cell already has a plant
+        if (clickedCell.plant_type === 0) {
+            // No plant exists, plant a new one
+            const randomType = Math.floor(Math.random() * 3) + 1;
+
+            // Create a sprite for the new plant
+            const plantSprite = this.add.sprite(
+                (Math.floor(ptr.x / tileSize) + 0.5) * tileSize,
+                (Math.floor(ptr.y / tileSize) + 0.5) * tileSize,
+                `plant${randomType}_1`
+            ).setScale(this.GRID_SCALE - 2);
+
+            // Update the grid cell with the plant data
+            this.grid.setCell(
+                Math.floor(ptr.x / tileSize),
+                Math.floor(ptr.y / tileSize),
+                {
+                    ...clickedCell,
+                    plant_type: randomType,
+                    growth_lvl: 1,
+                }
+            );
+
+            console.log(`Planted a type ${randomType} plant at (${ptr.x}, ${ptr.y}).`);
+        } else {
+            console.log("Cell already has a plant!");
+        }
+
+        // Notify the scene of a plant update
+        this.notify("plant-changed");
+    }
+    
   setPlantsFromData() {
     for (let x = 0; x < this.grid.height; x++) {
       for (let y = 0; y < this.grid.width; y++) {
