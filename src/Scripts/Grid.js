@@ -1,7 +1,7 @@
 import { Weather, TileWeather } from './Weather.js';
 
 export class Grid {
-  constructor(width, height, scene) {
+  constructor(width, height, scene, load) {
     this.width = width;
     this.height = height;
     this.scene = scene;
@@ -14,29 +14,30 @@ export class Grid {
     // Initialize weather system
     this.weather = new Weather(); // Global weather instance
 
-    // Initialize the byte array with cell and weather data
-    let offset = 0;
-    for (let x = 0; x < height; x++) {
-      for (let y = 0; y < width; y++) {
-        //if(offset + this.bytesPerCell > this.byteArray.byteLength) {
-        //  throw new Error("Offset out of bounds at " + offset);
-        //};
+    // Initialize the byte array with cell and weather data (only if not a loaded file)
+    if(!load){
+      for (let x = 0; x < height; x++) {
+        for (let y = 0; y < width; y++) {
+          //if(offset + this.bytesPerCell > this.byteArray.byteLength) {
+          //  throw new Error("Offset out of bounds at " + offset);
+          //};
 
-        // Generate weather using TileWeather
-        const tileWeather = new TileWeather(x, y, this.weather).generate();
+          // Generate weather using TileWeather
+          const tileWeather = new TileWeather(x, y, this.weather).generate();
 
-        // Store cell and weather data in the byte array
-        let cellData = {
-          x: x,
-          y: y,
-          sun_lvl: tileWeather.sun,
-          rain_lvl: tileWeather.rain,
-          plant_type: 0,
-          growth_lvl: 0,
-          water_diffusion_rate: 0
+          // Store cell and weather data in the byte array
+          let cellData = {
+            x: x,
+            y: y,
+            sun_lvl: tileWeather.sun,
+            rain_lvl: tileWeather.rain,
+            plant_type: 0,
+            growth_lvl: 0,
+            water_diffusion_rate: 0
+          }
+
+          this.setCell(x, y, cellData)
         }
-
-        this.setCell(x, y, cellData)
       }
     }
   }
@@ -68,6 +69,7 @@ export class Grid {
   }
 
   getCell(x, y) {
+    console.log(this.view.getInt32(this.offsetByAttribute(x,y,"rain_lvl"), true))
     return {
       x: this.view.getInt32(this.offsetByAttribute(x,y,"x"), true),
       y: this.view.getInt32(this.offsetByAttribute(x,y,"y"), true),
@@ -87,6 +89,7 @@ export class Grid {
     if(data.plant_type) this.view.setUint8(this.offsetByAttribute(x,y,"plant_type"), data.plant_type);
     if(data.growth_lvl) this.view.setUint8(this.offsetByAttribute(x,y,"growth_lvl"), data.growth_lvl);
     if(data.water_diffusion_rate) this.view.setUint8(this.offsetByAttribute(x,y,"water_diffusion_rate"), data.water_diffusion_rate);
+    console.log(`${data.x}, ${data.y}, ${data.sun_lvl}, ${data.rain_lvl}`)
   }
 
   updateWeather(seed = Math.random()) {
@@ -112,11 +115,16 @@ export class Grid {
     for (let x = 0; x < this.height; x++) {
       for (let y = 0; y < this.width; y++) {
         const cell = this.getCell(x, y);
+        // console.log(``);
+        console.log(`${x}, ${y}, ${cell.sun_lvl}, ${cell.rain_lvl}`);
+        // console.log(`${cell.sun_lvl * 2.55}, ${cell.rain_lvl * 2.55}`);
+        // console.log();
         const color = Phaser.Display.Color.GetColor(
           cell.sun_lvl * 2.55,
           cell.rain_lvl * 2.55,
           0
         );
+        // console.log(color);
         let rect =  this.scene.add.rectangle(
           cell.x * tile_size, 
           cell.y * tile_size, 
@@ -127,6 +135,7 @@ export class Grid {
       }
     }
 
+    console.log(rendered);
     return rendered;
   }
 

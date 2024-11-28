@@ -20,6 +20,24 @@ export class MenuScene extends Phaser.Scene {
         this.newGameButton.on('pointerout', () => { this.newGameButton.setStyle({ fill: 'darkgreen' }) });
         this.newGameButton.on('pointerup', () => { this.scene.start('playScene') });        
 
+        //load game button
+        this.loadGameButton = this.add.text(
+            this.game.config.width / 2, 
+            (this.game.config.height / 2) + 35, 
+            "Load Game", 
+            { fontSize: '30px', fill: 'darkgreen' }).setOrigin(0.5, 0.5);
+        this.loadGameButton.setInteractive();
+        this.loadGameButton.on('pointerover', () => { this.loadGameButton.setStyle({ fill: 'green' }) });
+        this.loadGameButton.on('pointerout', () => { this.loadGameButton.setStyle({ fill: 'darkgreen' }) });
+        this.loadGameButton.on('pointerup', () => { 
+          if(localStorage.getItem('saveFile1')) {
+            this.scene.start('playScene', {load: true});  
+          }
+          else {
+            console.log("No save found");
+          }
+        });
+
     }
 
     update() {

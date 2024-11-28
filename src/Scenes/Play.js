@@ -7,8 +7,13 @@ export class PlayScene extends Phaser.Scene {
        super("playScene");
     }
 
+    init(data) {
+      this.load = data.load;
+    }
+
 
     create() {
+
         this.graphics = this.add.graphics();
 
         //create tilemap & grid
@@ -24,10 +29,8 @@ export class PlayScene extends Phaser.Scene {
         this.tileset = this.tilemap.addTilesetImage("tileset");
         this.layer = this.tilemap.createLayer("Main", this.tileset);
         this.layer.setScale(this.GRID_SCALE);
-        this.grid = new Grid(this.GRID_WIDTH, this.GRID_HEIGHT, this);
+        this.grid = new Grid(this.GRID_WIDTH, this.GRID_HEIGHT, this, this.load);
         this.makeGridLines();
-        this.weatherMap = this.grid.render(this.tile_size);
-        this.plantHandler = this.updateWorldPlants(this);
 
         //player movement keys
         this.leftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
@@ -38,6 +41,13 @@ export class PlayScene extends Phaser.Scene {
         // this.time = new Clock(this);
         this.player = new Player(this, .5*this.tile_size, .5*this.tile_size, 'idle', 8, this.tile_size);
         this.player.scale = this.GRID_SCALE;
+
+        //Load save file data before we render the heatmap
+        if(this.load){
+          this.loadFile();
+        }
+        this.weatherMap = this.grid.render(this.tile_size);
+        this.plantHandler = this.updateWorldPlants(this);
 
         //set game condition
         this.gameOver = false;
