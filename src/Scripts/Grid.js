@@ -1,4 +1,4 @@
-import { Weather, TileWeather } from './Weather.js';
+import { TileWeather, Weather } from "./Weather.js";
 
 export class Grid {
   constructor(width, height, scene, load) {
@@ -7,7 +7,7 @@ export class Grid {
     this.scene = scene;
 
     // 19 bytes per cell: x, y, sun_lvl, rain_lvl, plant_type, growth_lvl, water_diffusion_rate
-    this.bytesPerCell = 19;
+    this.bytesPerCell = 20;
     this.byteArray = new ArrayBuffer(width * height * this.bytesPerCell);
     this.view = new DataView(this.byteArray);
 
@@ -25,30 +25,31 @@ export class Grid {
           // Generate weather using TileWeather
           const tileWeather = new TileWeather(x, y, this.weather).generate();
 
-          // Store cell and weather data in the byte array
+        // Store cell and weather data in the byte array
           let cellData = {
             x: x,
             y: y,
             sun_lvl: tileWeather.sun,
             rain_lvl: tileWeather.rain,
             plant_type: 0,
-            growth_lvl: 0,
-            water_diffusion_rate: 0
-          }
+            growth_lvl: 1,
+            water_diffusion_rate: 0,
+            plant_img: null,
+          };
 
-          this.setCell(x, y, cellData)
+          this.setCell(x, y, cellData);
         }
       }
     }
   }
 
-  byteOffset(x, y){
+  byteOffset(x, y) {
     return (x * this.width + y) * this.bytesPerCell;
   }
 
-  offsetByAttribute(x, y, attribute){
+  offsetByAttribute(x, y, attribute) {
     let offset = this.byteOffset(x, y);
-    switch(attribute){
+    switch (attribute) {
       case "x":
         return offset;
       case "y":
@@ -64,20 +65,32 @@ export class Grid {
       case "water_diffusion_rate":
         return offset + 18;
       default:
-        throw new Error(`Unknown attribute: "${attribute}"`)
+        throw new Error(`Unknown attribute: "${attribute}"`);
     }
   }
 
   getCell(x, y) {
     console.log(this.view.getInt32(this.offsetByAttribute(x,y,"rain_lvl"), true))
     return {
-      x: this.view.getInt32(this.offsetByAttribute(x,y,"x"), true),
-      y: this.view.getInt32(this.offsetByAttribute(x,y,"y"), true),
-      sun_lvl: this.view.getInt32(this.offsetByAttribute(x,y,"sun_lvl"), true),
-      rain_lvl: this.view.getInt32(this.offsetByAttribute(x,y,"rain_lvl"), true),
-      plant_type: this.view.getUint8(this.offsetByAttribute(x,y,"plant_type")),
-      growth_lvl: this.view.getUint8(this.offsetByAttribute(x,y,"growth_lvl")),
-      water_diffusion_rate: this.view.getUint8(this.offsetByAttribute(x,y,"water_diffusion_rate")),
+      x: this.view.getInt32(this.offsetByAttribute(x, y, "x"), true),
+      y: this.view.getInt32(this.offsetByAttribute(x, y, "y"), true),
+      sun_lvl: this.view.getInt32(
+        this.offsetByAttribute(x, y, "sun_lvl"),
+        true,
+      ),
+      rain_lvl: this.view.getInt32(
+        this.offsetByAttribute(x, y, "rain_lvl"),
+        true,
+      ),
+      plant_type: this.view.getUint8(
+        this.offsetByAttribute(x, y, "plant_type"),
+      ),
+      growth_lvl: this.view.getUint8(
+        this.offsetByAttribute(x, y, "growth_lvl"),
+      ),
+      water_diffusion_rate: this.view.getUint8(
+        this.offsetByAttribute(x, y, "water_diffusion_rate"),
+      ),
     };
   }
 
@@ -110,6 +123,20 @@ export class Grid {
     }
   }
 
+  updatePlants() {
+    this.plants = new Plants(this);
+
+    for (let x = 0; x < this.height; x++) {
+      for (let y = 0; y < this.width; y++) {
+        const cell = this.getCell(x, y);
+
+        // TODO: ?????
+        
+        this.setCell(x, y, cell);
+      }
+    }
+  }
+
   render(tile_size) {
     let rendered = [];
     for (let x = 0; x < this.height; x++) {
@@ -122,13 +149,15 @@ export class Grid {
         const color = Phaser.Display.Color.GetColor(
           cell.sun_lvl * 2.55,
           cell.rain_lvl * 2.55,
-          0
+          0,
         );
-        // console.log(color);
-        let rect =  this.scene.add.rectangle(
-          cell.x * tile_size, 
-          cell.y * tile_size, 
-          tile_size, tile_size, color, 0.5
+        let rect = this.scene.add.rectangle(
+          cell.x * tile_size,
+          cell.y * tile_size,
+          tile_size,
+          tile_size,
+          color,
+          0.5,
         ).setOrigin(0);
 
         rendered.push(rect);
@@ -140,15 +169,15 @@ export class Grid {
   }
 
   getCellOffset(x, y) {
-    return (x * this.bytesPerCell * this.height) + (y * this.bytesPerCell)
+    return (x * this.bytesPerCell * this.height) + (y * this.bytesPerCell);
   }
 
-  getCellAt(phaserX, phaserY, tile_size){
+  getCellAt(phaserX, phaserY, tile_size) {
     if (!(phaserX >= this.scene.width || phaserY >= this.scene.height)) {
       const bufferX = Math.floor(phaserX / tile_size);
       const bufferY = Math.floor(phaserY / tile_size);
       return this.getCellOffset(bufferX, bufferY);
-    } 
+    }
     console.log("couldn't get cell: out of bounds");
     return false;
   }
@@ -167,15 +196,15 @@ export class Grid {
 }
 
 
-  copyAttributesToArray(data){
+  copyAttributesToArray(data) {
     let array = [];
-    
+
     for (let x = 0; x < this.height; x++) {
       for (let y = 0; y < this.width; y++) {
         let cell = this.getCell(x, y);
-        let attributesToArray = {x: x, y: y};
-        for(let attribute of data){
-          attributesToArray[attribute] = cell[attribute]
+        let attributesToArray = { x: x, y: y };
+        for (let attribute of data) {
+          attributesToArray[attribute] = cell[attribute];
         }
         array.push(attributesToArray);
       }
@@ -184,10 +213,9 @@ export class Grid {
     return array;
   }
 
-  setStateFromArray(array){
-    for(let cellData of array){
+  setStateFromArray(array) {
+    for (let cellData of array) {
       this.setCell(cellData.x, cellData.y, cellData);
     }
   }
-
 }
