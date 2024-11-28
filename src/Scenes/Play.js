@@ -58,18 +58,19 @@ export class PlayScene extends Phaser.Scene {
     // create plants
     //this.plants = new Plants(this);
 
-    //Load save file data before we render the heatmap
-    if(this.load){
-      this.loadFile();
-    }
-    this.weatherMap = this.grid.render(this.tile_size);
-
     //set game condition
     this.gameOver = false;
     this.endOfDay = false;
     this.plantOneCount = 0;
     this.plantTwoCount = 0;
     this.plantThreeCount = 0;
+    this.plantSprites = [];
+
+    //Load save file data before we render the heatmap
+    if(this.load){
+      this.loadFile();
+    }
+    this.weatherMap = this.grid.render(this.tile_size);
 
     //buttons
     this.makeButton(
@@ -246,6 +247,7 @@ export class PlayScene extends Phaser.Scene {
             plantTwoCount: this.plantTwoCount,
             plantThreeCount: this.plantThreeCount
         },
+        plantSprites: this.plantSprites,
         undoStack: this.undoStack,
         redoStack: this.redoStack
     };
@@ -263,7 +265,6 @@ loadFile() {
 
         // Restore grid state
         this.grid.setStateFromArray(parsedData.grid);
-        this.setPlantsFromData(); //untested
 
         // Restore player state
         this.player.setPosition(parsedData.player.x, parsedData.player.y);
@@ -272,6 +273,11 @@ loadFile() {
         this.plantOneCount = parsedData.plantCounts.plantOneCount;
         this.plantTwoCount = parsedData.plantCounts.plantTwoCount;
         this.plantThreeCount = parsedData.plantCounts.plantThreeCount;
+
+        // restore sprites
+        this.plantSprites = parsedData.plantSprites;
+        this.renderPlantSprites();
+        //this.setPlantsFromData(); //untested
 
         // Restore undo/redo stacks
         this.undoStack = parsedData.undoStack || [];
@@ -333,7 +339,6 @@ loadFile() {
   }
 
     plantHandler(ptr) {
-        let scene = this;
         const tileSize = this.tile_size;
 
         // Get the cell offset for the player's current position
@@ -368,11 +373,19 @@ loadFile() {
             const randomType = Math.floor(Math.random() * 3) + 1;
 
             // Create a sprite for the new plant
+            let plantX = (Math.floor(ptr.x / tileSize) + 0.5) * tileSize;
+            let plantY = (Math.floor(ptr.y / tileSize) + 0.5) * tileSize;
             const plantSprite = this.add.sprite(
-                (Math.floor(ptr.x / tileSize) + 0.5) * tileSize,
-                (Math.floor(ptr.y / tileSize) + 0.5) * tileSize,
+                plantX, 
+                plantY, 
                 `plant${randomType}_1`
             ).setScale(this.GRID_SCALE - 2);
+            
+            this.plantSprites.push({
+              x: plantX,
+              y: plantY,
+              img: `plant${randomType}_1`
+            }); 
 
             // Update the grid cell with the plant data
             this.grid.setCell(
@@ -386,14 +399,17 @@ loadFile() {
             );
 
             console.log(`Planted a type ${randomType} plant at (${ptr.x}, ${ptr.y}).`);
+            clickedCell.plant_type = randomType;
         } else {
             console.log("Cell already has a plant!");
         }
+        console.log(clickedCell)
 
         // Notify the scene of a plant update
         this.notify("plant-changed");
     }
-    
+  
+    /*
   setPlantsFromData() {
     for (let x = 0; x < this.grid.height; x++) {
       for (let y = 0; y < this.grid.width; y++) {
@@ -407,6 +423,13 @@ loadFile() {
           ).setScale(this.GRID_SCALE - 2);
         }
       }
+    }
+  }
+    */
+
+  renderPlantSprites(){
+    for(const plant of this.plantSprites){
+      this.add.sprite(plant.x, plant.y, plant.img).setScale(this.GRID_SCALE - 2);
     }
   }
 
