@@ -67,6 +67,10 @@ export class PlayScene extends Phaser.Scene {
     this.plantSprites = [];
     this.destroyedSprites = []; // for undo/redo
 
+    // event handling
+    this.undoStack = [];
+    this.redoStack = [];
+
     //Load save file data before we render the heatmap
     if(this.load){
       this.loadFile();
@@ -131,15 +135,6 @@ export class PlayScene extends Phaser.Scene {
       backgroundColor: "#64ffc4",
       fontSize: 32,
     });
-
-    // event handling
-    this.undoStack = [];
-    this.redoStack = [];
-
-    this.bus = new EventTarget();
-    this.bus.addEventListener("weather-changed", () => this.gridChanged());
-    this.bus.addEventListener("plant-changed", () => this.gridChanged());
-    console.log(this.bus);
 
     this.input.on("pointermove", (ptr) => this.cellPreview(ptr));
     this.input.on("pointerdown", (ptr) => {
