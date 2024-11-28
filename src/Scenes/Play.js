@@ -65,6 +65,7 @@ export class PlayScene extends Phaser.Scene {
     this.plantTwoCount = 0;
     this.plantThreeCount = 0;
     this.plantSprites = [];
+    this.destroyedSprites = []; // for undo/redo
 
     //Load save file data before we render the heatmap
     if(this.load){
@@ -165,7 +166,7 @@ export class PlayScene extends Phaser.Scene {
             if (!plant) continue;
           }
         }
-        this.updateWorldWeather();
+        this.updateWorld("weather");
         this.endOfDay = false;
       }
     } else {
@@ -198,13 +199,11 @@ export class PlayScene extends Phaser.Scene {
   }
 
   endDay() {
-    let state = this.grid.copyAttributesToArray(["sun_lvl", "rain_lvl"]);
-    this.undoStack.push(state);
+    let weatherState = this.grid.copyAttributesToArray(["sun_lvl", "rain_lvl"]);
+    this.undoStack.push({weather: weatherState});
     this.redoStack = [];
 
-    //console.log(this.endOfDay);
     this.endOfDay = true;
-    //console.log(this.endOfDay);
     console.log("end day");
   }
 
@@ -212,7 +211,15 @@ export class PlayScene extends Phaser.Scene {
     let popped = this.undoStack.pop();
     if (popped) {
       this.redoStack.push(popped);
-      this.updateWorldWeather(popped);
+      if(popped.weather) this.updateWorld("weather", popped.weather);
+      if(popped.plant){ 
+        // update sprites
+        let destroy = this.plantSprites.pop();
+        this.findSpriteAt(destroy.x, destroy.y).destroy();
+        this.destroyedSprites.push(destroy);
+        
+        this.updateWorld("plant", popped.plant); 
+      }
 
       console.log("undone");
     } else console.log("undo failed: nothing to undo");
@@ -222,7 +229,15 @@ export class PlayScene extends Phaser.Scene {
     let popped = this.redoStack.pop();
     if (popped) {
       this.undoStack.push(popped);
-      this.updateWorldWeather(popped);
+      if(popped.weather) this.updateWorld("weather", popped.weather);
+      if(popped.plant){ 
+        // update sprites
+        let restore = this.destroyedSprites.pop();
+        this.renderPlantSprites([restore]);
+        this.plantSprites.push(restore);
+        
+        this.updateWorld("plant", popped.plant); 
+      }
 
       console.log("redone");
     } else console.log("redo failed: nothing to redo");
@@ -247,7 +262,10 @@ export class PlayScene extends Phaser.Scene {
             plantTwoCount: this.plantTwoCount,
             plantThreeCount: this.plantThreeCount
         },
-        plantSprites: this.plantSprites,
+        plantSprites: {
+          active: this.plantSprites,
+          destroyed: this.destroyedSprites
+        },
         undoStack: this.undoStack,
         redoStack: this.redoStack
     };
@@ -275,8 +293,9 @@ loadFile() {
         this.plantThreeCount = parsedData.plantCounts.plantThreeCount;
 
         // restore sprites
-        this.plantSprites = parsedData.plantSprites;
-        this.renderPlantSprites();
+        this.plantSprites = parsedData.plantSprites.active;
+        this.renderPlantSprites(this.plantSprites);
+        this.destroyedSprites = parsedData.plantSprites.destroyed;
         //this.setPlantsFromData(); //untested
 
         // Restore undo/redo stacks
@@ -379,13 +398,18 @@ loadFile() {
                 plantX, 
                 plantY, 
                 `plant${randomType}_1`
-            ).setScale(this.GRID_SCALE - 2);
+            ).setScale(this.GRID_SCALE - 2)
+            .setName("plant");;
             
             this.plantSprites.push({
               x: plantX,
               y: plantY,
               img: `plant${randomType}_1`
             }); 
+
+            // save grid state before changing
+            let plantState = this.grid.copyAttributesToArray(["plant_type"]);
+            this.undoStack.push({plant: plantState});
 
             // Update the grid cell with the plant data
             this.grid.setCell(
@@ -403,10 +427,6 @@ loadFile() {
         } else {
             console.log("Cell already has a plant!");
         }
-        console.log(clickedCell)
-
-        // Notify the scene of a plant update
-        this.notify("plant-changed");
     }
   
     /*
@@ -427,33 +447,45 @@ loadFile() {
   }
     */
 
-  renderPlantSprites(){
-    for(const plant of this.plantSprites){
-      this.add.sprite(plant.x, plant.y, plant.img).setScale(this.GRID_SCALE - 2);
+  renderPlantSprites(sprites){
+    for(const plant of sprites){
+      this.add.sprite(plant.x, plant.y, plant.img)
+        .setScale(this.GRID_SCALE - 2)
+        .setName("plant");
     }
   }
 
-  updateWorldWeather(arr) {
-    // destroy old heatmap
-    for (const rect of this.weatherMap) rect.destroy();
-    this.weatherMap = [];
+  updateWorld(target, arr) {
+    switch(target){
+      case "weather":
+        // destroy old heatmap
+        for (const rect of this.weatherMap) rect.destroy();
+        this.weatherMap = [];
+        // check for an array to determine generation
+        if (!arr) this.grid.updateWeather(); // new random
+        else this.grid.setStateFromArray(arr); // set from array
+        // re-render heatmap
+        this.weatherMap = this.grid.render(this.tile_size);
+        break;
+      case "plant":
+        this.grid.setStateFromArray(arr);
+        break;
+      default:
+        throw new Error(`Unkown target: ${target}`)
+    }
 
-    // check for an array to determine generation
-    if (!arr) this.grid.updateWeather();
-    // new random
-    else this.grid.setStateFromArray(arr); // set from array
-
-    // re-render heatmap
-    this.weatherMap = this.grid.render(this.tile_size);
-
-    this.notify("weather-changed");
   }
 
-  gridChanged() {
-    console.log("new grid state");
-  }
+  findSpriteAt(x, y) {
+    // get scene children and filter by name (plant)
+    const objects = this.children.getAll().filter(child => child.name === "plant");
 
-  notify(name) {
-    this.bus.dispatchEvent(new Event(name));
-  }
+    for (let obj of objects) {
+        if (obj.x === x && obj.y === y) {
+            return obj; // return the plant at x y
+        }
+    }
+
+    return null; // If no object matches
+}
 }
