@@ -2,54 +2,90 @@ export class SavesScene extends Phaser.Scene {
     constructor() {
       super("savesScene");
     }
+
+    init(data){
+      this.mode = data.mode;  // "save" or "load"
+      this.saveData = data.saveData;
+      this.previousScene = data.scene;
+      this.MAX_SAVES = 10;
+    }
   
     create() {
-    //   this.title = this.add.text(
-    //     this.game.config.width / 2,
-    //     this.game.config.height / 3,
-    //     "Plant Harvest",
-    //     { fontSize: "80px", fill: "darkgreen" },
-    //   ).setOrigin(0.5, 0.5);
-  
-    //   console.log("in the saves scene");
-  
-      // create buttons for saves
+      // back to previous scene
+      this.backButton = this.makeButton(80, 30, "Back", {fontSize: "50px", fill: "darkgreen"});
+      this.backButton.on('pointerup', () => {
+          this.scene.run(this.previousScene);
+      });
+
+      // ten empty slots
+      this.buttons = [];
+      this.emptyText = "[ empty slot ]";
+      const WIDTH = this.game.config.width;
+      const HEIGHT = this.game.config.height - 100;
+
+      for (let i = 0; i < this.MAX_SAVES; i++) {
+        const button = this.makeButton(
+            WIDTH / 2, 
+            HEIGHT / this.MAX_SAVES + i * HEIGHT / this.MAX_SAVES,
+            this.emptyText, 
+            {fontSize: `${HEIGHT / 2 / this.MAX_SAVES}px`}
+        );
+        this.buttons.push(button);
+      }
+      
+      // update text for saves
       this.savedData = localStorage.getItem('saveFiles');
-      this.parsedData = null;
-
+      this.saveFiles = null;
       if(this.savedData) {
-        this.parsedData = JSON.parse(this.savedData);
-        console.log(this.parsedData);
+        this.saveFiles = JSON.parse(this.savedData);
 
-        if (this.parsedData.length > 0) {
-          for (let i = 0; i < this.parsedData.length; i++) {
-            const button = this.makeButton(
-                400 + (this.parsedData.length), 
-                (30 + (this.parsedData.length)) + i * 90,
-                "Save " + (i + 1), 
-                {fontSize: "50px"}
-            );
-
-            button.on('pointerup', () => {
-                console.log(i);
-                this.scene.start('playScene', {load: true, load_index: i});  
-                }  
-            );
+        // replace empty slot text with save indices
+        if (this.saveFiles.length > 0) {
+          for (let i = 0; i < this.saveFiles.length; i++) {
+            this.buttons[i].text = "Save " + (i + 1);
           }
-        } else {
-          this.add.text(400, 100, "No saved games!", {fontSize: "40px"}).setOrigin(0.5, 0.5);
         }
       }
 
-    this.backButton = this.makeButton(80, 30, "Menu", {fontSize: "50px", fill: "darkgreen"});
-    this.backButton.on('pointerup', () => {
-        this.scene.start("menuScene");
-    });
+      this.buttonHandler();
     }
-  
+    
+    buttonHandler(){
+      for(let i = 0; i < this.buttons.length; i++){
+        this.buttons[i].on('pointerup', () => {
+          if(this.buttons[i].text === this.emptyText){
+            if(this.mode === "load") console.log("Empty slot, no game to load!")  
+            if(this.mode === "save"){
+              this.addSave(i);
+            }  
+          } else {
+            if(this.mode === "load") this.scene.start('playScene', {load: true, load_index: i});  
+            if(this.mode === "save"){
+              const proceed = window.confirm("This will overwrite your saved data. Proceed?");
+              if(proceed === true) this.addSave(i);
+            }
+          }
+          
+        });
+      }
+    }
+
+    addSave(i){
+      this.buttons[i].text = "Save " + (i + 1);
+      this.saveFiles[i] = this.saveData;
+      localStorage.setItem('saveFiles', JSON.stringify(this.saveFiles));
+
+      this.scene.start('playScene', {load: true, load_index: i});
+      this.scene.stop();
+    }
+
     makeButton(x, y, text, style, colors=[ { fill: "green" }, { fill: 'darkgreen' } ]) {
-      const button = this.add.text(x, y, text, style).setOrigin(0.5, 0.5);
+      const button = this.add.text(x, y, text, style)
+        .setOrigin(0.5, 0.5)
+        .setStyle(colors[1]);
+
       button.setInteractive();
+
       button.on("pointerover", () => {
         button.setStyle(colors[0]);
       });

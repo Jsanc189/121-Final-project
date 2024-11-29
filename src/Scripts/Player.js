@@ -6,31 +6,31 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.movementSpeed = tileSize;
   }
 
-  update() {
+  update(scene) {
     this.setDepth(10);
 
     if (this.ableToMove) {
       let moved = false;
-      if (this.scene.leftKey.isDown && this.x > 40) {
+      if (scene.leftKey.isDown && this.x > 40) {
         this.x -= this.movementSpeed;
         moved = true;
       }
-      if (this.scene.rightKey.isDown && this.x < this.scene.width - 40) {
+      if (scene.rightKey.isDown && this.x < scene.width - 40) {
         this.x += this.movementSpeed;
         moved = true;
       }
-      if (this.scene.upKey.isDown && this.y > 40) {
+      if (scene.upKey.isDown && this.y > 40) {
         this.y -= this.movementSpeed;
         moved = true;
       }
-      if (this.scene.downKey.isDown && this.y < this.scene.height - 40) {
+      if (scene.downKey.isDown && this.y < scene.height - 40) {
         this.y += this.movementSpeed;
         moved = true;
       }
 
       if (moved) {
         this.ableToMove = false;
-        this.scene.time.delayedCall(200, () => {
+        scene.time.delayedCall(200, () => {
           this.ableToMove = true;
         });
       }

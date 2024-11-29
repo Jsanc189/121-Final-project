@@ -153,7 +153,7 @@ export class PlayScene extends Phaser.Scene {
   }
 
   update() {
-    this.player.update();
+    this.player.update(this);
     if (!this.gameOver) {
       //check if end conditions are met
       this.checkWin();
@@ -279,7 +279,11 @@ export class PlayScene extends Phaser.Scene {
         this.saveFiles.push(saveData); 
         this.sessionSaved = true;
       }
-    } else{ this.saveFiles.push(saveData); }
+    } else{ 
+      this.scene.pause();
+      this.scene.start("savesScene", {mode: "save", saveData: saveData, scene: this});
+      //this.saveFiles.push(saveData); 
+    }
 
     localStorage.setItem('saveFiles', JSON.stringify(this.saveFiles));
     console.log('Game saved:', this.saveFiles);
@@ -326,7 +330,6 @@ loadFile(savedData) {
 
   quit() {
     console.log("Quitting game...");
-
     
     this.scene.stop();
     this.scene.start("menuScene");
