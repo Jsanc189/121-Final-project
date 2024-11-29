@@ -7,9 +7,9 @@ export class PlayScene extends Phaser.Scene {
     super("playScene");
   }
 
-  init(data, data_index) {
+  init(data) {
     this.load = data.load;
-    this.data_index = data_index;
+    this.load_index = data.load_index;
   }
 
   create() {
@@ -17,6 +17,12 @@ export class PlayScene extends Phaser.Scene {
 
     // create save array
     this.saveFiles = [];
+    const savedData = localStorage.getItem('saveFiles');
+    if (savedData) {
+        const parsedData = (JSON.parse(savedData));
+        this.saveFiles = parsedData;
+    }
+    this.sessionSaved = this.load;
 
     //create tilemap & grid
     this.GRID_WIDTH = 10;
@@ -74,7 +80,7 @@ export class PlayScene extends Phaser.Scene {
 
     //Load save file data before we render the heatmap
     if(this.load){
-      this.loadFile();
+      this.loadFile(savedData);
     }
     this.weatherMap = this.grid.render(this.tile_size);
 
@@ -173,7 +179,7 @@ export class PlayScene extends Phaser.Scene {
     ) {
       console.log("You win!");
       // autosave 
-      this.saveFile();
+      this.saveFile(true);
       this.gameOver = true;
     }
   }
@@ -196,7 +202,7 @@ export class PlayScene extends Phaser.Scene {
     this.undoStack.push({weather: weatherState});
     this.redoStack = [];
     // autosave 
-    this.saveFile();
+    this.saveFile(true);
     this.endOfDay = true;
     console.log("end day");
   }
@@ -237,7 +243,7 @@ export class PlayScene extends Phaser.Scene {
     } else console.log("redo failed: nothing to redo");
   }
 
-  saveFile() {
+  saveFile(isAuto) {
     console.log('Saving game...');
     
     const gridState = this.grid.copyAttributesToArray(["sun_lvl", "rain_lvl", "plant_type", "growth_lvl"]); // Assuming this returns the grid state as an array
@@ -265,44 +271,54 @@ export class PlayScene extends Phaser.Scene {
     };
 
     // push to save files array
-    this.saveFiles.push(saveData);
+    if(isAuto === true){
+      // overwrite last element with autosave if the session has already been saved
+      if(this.sessionSaved === true && this.saveFiles.length > 0){
+        this.saveFiles[this.saveFiles.length - 1] = saveData;
+      } else{ 
+        this.saveFiles.push(saveData); 
+        this.sessionSaved = true;
+      }
+    } else{ this.saveFiles.push(saveData); }
 
     localStorage.setItem('saveFiles', JSON.stringify(this.saveFiles));
     console.log('Game saved:', this.saveFiles);
 }
 
-loadFile() {
+loadFile(savedData) {
     console.log('Loading game...');
 
     // index with whatever save the player wants to get
-    const savedData = localStorage.getItem('saveFiles');
+    //const savedData = localStorage.getItem('saveFiles');
 
     if (savedData) {
         const parsedData = (JSON.parse(savedData));
+        this.saveFiles = parsedData;
 
-        console.log(parsedData, this.data_index);
+        // get session data by index
+        const sessionData = parsedData[this.load_index];
         // Restore grid state
-        this.grid.setStateFromArray(parsedData.grid);
+        this.grid.setStateFromArray(sessionData.grid);
 
         // Restore player state
-        this.player.setPosition(parsedData.player.x, parsedData.player.y);
+        this.player.setPosition(sessionData.player.x, sessionData.player.y);
 
         // Restore plant counts
-        this.plantOneCount = parsedData.plantCounts.plantOneCount;
-        this.plantTwoCount = parsedData.plantCounts.plantTwoCount;
-        this.plantThreeCount = parsedData.plantCounts.plantThreeCount;
+        this.plantOneCount = sessionData.plantCounts.plantOneCount;
+        this.plantTwoCount = sessionData.plantCounts.plantTwoCount;
+        this.plantThreeCount = sessionData.plantCounts.plantThreeCount;
 
         // restore sprites
-        this.plantSprites = parsedData.plantSprites.active;
+        this.plantSprites = sessionData.plantSprites.active;
         this.renderPlantSprites(this.plantSprites);
-        this.destroyedSprites = parsedData.plantSprites.destroyed;
+        this.destroyedSprites = sessionData.plantSprites.destroyed;
         //this.setPlantsFromData(); //untested
 
         // Restore undo/redo stacks
-        this.undoStack = parsedData.undoStack || [];
-        this.redoStack = parsedData.redoStack || [];
+        this.undoStack = sessionData.undoStack || [];
+        this.redoStack = sessionData.redoStack || [];
 
-        console.log('Game loaded:', parsedData);
+        console.log('Game loaded:', sessionData);
     } else {
         console.log('No saved game found.');
     }
@@ -494,7 +510,6 @@ loadFile() {
 
   findSpriteInArray(x, y, arr) {
     for(const sprite of arr) {
-      console.log(sprite.x, sprite.y)
       if(sprite.x == x && sprite.y == y) {
         return sprite;
       }

@@ -22,25 +22,24 @@ export class SavesScene extends Phaser.Scene {
         console.log(this.parsedData);
 
         if (this.parsedData.length > 0) {
-      for (let i = 0; i < this.parsedData.length; i++) {
-        const button = this.makeButton(
-            400 + (this.parsedData.length), 
-            50 + (this.parsedData.length),
-            "Save " + (i + 1), 
-            {fontSize: "50px"}
-        );
+          for (let i = 0; i < this.parsedData.length; i++) {
+            const button = this.makeButton(
+                400 + (this.parsedData.length), 
+                (30 + (this.parsedData.length)) + i * 90,
+                "Save " + (i + 1), 
+                {fontSize: "50px"}
+            );
 
-        button.on('pointerup', () => {
-            console.log(i);
-            this.scene.start('playScene', {load: true, data_index: i});  
-            }  
-        );
-
+            button.on('pointerup', () => {
+                console.log(i);
+                this.scene.start('playScene', {load: true, load_index: i});  
+                }  
+            );
+          }
+        } else {
+          this.add.text(400, 100, "No saved games!", {fontSize: "40px"}).setOrigin(0.5, 0.5);
+        }
       }
-    } else {
-        this.add.text(400, 100, "No saved games!", {fontSize: "40px"}).setOrigin(0.5, 0.5);
-    }
-    }
 
     this.backButton = this.makeButton(80, 30, "Menu", {fontSize: "50px", fill: "darkgreen"});
     this.backButton.on('pointerup', () => {

@@ -22,7 +22,7 @@ export class MenuScene extends Phaser.Scene {
       { fontSize: "40px", fill: "darkgreen" }
     )
     this.newGameButton.on("pointerup", () => {
-      this.scene.start("playScene", {load: false, index: -1});
+      this.scene.start("playScene", {load: false, load_index: -1});
     });
 
     //load game button
