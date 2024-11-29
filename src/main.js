@@ -20,3 +20,4 @@ const game = new Game(config);
 
 //grid to hold the Play scene's grid of tiles
 game.saveFiles = null;
+game.MAX_SAVES = 10;

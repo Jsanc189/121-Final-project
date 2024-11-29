@@ -76,15 +76,25 @@ export class PlayScene extends Phaser.Scene {
     this.undoStack = [];
     this.redoStack = [];
 
+    this.weatherMap = [] // this.grid.render(this.tile_size);
+    this.heatmapEnabled = false;
+    this.autosaveEnabled = false;
     //Load save file data before we render the heatmap
     if(this.load){
       this.loadFile(savedData);
     }
-    this.weatherMap = [] // this.grid.render(this.tile_size);
-    this.heatmapEnabled = false;
-    this.autosaveEnabled = false;
 
+    // buttons and toggles
     this.initUIX();
+    console.log(this.autosaveEnabled, this.heatmapEnabled)
+    if(this.autosaveEnabled === true){
+      this.autosaveEnabled = !this.autosaveEnabled;
+      this.autosaveToggle.emit("pointerup")
+    }
+    if(this.heatmapEnabled === true){
+      this.heatmapEnabled = !this.heatmapEnabled;
+      this.heatmapToggle.emit("pointerup")
+    }
 
     // weather levels label on hover
     this.levelsText = this.add.text(0, 0, "", {
@@ -208,6 +218,10 @@ export class PlayScene extends Phaser.Scene {
     const saveData = {
         grid: gridState,
         player: playerState,
+        toggles: {
+          autosave: this.autosaveEnabled,
+          heatmap: this.heatmapEnabled
+        },
         plantCounts: {
             plantOneCount: this.plantOneCount,
             plantTwoCount: this.plantTwoCount,
@@ -223,21 +237,55 @@ export class PlayScene extends Phaser.Scene {
 
     // push to save files array
     if(isAuto === true){
-      // overwrite last element with autosave if the session has already been saved
-      if(this.sessionSaved === true && this.saveFiles.length > 0){
-        this.saveFiles[this.saveFiles.length - 1] = saveData;
-      } else{ 
-        this.saveFiles.push(saveData); 
-        this.sessionSaved = true;
-      }
+      this.handleAutosave(saveData);
     } else{ 
       this.scene.pause();
       this.scene.start("savesScene", {mode: "save", saveData: saveData, scene: this});
-      //this.saveFiles.push(saveData); 
     }
 
     localStorage.setItem('saveFiles', JSON.stringify(this.saveFiles));
     console.log('Game saved:', this.saveFiles);
+}
+
+handleAutosave(saveData){
+  // if we're in a loaded file, save to same index
+  if(this.load === true){
+    this.saveFiles[this.load_index] = saveData;
+    return;
+  }
+  // if not, find first null in saveFiles
+  let saved = false;
+  for(let i = 0; i < this.saveFiles.length; i++){
+    if(this.saveFiles[i] === null){
+      this.saveFiles[i] = saveData;
+      return;
+    }
+  }
+  // no null found
+  if(!saved){
+    // if there's space, push
+    if(this.saveFiles.length < this.game.MAX_SAVES){
+      this.saveFiles.push(saveData); 
+      this.load = true;
+      this.load_index = this.saveFiles.length - 1;
+      return;
+    }
+    // if no space, ask if user wants to overwrite
+    else{
+      const overwrite = window.confirm("All save slots in use. Overwrite?");
+      // if user declines, turn off autosave
+      if(!overwrite){ 
+        this.autosaveToggle.emit("pointerup");
+        return;
+      }
+      // is user accepts, let them pick which slot to overwrite
+      else{
+        this.scene.pause();
+        this.scene.start("savesScene", {mode: "save", saveData: saveData, scene: this});
+        return;
+      }
+    }
+  }
 }
 
 loadFile(savedData) {
@@ -257,6 +305,8 @@ loadFile(savedData) {
 
         // Restore player state
         this.player.setPosition(sessionData.player.x, sessionData.player.y);
+        this.autosaveEnabled = sessionData.toggles.autosave;
+        this.heatmapEnabled = sessionData.toggles.heatmap;
 
         // Restore plant counts
         this.plantOneCount = sessionData.plantCounts.plantOneCount;
@@ -573,55 +623,55 @@ loadFile(savedData) {
     );
 
     // make toggle for autosaving
-    const autosaveToggle = this.add.rectangle(
+    this.autosaveToggle = this.add.rectangle(
       this.game.config.width - 50, 50, 50, 50, 0xFFFFFF)
       .setOrigin(0.5);
-    this.add.text(autosaveToggle.x, autosaveToggle.y + 50, "autosave", {
+    this.add.text(this.autosaveToggle.x, this.autosaveToggle.y + 50, "autosave", {
       fontSize: 16,
       color: "#3CAD24",
     }).setOrigin(0.5);
-    autosaveToggle.setInteractive();
-    autosaveToggle.on("pointerover", () => {
-      autosaveToggle.setFillStyle(0x3CAD24);
+    this.autosaveToggle.setInteractive();
+    this.autosaveToggle.on("pointerover", () => {
+      this.autosaveToggle.setFillStyle(0x3CAD24);
     });
-    autosaveToggle.on("pointerout", () => {
-      if(!this.autosaveEnabled) autosaveToggle.setFillStyle(0xFFFFFF);
+    this.autosaveToggle.on("pointerout", () => {
+      if(!this.autosaveEnabled) this.autosaveToggle.setFillStyle(0xFFFFFF);
     });
-    autosaveToggle.on("pointerdown", () => {
-      autosaveToggle.setFillStyle(0x3CAD24);
+    this.autosaveToggle.on("pointerdown", () => {
+      this.autosaveToggle.setFillStyle(0x3CAD24);
     });
-    autosaveToggle.on("pointerup", () => {
+    this.autosaveToggle.on("pointerup", () => {
       this.autosaveEnabled = !this.autosaveEnabled;
-      if(this.autosaveEnabled) autosaveToggle.setFillStyle(0x06402B);
-      else autosaveToggle.setFillStyle(0xFFFFFF);
+      if(this.autosaveEnabled) this.autosaveToggle.setFillStyle(0x06402B);
+      else this.autosaveToggle.setFillStyle(0xFFFFFF);
     });
 
     // make toggle for heatmap
-    const heatmapToggle = this.add.rectangle(
+    this.heatmapToggle = this.add.rectangle(
       this.game.config.width - 50, 200, 50, 50, 0xFFFFFF)
       .setOrigin(0.5);
-    this.add.text(heatmapToggle.x, heatmapToggle.y + 50, "weather\n layer", {
+    this.add.text(this.heatmapToggle.x, this.heatmapToggle.y + 50, "weather\n layer", {
       fontSize: 16,
       color: "#3CAD24",
     }).setOrigin(0.5);
-    heatmapToggle.setInteractive();
-    heatmapToggle.on("pointerover", () => {
-      heatmapToggle.setFillStyle(0x3CAD24);
+    this.heatmapToggle.setInteractive();
+    this.heatmapToggle.on("pointerover", () => {
+      this.heatmapToggle.setFillStyle(0x3CAD24);
     });
-    heatmapToggle.on("pointerout", () => {
-      if(!this.heatmapEnabled) heatmapToggle.setFillStyle(0xFFFFFF);
+    this.heatmapToggle.on("pointerout", () => {
+      if(!this.heatmapEnabled) this.heatmapToggle.setFillStyle(0xFFFFFF);
     });
-    heatmapToggle.on("pointerdown", () => {
-      heatmapToggle.setFillStyle(0x3CAD24);
+    this.heatmapToggle.on("pointerdown", () => {
+      this.heatmapToggle.setFillStyle(0x3CAD24);
     });
-    heatmapToggle.on("pointerup", () => {
+    this.heatmapToggle.on("pointerup", () => {
       this.heatmapEnabled = !this.heatmapEnabled;
       if(this.heatmapEnabled){ 
-        heatmapToggle.setFillStyle(0x06402B);
+        this.heatmapToggle.setFillStyle(0x06402B);
         this.weatherMap = this.grid.render(this.tile_size);
       }
       else {
-        heatmapToggle.setFillStyle(0xFFFFFF);
+        this.heatmapToggle.setFillStyle(0xFFFFFF);
         if(this.weatherMap.length > 0) for(const rect of this.weatherMap) rect.destroy();
         this.weatherMap = [];
       }

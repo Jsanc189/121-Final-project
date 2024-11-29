@@ -7,7 +7,7 @@ export class SavesScene extends Phaser.Scene {
       this.mode = data.mode;  // "save" or "load"
       this.saveData = data.saveData;
       this.previousScene = data.scene;
-      this.MAX_SAVES = 10;
+      this.MAX_SAVES = this.game.MAX_SAVES;
     }
   
     create() {
@@ -15,6 +15,7 @@ export class SavesScene extends Phaser.Scene {
       this.backButton = this.makeButton(80, 30, "Back", {fontSize: "50px", fill: "darkgreen"});
       this.backButton.on('pointerup', () => {
           this.scene.run(this.previousScene);
+          this.scene.stop();
       });
 
       // ten empty slots
