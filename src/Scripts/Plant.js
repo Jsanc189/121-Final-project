@@ -44,11 +44,17 @@ export class Plants {
                 cell.growth_lvl++;
             }
             this.image.setTexture("plant1_" + cell.growth_lvl);
+            console.log("plant1_" + cell.growth_lvl);
+            break;
+          case TYPE2:
+            // check for plant type 2 growth conditions
+
             break;
           case TYPE2:
             // check for plant type 2 growth conditions
             if (cell.sun_lvl >= 20 && cell.rain_lvl >= 20) {
                 cell.growth_lvl++;
+                console.log("plant2_" + cell.growth_lvl);           
             }
             this.image.setTexture("plant2_" + cell.growth_lvl);
             break;
@@ -56,6 +62,8 @@ export class Plants {
             // check for plant type 3 growth conditions
             if (cell.sun_lvl >= 30 && cell.rain_lvl >= 30) {
                 cell.growth_lvl++;
+                console.log(cell.growth_lvl)
+
             }
             this.image.setTexture("plant3_" + cell.growth_lvl);
             break;
