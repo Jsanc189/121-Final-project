@@ -13,8 +13,6 @@ export class PlayScene extends Phaser.Scene {
   }
 
   create() {
-    this.graphics = this.add.graphics();
-
     // create save array
     this.saveFiles = [];
     const savedData = localStorage.getItem('saveFiles');
@@ -29,8 +27,8 @@ export class PlayScene extends Phaser.Scene {
     this.GRID_HEIGHT = 10;
     this.GRID_SCALE = 5; //og tilemap size: 512x320
     this.tile_size = 16 * this.GRID_SCALE;
-    this.width = 800;
-    this.height = 800;
+    this.width = this.game.config.width - 100;
+    this.height = this.game.config.height - 100;
 
     // init game world
     this.tilemap = this.make.tilemap({ key: "tilemap" });
@@ -83,6 +81,7 @@ export class PlayScene extends Phaser.Scene {
       this.loadFile(savedData);
     }
     this.weatherMap = this.grid.render(this.tile_size);
+    this.autosaveEnabled = false;
 
     //buttons
     this.makeButton(
@@ -135,6 +134,31 @@ export class PlayScene extends Phaser.Scene {
       "16px",
       () => this.quit.bind(this),
     );
+
+    // toggles
+    const toggleBG = this.add.rectangle(
+      this.game.config.width - 50, 50, 50, 50, 0xFFFFFF)
+      .setOrigin(0.5);
+    this.add.text(toggleBG.x, toggleBG.y + 50, "autosave", {
+      fontSize: 16,
+      color: "#3CAD24",
+    }).setOrigin(0.5);
+    toggleBG.setInteractive();
+    toggleBG.on("pointerover", () => {
+      toggleBG.setFillStyle(0x3CAD24);
+    });
+    toggleBG.on("pointerout", () => {
+      if(!this.autosaveEnabled) toggleBG.setFillStyle(0xFFFFFF);
+    });
+    toggleBG.on("pointerdown", () => {
+      toggleBG.setFillStyle(0x3CAD24);
+    });
+    toggleBG.on("pointerup", () => {
+      this.autosaveEnabled = !this.autosaveEnabled;
+      if(this.autosaveEnabled) toggleBG.setFillStyle(0x06402B);
+      else toggleBG.setFillStyle(0xFFFFFF);
+    });
+
 
     // weather levels label on hover
     this.levelsText = this.add.text(0, 0, "", {
@@ -244,6 +268,7 @@ export class PlayScene extends Phaser.Scene {
   }
 
   saveFile(isAuto) {
+    if(isAuto === true && this.autosaveEnabled === false) return;
     console.log('Saving game...');
     
     const gridState = this.grid.copyAttributesToArray(["sun_lvl", "rain_lvl", "plant_type", "growth_lvl"]); // Assuming this returns the grid state as an array
