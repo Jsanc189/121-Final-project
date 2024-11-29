@@ -49,24 +49,76 @@ export class SavesScene extends Phaser.Scene {
       }
 
       this.buttonHandler();
+
+      if(this.mode === "load"){
+        // toggle for deletions
+        this.deleting = false;
+        const lastMode = this.mode;
+        this.deleteToggle = this.add.rectangle(
+          80, 100, 50, 50, 0xFFFFFF)
+          .setOrigin(0.5);
+        const deleteText = this.add.text(this.deleteToggle.x, this.deleteToggle.y + 50, "delete saves", {
+          fontSize: 16,
+          color: "#3CAD24",
+        }).setOrigin(0.5);
+        this.deleteToggle.setInteractive();
+        this.deleteToggle.on("pointerover", () => {
+          this.deleteToggle.setFillStyle(0x3CAD24);
+        });
+        this.deleteToggle.on("pointerout", () => {
+          if(!this.deleting) this.deleteToggle.setFillStyle(0xFFFFFF);
+        });
+        this.deleteToggle.on("pointerdown", () => {
+          this.deleteToggle.setFillStyle(0x3CAD24);
+        });
+        this.deleteToggle.on("pointerup", () => {
+          this.deleting = !this.deleting;
+          if(this.deleting){ 
+            this.deleteToggle.setFillStyle(0xFF0000);
+            deleteText.setStyle({color: "red"});
+            this.mode = "delete";
+          }
+          else {
+            this.deleteToggle.setFillStyle(0xFFFFFF);
+            deleteText.setStyle({color: "#3CAD24"});
+            this.mode = lastMode;
+          }
+        });
+      }
     }
     
     buttonHandler(){
       for(let i = 0; i < this.buttons.length; i++){
         this.buttons[i].on('pointerup', () => {
-          if(this.buttons[i].text === this.emptyText){
-            if(this.mode === "load") console.log("Empty slot, no game to load!")  
-            if(this.mode === "save"){
-              this.addSave(i);
-            }  
-          } else {
-            if(this.mode === "load") this.scene.start('playScene', {load: true, load_index: i});  
-            if(this.mode === "save"){
-              const proceed = window.confirm("This will overwrite your saved data. Proceed?");
-              if(proceed === true) this.addSave(i);
-            }
+          switch(this.mode){
+            case "load":
+              if(this.buttons[i].text === this.emptyText){
+                console.log("Empty slot, no game to load!");
+              } else {
+                this.scene.start('playScene', {load: true, load_index: i});
+              }
+              break;
+            case "save":
+              if(this.buttons[i].text === this.emptyText){
+                this.addSave(i);
+              } else {
+                const proceed = window.confirm("This will overwrite your saved data. Proceed?");
+                if(proceed === true) this.addSave(i);
+              }
+              break;
+            case "delete":
+              if(this.buttons[i].text === this.emptyText){
+                console.log("Empty slot, nothing to delete!");
+              } else {
+                console.log("deleting save and index " + i); 
+                this.buttons[i].text = this.emptyText;
+                this.saveFiles[i] = null; 
+                localStorage.setItem('saveFiles', JSON.stringify(this.saveFiles));
+              }
+              break;
+            default:
+              throw new Error(`Unknown action: ${this.mode}`);
           }
-          
         });
       }
     }

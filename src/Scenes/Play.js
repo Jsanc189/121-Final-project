@@ -258,6 +258,8 @@ handleAutosave(saveData){
   for(let i = 0; i < this.saveFiles.length; i++){
     if(this.saveFiles[i] === null){
       this.saveFiles[i] = saveData;
+      this.load = true;
+      this.load_index = i;
       return;
     }
   }
