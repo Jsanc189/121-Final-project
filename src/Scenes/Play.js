@@ -71,6 +71,8 @@ export class PlayScene extends Phaser.Scene {
     this.plantThreeCount = 0;
     this.plantSprites = [];
     this.destroyedSprites = []; // for undo/redo
+    this.grownPlants = [];
+    this.ungrownPlants = [];
 
     // event handling
     this.undoStack = [];
@@ -160,6 +162,8 @@ export class PlayScene extends Phaser.Scene {
   endDay() {
     let weatherState = this.grid.copyAttributesToArray(["sun_lvl", "rain_lvl"]);
     this.undoStack.push({weather: weatherState});
+    let plantState = this.grid.copyAttributesToArray(["growth_lvl","plant_type"]);
+    this.undoStack.push({growth: plantState});
     this.redoStack = [];
     // autosave 
     this.saveFile(true);
@@ -180,6 +184,28 @@ export class PlayScene extends Phaser.Scene {
         
         this.updateWorld("plant", popped.plant); 
       }
+      if(popped.growth){
+        let restore = this.grownPlants.pop();
+        this.ungrownPlants.push(restore);
+        restore.forEach(plant => {  
+          let restoreToLevel = plant.growth_lvl-1;
+          if(restoreToLevel < 1) restoreToLevel = 1;
+          let plantSprite = {
+            x: (plant.x + 0.5) * this.tile_size,
+            y: (plant.y + 0.5) * this.tile_size,
+            img: `plant${plant.plant_type}_${restoreToLevel}`
+          }
+          this.updateSprite(
+            (plant.x + 0.5) * this.tile_size,
+            (plant.y + 0.5) * this.tile_size,
+            this.plantSprites,
+            plantSprite
+          );
+          this.renderPlantSprites([plantSprite]);
+          plant.growth_lvl = restoreToLevel;
+          console.log(plant, popped)
+        });
+      }
 
       console.log("undone");
     } else console.log("undo failed: nothing to undo");
@@ -197,6 +223,28 @@ export class PlayScene extends Phaser.Scene {
         this.plantSprites.push(restore);
         
         this.updateWorld("plant", popped.plant); 
+      }
+      if(popped.growth){
+        let restore = this.ungrownPlants.pop();
+        this.grownPlants.push(restore);
+        restore.forEach(plant => {  
+          let restoreToLevel = plant.growth_lvl+1;
+          if(restoreToLevel > 3) restoreToLevel = 3;
+          let plantSprite = {
+            x: (plant.x + 0.5) * this.tile_size,
+            y: (plant.y + 0.5) * this.tile_size,
+            img: `plant${plant.plant_type}_${restoreToLevel}`
+          }
+          this.updateSprite(
+            (plant.x + 0.5) * this.tile_size,
+            (plant.y + 0.5) * this.tile_size,
+            this.plantSprites,
+            plantSprite
+          );
+          this.renderPlantSprites([plantSprite]);
+          plant.growth_lvl = restoreToLevel;
+          console.log(plant, popped)
+        });
       }
 
       console.log("redone");
@@ -421,8 +469,8 @@ loadFile(savedData) {
             plantY, 
             `plant${randomType}_1`
         ).setScale(this.GRID_SCALE - 2)
-        .setName("plant");;
-        
+        .setName("plant");
+
         this.plantSprites.push({
           x: plantX,
           y: plantY,
@@ -451,26 +499,14 @@ loadFile(savedData) {
     }
   }
   
-    /*
-  setPlantsFromData() {
-    for (let x = 0; x < this.grid.height; x++) {
-      for (let y = 0; y < this.grid.width; y++) {
-        let cell = this.grid.getCell(x, y);
-        //Create a sprite at the x,y location
-        if(cell.plant_type != 0) {
-          this.add.sprite(
-            x * this.tileSize,
-            y * this.tileSize,
-            `plant${cell.plant_type}_${cell.growth_lvl}` //ie: plant1_1
-          ).setScale(this.GRID_SCALE - 2);
-        }
-      }
-    }
-  }
-    */
-
   renderPlantSprites(sprites){
     for(const plant of sprites){
+      // if there's already a cell here, destroy it so we aren't rendering
+      //  sprites on top of each other
+      let cellSprite = this.findSpriteAt(plant.x, plant.y);
+      if(cellSprite){
+        cellSprite.destroy();
+      }
       this.add.sprite(plant.x, plant.y, plant.img)
         .setScale(this.GRID_SCALE - 2)
         .setName("plant");
@@ -538,6 +574,7 @@ loadFile(savedData) {
   }
 
   updatePlants() {
+    let dayGrowth = [];
     for (let x = 0; x < this.grid.height; x++) {
       for (let y = 0; y < this.grid.width; y++) {
         const cell = this.grid.getCell(x, y); //get the tile of the plant
@@ -566,8 +603,10 @@ loadFile(savedData) {
             break;
         }
         this.updateSprite(plantSprite.x, plantSprite.y, this.plantSprites, plantSprite);
+        if(cell.growth_lvl > 1) dayGrowth.push(cell);
       }
     }
+    this.grownPlants.push(dayGrowth);
     this.renderPlantSprites(this.plantSprites);
   }
 

@@ -6,7 +6,7 @@ export class Grid {
     this.height = height;
     this.scene = scene;
 
-    // 19 bytes per cell: x, y, sun_lvl, rain_lvl, plant_type, growth_lvl, water_diffusion_rate
+    // 20 bytes per cell: x, y, sun_lvl, rain_lvl, plant_type, growth_lvl, water_diffusion_rate
     this.bytesPerCell = 20;
     this.byteArray = new ArrayBuffer(width * height * this.bytesPerCell);
     this.view = new DataView(this.byteArray);
@@ -18,10 +18,6 @@ export class Grid {
     if(!load){
       for (let x = 0; x < height; x++) {
         for (let y = 0; y < width; y++) {
-          //if(offset + this.bytesPerCell > this.byteArray.byteLength) {
-          //  throw new Error("Offset out of bounds at " + offset);
-          //};
-
           // Generate weather using TileWeather
           const tileWeather = new TileWeather(x, y, this.weather).generate();
 
