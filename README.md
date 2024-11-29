@@ -80,17 +80,24 @@ Same.
 Same.
 
 ### F1.a The important state of your game's grid must be backed by a single contiguous byte array in AoS or SoA format. If your game stores the grid state in multiple format, the byte array format must be the primary format (i.e. other formats are decoded from it as needed).  
-Our game's grid state, which stores the state of the weather per cell in the grid as well as the plant information per cell, is stored in a single byte array in AoS format. We had already constructed the game state to be stored in a 2d array grid, so the AoS format was intuitive to restructure our game to fit. Below is a diagram of the storage.
+Our game's grid state, which stores the state of the weather per cell in the grid as well as the plant information per cell, is stored in a single byte array in AoS format. We had already constructed the game state to be stored in a 2d array grid, so the AoS format was intuitive to restructure our game to fit. Each index of the grid is an array, and each index of that array is an array of cells that store information about the cell's state in the game. Below is a diagram of the storage.
 ![F1.a data structure diagram](./f1_storage_diagram.png)
 
 ### F1.b The player must be able to manually save their progress in the game. This must allow them to load state and continue play another day (i.e. after quitting the game app). The player must be able to manage multiple save files/slots.  
 The interface has a 'save' button that, when clicked, save the player's progress by storing the grid state, the player state, and the undo/redo stack in JSON format to the browser's local storage. When the player clicks the 'load' button, the game parses the stored data from local storage and applies the grid state, player state, and undo/redo stack to the grid. 
 
 ### F1.c The game must implement an implicit auto-save system to support recovery from unexpected quits. (For example, when the game is launched, if an auto-save entry is present, the game might ask the player "do you want to continue where you left off?" The auto-save entry might or might not be visible among the list of manual save entries available for the player to load as part of F1.b.)  
-Since our game's time runs on a day-by-day system, and no significant changes happen between days, we added an autosave at the end of each day that the player can return to. When the player opens the game, they have the option to open a new game or load a previous save, which can be an autosave. 
+Since our game's time runs on a day-by-day system, and no significant changes happen between days, we added an autosave at the end of each day that the player can return to. When the player opens the game, they have the option to open a new game or load a previous save through a screen that shows them each save, and the save they choose can be an autosave. 
 
 ### F1.d The player must be able to undo every major choice (all the way back to the start of play), even from a saved game. They should be able to redo (undo of undo operations) multiple times.  
-Each change to the grid state, the player state, and 
+Each change to the grid state, the player state, the plants, and the weather is stored in an array that behaves as a stack. When players click the undo button, the game pops the last action on the stack, and puts it into a redo array, which also behaves as a stack, and refreshes the grid, and vice versa when the player presses the redo button. 
+
+## Reflection
+The team went into this section of the project intending to have far more opportunities for intentional partner coding, but unfortunately, the reality of everyone's schedules made it difficult for us to have overlapping time to work together. Programming ended up being done in chunks by different people, and we all ended up dipping our toes into different tasks as we worked to make the game cohesive, but this also helped us all learn more about how our code functions on a deeper level.
+
+We ended up drastically changing the grid implementation to work as a byte array, but worked to keep complex functions easily accessible and with recognizable names. The Plant class was rendered useless, as well as some other functions, so we'll have to do some significant code cleanup before going forward with new features. We definitely had trouble converting some of our old functions to work with a new grid framework, so we should consider abstracting more of our features and functions to make this switch easier next time we're asked to change the code.
+
+The nature of JavaScript's abstraction from memory made it more difficult to implement the byte array storage and the save states for the game, so this was a struggle for our group, but we worked around it well enough for this time around. However, a language like C++ or C#, perhaps in Godot, would be more helpful for this kind of storage implementation. However, we researched and found ways to solve these problems with Phaser and JS functions. In the future, switching to an object-oriented language with memory management support like C++/C# would ultimately be helpful to our framework for the project. 
 
 ## Resources
 In creating the tilemap & tileset, we used the [Tiled software](https://www.mapeditor.org/) and Kenney's [Tiny Town tileset](https://kenney.nl/assets/tiny-town). The player was created from the [Hana Caraka Base Character tileset](https://bagong-games.itch.io/hana-caraka-base-character) with spritesheet support via [TexturePacker](https://www.codeandweb.com/texturepacker).
