@@ -1,18 +1,22 @@
 import { Grid } from "../Scripts/Grid.js";
 import { Player } from "../Scripts/Player.js";
-import { Plants } from "../Scripts/Plant.js";
+//import { Plants } from "../Scripts/Plant.js";
 
 export class PlayScene extends Phaser.Scene {
   constructor() {
     super("playScene");
   }
 
-  init(data) {
+  init(data, data_index) {
     this.load = data.load;
+    this.data_index = data_index;
   }
 
   create() {
     this.graphics = this.add.graphics();
+
+    // create save array
+    this.saveFiles = [];
 
     //create tilemap & grid
     this.GRID_WIDTH = 10;
@@ -168,6 +172,8 @@ export class PlayScene extends Phaser.Scene {
       this.plantThreeCount >= 3
     ) {
       console.log("You win!");
+      // autosave 
+      this.saveFile();
       this.gameOver = true;
     }
   }
@@ -189,7 +195,8 @@ export class PlayScene extends Phaser.Scene {
     let weatherState = this.grid.copyAttributesToArray(["sun_lvl", "rain_lvl"]);
     this.undoStack.push({weather: weatherState});
     this.redoStack = [];
-
+    // autosave 
+    this.saveFile();
     this.endOfDay = true;
     console.log("end day");
   }
@@ -257,17 +264,23 @@ export class PlayScene extends Phaser.Scene {
         redoStack: this.redoStack
     };
 
-    localStorage.setItem('saveFile1', JSON.stringify(saveData));
-    console.log('Game saved:', saveData);
+    // push to save files array
+    this.saveFiles.push(saveData);
+
+    localStorage.setItem('saveFiles', JSON.stringify(this.saveFiles));
+    console.log('Game saved:', this.saveFiles);
 }
 
 loadFile() {
     console.log('Loading game...');
 
-    const savedData = localStorage.getItem('saveFile1');
-    if (savedData) {
-        const parsedData = JSON.parse(savedData);
+    // index with whatever save the player wants to get
+    const savedData = localStorage.getItem('saveFiles');
 
+    if (savedData) {
+        const parsedData = (JSON.parse(savedData));
+
+        console.log(parsedData, this.data_index);
         // Restore grid state
         this.grid.setStateFromArray(parsedData.grid);
 
@@ -295,10 +308,10 @@ loadFile() {
     }
 }
 
-
-
   quit() {
     console.log("Quitting game...");
+
+    
     this.scene.stop();
     this.scene.start("menuScene");
   }

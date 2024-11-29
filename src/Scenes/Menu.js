@@ -22,7 +22,7 @@ export class MenuScene extends Phaser.Scene {
       { fontSize: "40px", fill: "darkgreen" }
     )
     this.newGameButton.on("pointerup", () => {
-      this.scene.start("playScene", {load: false});
+      this.scene.start("playScene", {load: false, index: -1});
     });
 
     //load game button
@@ -33,17 +33,18 @@ export class MenuScene extends Phaser.Scene {
       { fontSize: '30px', fill: 'darkgreen' }
     )
     this.loadButton.on('pointerup', () => {
-      if(localStorage.getItem('saveFile1')) {
-        this.scene.start('playScene', {load: true});  
-      }
-      else {
-        this.add.text(
-          this.game.config.width / 2, 
-          (this.game.config.height / 2) + 55, 
-          "No save file found", 
-          { fontSize: '18px', fill: 'darkgreen' }
-        ).setOrigin(0.5, 0.5);
-      }
+      this.scene.start("savesScene");
+      // if(localStorage.getItem('saveFile1')) {
+      //   this.scene.start('playScene', {load: true});  
+      // }
+      // else {
+      //   this.add.text(
+      //     this.game.config.width / 2, 
+      //     (this.game.config.height / 2) + 55, 
+      //     "No save file found", 
+      //     { fontSize: '18px', fill: 'darkgreen' }
+      //   ).setOrigin(0.5, 0.5);
+      // }
     });
   }
 
