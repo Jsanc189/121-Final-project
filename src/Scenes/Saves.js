@@ -42,7 +42,7 @@ export class SavesScene extends Phaser.Scene {
         // replace empty slot text with save indices
         if (this.saveFiles.length > 0) {
           for (let i = 0; i < this.saveFiles.length; i++) {
-            this.buttons[i].text = "Save " + (i + 1);
+            if(this.saveFiles[i]) this.buttons[i].text = "Save " + String.fromCharCode(65 + i);
           }
         }
       }
