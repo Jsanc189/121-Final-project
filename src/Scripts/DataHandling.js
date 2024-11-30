@@ -1,4 +1,4 @@
-import { renderPlantSprites } from "./Plant.js";
+import { renderPlantSprites, updatePlantCount } from "./Plant.js";
 
 export function undo(scene) {
     let popped = scene.undoStack.pop();
@@ -94,7 +94,6 @@ export function redo(scene) {
           );
           renderPlantSprites([plantSprite], scene);
           plant.growth_lvl = restoreToLevel;
-          console.log(plant, popped)
         });
       }
 
