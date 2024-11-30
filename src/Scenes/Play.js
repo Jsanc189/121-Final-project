@@ -190,6 +190,8 @@ export class PlayScene extends Phaser.Scene {
 
         this.renderPlantSprites([restore]);
         this.plantSprites.push(restore);
+
+        this.updatePlantCount(restore.type, -1);
         this.updateWorld("plant", popped.harvested); 
       }
       if(popped.growth){
@@ -236,7 +238,8 @@ export class PlayScene extends Phaser.Scene {
         let destroy = this.plantSprites.pop();
         this.findSpriteAt(destroy.x, destroy.y).destroy();
         this.destroyedSprites.push(destroy);
-        
+
+        this.updatePlantCount(destroy.type, 1);
         this.updateWorld("plant", popped.harvested);  
       }
       if(popped.growth){
@@ -522,29 +525,34 @@ loadFile(savedData) {
           this.destroyedSprites.push({
             x: x,
             y: y,
-            img: `plant${clickedCell.plant_type}_${clickedCell.growth_lvl}`
+            img: `plant${clickedCell.plant_type}_${clickedCell.growth_lvl}`,
+            type: clickedCell.plant_type
           });
           harvestSprite.destroy();
 
           // update plant type count
-          switch(clickedCell.plant_type){
-            case 1:
-              this.plantOneCount++;
-              break;
-            case 2:
-              this.plantTwoCount++;
-              break;
-            case 3:
-              this.plantThreeCount++;
-              break;
-            default:
-              throw new Error(`Unknown plant type: ${clickedCell.plant_type}`);
-          }
+          this.updatePlantCount(clickedCell.plant_type, 1);
 
         }
     }
   }
   
+  updatePlantCount(type, amount){
+    switch(type){
+      case 1:
+        this.plantOneCount += amount;
+        break;
+      case 2:
+        this.plantTwoCount += amount;
+        break;
+      case 3:
+        this.plantThreeCount += amount;
+        break;
+      default:
+        throw new Error(`Unknown plant type: ${type}`);
+    }
+  }
+
   renderPlantSprites(sprites){
     for(const plant of sprites){
       // if there's already a cell here, destroy it so we aren't rendering
@@ -553,7 +561,6 @@ loadFile(savedData) {
       if(cellSprite){
         cellSprite.destroy();
       }
-      console.log(plant)
       this.add.sprite(plant.x, plant.y, plant.img)
         .setScale(this.GRID_SCALE - 2)
         .setName("plant");
