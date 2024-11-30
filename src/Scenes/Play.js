@@ -597,7 +597,7 @@ loadFile(savedData) {
             }
             break;
           case 2:
-            if (cell.sun_lvl >= 20 && cell.rain_lvl >= 20) { // check for plant type 2 growth conditions
+            if (cell.sun_lvl >= 15 && cell.rain_lvl >= 20) { // check for plant type 2 growth conditions
                 const newGrowth = cell.growth_lvl + 1; //increase growth level
                 plantSprite.img = "plant2_" + newGrowth;
                 this.grid.setCell(x, y, { ...cell, growth_lvl: newGrowth }); //update the growth level in the grid
@@ -606,9 +606,10 @@ loadFile(savedData) {
             }
             break;
           case 3:
-            if (cell.sun_lvl >= 30 && cell.rain_lvl >= 30) { // check for plant type 3 growth conditions
+            if (cell.sun_lvl >= 20 && cell.rain_lvl >= 30) { // check for plant type 3 growth conditions
                 const newGrowth = cell.growth_lvl + 1; //increase growth level
                 plantSprite.img = "plant3_" + newGrowth;
+                console.log(toString(plantSprite.img));
                 this.grid.setCell(x, y, { ...cell, growth_lvl: newGrowth }); //update the growth level in the grid
                 console.log("Plant 3 is ready to harvest! " + newGrowth)
             }
