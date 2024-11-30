@@ -184,6 +184,14 @@ export class PlayScene extends Phaser.Scene {
         
         this.updateWorld("plant", popped.plant); 
       }
+      if(popped.harvested){
+        let restore = this.destroyedSprites.pop();
+        console.log(popped.harvested, restore)
+
+        this.renderPlantSprites([restore]);
+        this.plantSprites.push(restore);
+        this.updateWorld("plant", popped.harvested); 
+      }
       if(popped.growth){
         let restore = this.grownPlants.pop();
         this.ungrownPlants.push(restore);
@@ -223,6 +231,13 @@ export class PlayScene extends Phaser.Scene {
         this.plantSprites.push(restore);
         
         this.updateWorld("plant", popped.plant); 
+      }
+      if(popped.harvested){
+        let destroy = this.plantSprites.pop();
+        this.findSpriteAt(destroy.x, destroy.y).destroy();
+        this.destroyedSprites.push(destroy);
+        
+        this.updateWorld("plant", popped.harvested);  
       }
       if(popped.growth){
         let restore = this.ungrownPlants.pop();
@@ -495,7 +510,38 @@ loadFile(savedData) {
         console.log(`Planted a type ${randomType} plant at (${ptr.x}, ${ptr.y}).`);
         clickedCell.plant_type = randomType;
     } else {
-        console.log("Cell already has a plant!");
+        let x =  (Math.floor(ptr.x / tileSize) + 0.5) * tileSize;
+        let y =  (Math.floor(ptr.y / tileSize) + 0.5) * tileSize;
+        if(clickedCell.growth_lvl >= 3){
+          console.log("Harvesting plant!");
+
+          let plantState = this.grid.copyAttributesToArray(["plant_type"]);
+          this.undoStack.push({harvested: plantState});
+
+          let harvestSprite = this.findSpriteAt(x, y);
+          this.destroyedSprites.push({
+            x: x,
+            y: y,
+            img: `plant${clickedCell.plant_type}_${clickedCell.growth_lvl}`
+          });
+          harvestSprite.destroy();
+
+          // update plant type count
+          switch(clickedCell.plant_type){
+            case 1:
+              this.plantOneCount++;
+              break;
+            case 2:
+              this.plantTwoCount++;
+              break;
+            case 3:
+              this.plantThreeCount++;
+              break;
+            default:
+              throw new Error(`Unknown plant type: ${clickedCell.plant_type}`);
+          }
+
+        }
     }
   }
   
@@ -507,6 +553,7 @@ loadFile(savedData) {
       if(cellSprite){
         cellSprite.destroy();
       }
+      console.log(plant)
       this.add.sprite(plant.x, plant.y, plant.img)
         .setScale(this.GRID_SCALE - 2)
         .setName("plant");
