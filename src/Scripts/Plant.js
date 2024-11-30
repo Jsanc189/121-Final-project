@@ -86,7 +86,9 @@ export function plantHandler(ptr, scene) {
 
         // destroy sprite
         scene.destroyedSprites.push({
-          ...harvestSprite,
+          x: harvestSprite.x,
+          y: harvestSprite.y,
+          img: harvestSprite.img,
           type: clickedCell.plant_type
         });
         harvestSprite.destroy();
