@@ -33,7 +33,7 @@ export class Load extends Phaser.Scene {
 
     // load plant sprites
     for (let i = 1; i <= 3; i++) {
-      for (let j = 1; j <= 3; j++) {
+      for (let j = 0; j <= 2; j++) {
         this.load.image("plant" + i + "_" + j, "plant" + i + "_" + j + ".png");
       }
     }
