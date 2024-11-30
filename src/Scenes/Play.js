@@ -1,8 +1,8 @@
 import { Grid } from "../Scripts/Grid.js";
 import { Player } from "../Scripts/Player.js";
-//import { Plants } from "../Scripts/Plant.js";
 import { plantHandler, updatePlants } from "../Scripts/Plant.js"
 import { undo, redo, saveFile, loadFile } from "../Scripts/DataHandling.js";
+import { initUIX, cellPreview } from "../Scripts/UIX.js";
 
 export class PlayScene extends Phaser.Scene {
   constructor() {
@@ -89,7 +89,8 @@ export class PlayScene extends Phaser.Scene {
     }
 
     // buttons and toggles
-    this.initUIX();
+    // undo, redo, endDay, saveFile, quit
+    initUIX(this, undo, redo, this.endDay, saveFile, this.quit);
     console.log(this.autosaveEnabled, this.heatmapEnabled)
     if(this.autosaveEnabled === true){
       this.autosaveEnabled = !this.autosaveEnabled;
@@ -107,7 +108,7 @@ export class PlayScene extends Phaser.Scene {
       fontSize: 32,
     });
 
-    this.input.on("pointermove", (ptr) => this.cellPreview(ptr));
+    this.input.on("pointermove", (ptr) => cellPreview(this, ptr));
     this.input.on("pointerdown", (ptr) => {
       if (!(ptr.x >= this.width || ptr.y >= this.width)) {
         console.log("doot")
@@ -180,47 +181,6 @@ export class PlayScene extends Phaser.Scene {
     this.scene.start("menuScene");
   }
 
-  makeButton(x, y, width, height, text, textColor, textSize, functionCall) {
-    const buttonBG = this.add.rectangle(x, y, width, height, 0xFFFFFF);
-    const button = this.add.text(x, y, text, {
-      fontSize: textSize,
-      color: textColor,
-    }).setOrigin(0.5);
-    buttonBG.setInteractive();
-    button.setInteractive();
-    buttonBG.on("pointerover", () => {
-      button.setStyle({ color: "#3CAD24" });
-    });
-    button.on("pointerover", () => {
-      button.setStyle({ color: "#3CAD24" });
-    });
-    buttonBG.on("pointerout", () => {
-      button.setStyle({ color: textColor });
-    });
-    button.on("pointerup", functionCall());
-    buttonBG.on("pointerup", functionCall());
-  }
-
-  cellPreview(ptr) {
-    if (!(ptr.x >= 800 || ptr.y >= 800)) {
-      let [x, y] = [ptr.x, ptr.y];
-      let [w, h] = [this.levelsText.width, this.levelsText.height];
-      if (x < w) w = 0;
-      if (y < h) h = 0;
-      this.levelsText.x = x - w;
-      this.levelsText.y = y - h;
-
-      let [gridX, gridY] = [
-        Math.floor(x / this.tile_size),
-        Math.floor(y / this.tile_size),
-      ];
-      let cell = this.grid.getCell(gridX, gridY);
-      this.levelsText.setText(
-        `sun: ${cell.sun_lvl}\nrain: ${cell.rain_lvl}`,
-      );
-    }
-  }
-
   updateWorld(target, arr) {
     switch(target){
       case "weather":
@@ -269,114 +229,5 @@ export class PlayScene extends Phaser.Scene {
       }
     }
     return null;
-  }
-
-  initUIX(){
-    //buttons
-    this.makeButton(
-      75,
-      860,
-      100,
-      50,
-      "Undo",
-      0xffffff,
-      "16px",
-      () => undo.bind(this),
-    );
-    this.makeButton(
-      225,
-      860,
-      100,
-      50,
-      "Redo",
-      0xffffff,
-      "16px",
-      () => redo.bind(this),
-    );
-    this.makeButton(
-      375,
-      860,
-      100,
-      50,
-      "End Day",
-      0xffffff,
-      "16px",
-      () => this.endDay.bind(this),
-    );
-    this.makeButton(
-      575,
-      860,
-      100,
-      50,
-      "Save",
-      0xffffff,
-      "16px",
-      () => saveFile.bind(this, this),
-    );
-    this.makeButton(
-      725,
-      860,
-      100,
-      50,
-      "Quit",
-      0xffffff,
-      "16px",
-      () => this.quit.bind(this),
-    );
-
-    // make toggle for autosaving
-    this.autosaveToggle = this.add.rectangle(
-      this.game.config.width - 50, 50, 50, 50, 0xFFFFFF)
-      .setOrigin(0.5);
-    this.add.text(this.autosaveToggle.x, this.autosaveToggle.y + 50, "autosave", {
-      fontSize: 16,
-      color: "#3CAD24",
-    }).setOrigin(0.5);
-    this.autosaveToggle.setInteractive();
-    this.autosaveToggle.on("pointerover", () => {
-      this.autosaveToggle.setFillStyle(0x3CAD24);
-    });
-    this.autosaveToggle.on("pointerout", () => {
-      if(!this.autosaveEnabled) this.autosaveToggle.setFillStyle(0xFFFFFF);
-    });
-    this.autosaveToggle.on("pointerdown", () => {
-      this.autosaveToggle.setFillStyle(0x3CAD24);
-    });
-    this.autosaveToggle.on("pointerup", () => {
-      this.autosaveEnabled = !this.autosaveEnabled;
-      if(this.autosaveEnabled) this.autosaveToggle.setFillStyle(0x06402B);
-      else this.autosaveToggle.setFillStyle(0xFFFFFF);
-    });
-
-    // make toggle for heatmap
-    this.heatmapToggle = this.add.rectangle(
-      this.game.config.width - 50, 200, 50, 50, 0xFFFFFF)
-      .setOrigin(0.5);
-    this.add.text(this.heatmapToggle.x, this.heatmapToggle.y + 50, "weather\n layer", {
-      fontSize: 16,
-      color: "#3CAD24",
-    }).setOrigin(0.5);
-    this.heatmapToggle.setInteractive();
-    this.heatmapToggle.on("pointerover", () => {
-      this.heatmapToggle.setFillStyle(0x3CAD24);
-    });
-    this.heatmapToggle.on("pointerout", () => {
-      if(!this.heatmapEnabled) this.heatmapToggle.setFillStyle(0xFFFFFF);
-    });
-    this.heatmapToggle.on("pointerdown", () => {
-      this.heatmapToggle.setFillStyle(0x3CAD24);
-    });
-    this.heatmapToggle.on("pointerup", () => {
-      this.heatmapEnabled = !this.heatmapEnabled;
-      if(this.heatmapEnabled){ 
-        this.heatmapToggle.setFillStyle(0x06402B);
-        this.weatherMap = this.grid.render(this.tile_size);
-      }
-      else {
-        this.heatmapToggle.setFillStyle(0xFFFFFF);
-        if(this.weatherMap.length > 0) for(const rect of this.weatherMap) rect.destroy();
-        this.weatherMap = [];
-      }
-    });
   }
 }
