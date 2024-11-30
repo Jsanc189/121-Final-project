@@ -91,7 +91,6 @@ export class PlayScene extends Phaser.Scene {
     // buttons and toggles
     // undo, redo, endDay, saveFile, quit
     initUIX(this, undo, redo, this.endDay, saveFile, this.quit);
-    console.log(this.autosaveEnabled, this.heatmapEnabled)
     if(this.autosaveEnabled === true){
       this.autosaveEnabled = !this.autosaveEnabled;
       this.autosaveToggle.emit("pointerup")
@@ -163,10 +162,8 @@ export class PlayScene extends Phaser.Scene {
   }
 
   endDay() {
-    let weatherState = this.grid.copyAttributesToArray(["sun_lvl", "rain_lvl"]);
-    this.undoStack.push({weather: weatherState});
-    let plantState = this.grid.copyAttributesToArray(["growth_lvl","plant_type"]);
-    this.undoStack.push({growth: plantState});
+    let state = this.grid.copyAttributesToArray(["sun_lvl", "rain_lvl", "growth_lvl", "plant_type"]);
+    this.undoStack.push({weather: state, growth: state});
     this.redoStack = [];
     // autosave 
     saveFile(this, true);
@@ -184,26 +181,26 @@ export class PlayScene extends Phaser.Scene {
   updateWorld(target, arr) {
     switch(target){
       case "weather":
+        // destroy old heatmap
         if(this.heatmapEnabled){
-          // destroy old heatmap
-          if(this.weatherMap.length > 0) for(const rect of this.weatherMap) rect.destroy();
+          if(this.weatherMap.length > 0){ 
+            for(const rect of this.weatherMap){ rect.destroy(); }
+          }
           this.weatherMap = [];
         }
-        // check for an array to determine generation
+
+        // update world weather
         if (!arr) this.grid.updateWeather(); // new random
         else this.grid.setStateFromArray(arr); // set from array
+
+        // re-render heatmap
         if(this.heatmapEnabled){
-          // re-render heatmap
           this.weatherMap = this.grid.render(this.tile_size);
         }
         break;
       case "plant":
-        if(arr) {
-          this.grid.setStateFromArray(arr);
-        }
-        else {
-          updatePlants(this); //end of day growth
-        }
+        if(arr) { this.grid.setStateFromArray(arr); }
+        else { updatePlants(this); } //end of day growth 
         break;
       default:
         throw new Error(`Unkown target: ${target}`)
@@ -224,7 +221,7 @@ export class PlayScene extends Phaser.Scene {
   updateSprite(x, y, arr, newSprite) {
     for(let i = 0; i < arr.length; i++) {
       if(arr[i].x == x && arr[i].y == y) {
-        arr[i] = newSprite;
+        arr[i] = newSprite; // destroy arr[i] before setting to new sprite??
         return arr[i];
       }
     }

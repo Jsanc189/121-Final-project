@@ -89,13 +89,15 @@ export class Grid {
   }
 
   setCell(x, y, data) {
-    if(data.x) this.view.setInt32(this.offsetByAttribute(x,y,"x"), data.x, true);
-    if(data.y) this.view.setInt32(this.offsetByAttribute(x,y,"y"), data.y, true);
-    if(data.sun_lvl) this.view.setInt32(this.offsetByAttribute(x,y,"sun_lvl"), data.sun_lvl, true);
-    if(data.rain_lvl) this.view.setInt32(this.offsetByAttribute(x,y,"rain_lvl"), data.rain_lvl, true);
-    if(data.plant_type) this.view.setUint8(this.offsetByAttribute(x,y,"plant_type"), data.plant_type);
-    if(data.growth_lvl) this.view.setUint8(this.offsetByAttribute(x,y,"growth_lvl"), data.growth_lvl);
-    if(data.water_diffusion_rate) this.view.setUint8(this.offsetByAttribute(x,y,"water_diffusion_rate"), data.water_diffusion_rate);
+    if(!x) x = 0;
+    if(!y) y = 0;
+    if(data.x !== null) this.view.setInt32(this.offsetByAttribute(x,y,"x"), data.x, true);
+    if(data.y !== null) this.view.setInt32(this.offsetByAttribute(x,y,"y"), data.y, true);
+    if(data.sun_lvl !== null) this.view.setInt32(this.offsetByAttribute(x,y,"sun_lvl"), data.sun_lvl, true);
+    if(data.rain_lvl !== null) this.view.setInt32(this.offsetByAttribute(x,y,"rain_lvl"), data.rain_lvl, true);
+    if(data.plant_type !== null) this.view.setUint8(this.offsetByAttribute(x,y,"plant_type"), data.plant_type);
+    if(data.growth_lvl !== null) this.view.setUint8(this.offsetByAttribute(x,y,"growth_lvl"), data.growth_lvl);
+    if(data.water_diffusion_rate !== null) this.view.setUint8(this.offsetByAttribute(x,y,"water_diffusion_rate"), data.water_diffusion_rate);
   }
 
   updateWeather(seed = Math.random()) {

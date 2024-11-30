@@ -35,7 +35,7 @@ export function plantHandler(ptr, scene) {
       // Create a sprite for the new plant
       let plantX = (Math.floor(ptr.x / tileSize) + 0.5) * tileSize;
       let plantY = (Math.floor(ptr.y / tileSize) + 0.5) * tileSize;
-      const plantSprite = scene.add.sprite(
+      scene.add.sprite(
           plantX, 
           plantY, 
           `plant${randomType}_1`
@@ -49,8 +49,8 @@ export function plantHandler(ptr, scene) {
       }); 
 
       // save grid state before changing
-      let plantState = scene.grid.copyAttributesToArray(["plant_type"]);
-      scene.undoStack.push({plant: plantState});
+      let plantState = scene.grid.copyAttributesToArray(["x", "y", "sun_lvl", "rain_lvl", "plant_type", "growth_lvl"]);
+      scene.undoStack.push({cell: clickedCell, plant: plantState});
 
       // Update the grid cell with the plant data
       scene.grid.setCell(
@@ -66,19 +66,27 @@ export function plantHandler(ptr, scene) {
       console.log(`Planted a type ${randomType} plant at (${ptr.x}, ${ptr.y}).`);
       clickedCell.plant_type = randomType;
   } else {
+    console.log("plant here...", clickedCell);
+
       let x =  (Math.floor(ptr.x / tileSize) + 0.5) * tileSize;
       let y =  (Math.floor(ptr.y / tileSize) + 0.5) * tileSize;
       if(clickedCell.growth_lvl >= 3){
         console.log("Harvesting plant!");
 
         let plantState = scene.grid.copyAttributesToArray(["plant_type"]);
-        scene.undoStack.push({harvested: plantState});
+        scene.undoStack.push({cell: clickedCell, harvested: plantState});
 
+        // find sprite to destroy
         let harvestSprite = scene.findSprite(x, y);
+
+        // remove harvest sprite from plantSprites
+        scene.plantSprites = scene.plantSprites.filter(sprite =>
+          sprite !== scene.findSprite(harvestSprite.x, harvestSprite.y, scene.plantSprites)
+        );
+
+        // destroy sprite
         scene.destroyedSprites.push({
-          x: x,
-          y: y,
-          img: `plant${clickedCell.plant_type}_${clickedCell.growth_lvl}`,
+          ...harvestSprite,
           type: clickedCell.plant_type
         });
         harvestSprite.destroy();
@@ -86,11 +94,16 @@ export function plantHandler(ptr, scene) {
         // update plant type count
         updatePlantCount(clickedCell.plant_type, 1, scene);
 
+        // update cell data
+        clickedCell.plant_type = 0;
+        clickedCell.growth_lvl = 0;
+        scene.grid.setCell(clickedCell.x, clickedCell.y, clickedCell);
       }
   }
 }
 
 export function updatePlants(scene) {
+  let growthToTrack = false;
   let dayGrowth = [];
   for (let x = 0; x < scene.grid.height; x++) {
     for (let y = 0; y < scene.grid.width; y++) {
@@ -101,24 +114,33 @@ export function updatePlants(scene) {
       if (plant == 0 ||  cell.growth_lvl >= 3) continue;
 
       //find correct sprite 
-      const plantSprite = scene.findSprite( (x + 0.5) * scene.tile_size, (y + 0.5) * scene.tile_size, scene.plantSprites);
+      let plantSprite = scene.findSprite( (x + 0.5) * scene.tile_size, (y + 0.5) * scene.tile_size, scene.plantSprites);
+      if(plantSprite === null){
+        plantSprite = {
+          x: (x + 0.5) * scene.tile_size,
+          y: (y + 0.5) * scene.tile_size,
+          img: ""
+        }
+      }
       switch (cell.plant_type) {
         case 1:
           if (cell.sun_lvl >= 10 && cell.rain_lvl >= 10) { // check for plant type 1 growth conditions
               const newGrowth = cell.growth_lvl + 1; //increase growth level
               plantSprite.img = "plant1_" + newGrowth;
-              scene.grid.setCell(x, y, { ...cell, growth_lvl: newGrowth }); //update the growth level in the grid
+              cell.growth_lvl = newGrowth;
+              scene.grid.setCell(x, y, cell); //update the growth level in the grid
               console.log("Plant 1 grew!" + newGrowth)
-
+              growthToTrack = true;
           }
           break;
         case 2:
           if (cell.sun_lvl >= 15 && cell.rain_lvl >= 20) { // check for plant type 2 growth conditions
               const newGrowth = cell.growth_lvl + 1; //increase growth level
               plantSprite.img = "plant2_" + newGrowth;
-              scene.grid.setCell(x, y, { ...cell, growth_lvl: newGrowth }); //update the growth level in the grid
+              cell.growth_lvl = newGrowth;
+              scene.grid.setCell(x, y, cell); //update the growth level in the grid
               console.log("Plant 2 grew!" + newGrowth);
-
+              growthToTrack = true;
           }
           break;
         case 3:
@@ -126,13 +148,15 @@ export function updatePlants(scene) {
               const newGrowth = cell.growth_lvl + 1; //increase growth level
               plantSprite.img = "plant3_" + newGrowth;
               console.log(toString(plantSprite.img));
-              scene.grid.setCell(x, y, { ...cell, growth_lvl: newGrowth }); //update the growth level in the grid
+              cell.growth_lvl = newGrowth;
+              scene.grid.setCell(x, y, cell); //update the growth level in the grid
               console.log("Plant 3 is ready to harvest! " + newGrowth)
+              growthToTrack = true;
           }
           break;
       }
       scene.updateSprite(plantSprite.x, plantSprite.y, scene.plantSprites, plantSprite);
-      if(cell.growth_lvl > 1) dayGrowth.push(cell);
+      if(growthToTrack === true) dayGrowth.push(cell);
     }
   }
   scene.grownPlants.push(dayGrowth);
@@ -140,6 +164,7 @@ export function updatePlants(scene) {
 }
 
 export function updatePlantCount(type, amount, scene){
+  if(type === null) return;
   switch(type){
     case 1:
       scene.plantOneCount += amount;

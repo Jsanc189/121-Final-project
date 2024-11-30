@@ -4,52 +4,65 @@ export function undo(scene) {
     let popped = scene.undoStack.pop();
     if (popped) {
       scene.redoStack.push(popped);
-      if(popped.weather) scene.updateWorld("weather", popped.weather);
+      if(popped.weather){ 
+        console.log("undo weather");
+        scene.updateWorld("weather", popped.weather);
+      }
       if(popped.plant){ 
+        console.log("undo plant")
         // update sprites
         let destroy = scene.plantSprites.pop();
         scene.findSprite(destroy.x, destroy.y).destroy();
-        console.log(destroy.x, destroy.y, scene.children.getAll())
-        
-        scene.destroyedSprites.push(destroy);
+        scene.destroyedSprites.push({
+          ...destroy,
+          type: popped.cell.plant_type
+        });
 
-        console.log(popped.plant)
-        scene.updateWorld("plant", popped.plant); 
+        // update grid at cell
+        popped.cell.plant_type = 0;
+        popped.cell.growth_lvl = 0;
+        scene.grid.setCell(popped.cell.x, popped.cell.y, popped.cell);
       }
       if(popped.harvested){
+        console.log("undo harvest")
         let restore = scene.destroyedSprites.pop();
-        console.log(popped.harvested, restore)
 
         renderPlantSprites([restore], scene);
         scene.plantSprites.push(restore);
 
-        console.log(popped.harvested)
         updatePlantCount(restore.type, -1, scene);
-        scene.updateWorld("plant", popped.harvested); 
+
+        popped.cell.plant_type = restore.type;
+        popped.cell.growth_lvl = 3;
+        scene.grid.setCell(popped.cell.x, popped.cell.y, popped.cell);
       }
       if(popped.growth){
         let restore = scene.grownPlants.pop();
+        if(restore.length > 0) console.log("undo growth");
         scene.ungrownPlants.push(restore);
-        restore.forEach(plant => {  
-          let restoreToLevel = plant.growth_lvl-1;
+        restore.forEach(cell => {
+          // restore (step back) growth at cell
+          let restoreToLevel = cell.growth_lvl - 1;
           if(restoreToLevel < 1) restoreToLevel = 1;
+          cell.growth_lvl = restoreToLevel;
+          scene.grid.setCell(cell.x, cell.y, cell);
+
+          // update sprite
           let plantSprite = {
-            x: (plant.x + 0.5) * scene.tile_size,
-            y: (plant.y + 0.5) * scene.tile_size,
-            img: `plant${plant.plant_type}_${restoreToLevel}`
+            x: (cell.x + 0.5) * scene.tile_size,
+            y: (cell.y + 0.5) * scene.tile_size,
+            img: `plant${cell.plant_type}_${cell.growth_lvl}`
           }
           scene.updateSprite(
-            (plant.x + 0.5) * scene.tile_size,
-            (plant.y + 0.5) * scene.tile_size,
+            (cell.x + 0.5) * scene.tile_size,
+            (cell.y + 0.5) * scene.tile_size,
             scene.plantSprites,
             plantSprite
           );
+
           renderPlantSprites([plantSprite], scene);
-          plant.growth_lvl = restoreToLevel;
-          console.log(plant, popped)
         });
       }
-
       console.log("undone");
     } else console.log("undo failed: nothing to undo");
 }
@@ -58,42 +71,59 @@ export function redo(scene) {
     let popped = scene.redoStack.pop();
     if (popped) {
       scene.undoStack.push(popped);
-      if(popped.weather) scene.updateWorld("weather", popped.weather);
+      if(popped.weather){ 
+        console.log("redo weather");
+        scene.updateWorld("weather", popped.weather); 
+      }
       if(popped.plant){ 
+        console.log("redo plant");
         // update sprites
         let restore = scene.destroyedSprites.pop();
         renderPlantSprites([restore], scene);
         scene.plantSprites.push(restore);
-        
-        scene.updateWorld("plant", popped.plant); 
+
+        // update grid at cell
+        popped.cell.plant_type = restore.type;
+        popped.cell.growth_lvl = 1;
+        scene.grid.setCell(popped.cell.x, popped.cell.y, popped.cell);
       }
       if(popped.harvested){
+        console.log("redo harvest");
         let destroy = scene.plantSprites.pop();
         scene.findSprite(destroy.x, destroy.y).destroy();
         scene.destroyedSprites.push(destroy);
 
         updatePlantCount(destroy.type, 1, scene);
-        scene.updateWorld("plant", popped.harvested);  
+
+        popped.cell.plant_type = 0;
+        popped.cell.growth_lvl = 0;
+        scene.grid.setCell(popped.cell.x, popped.cell.y, popped.cell);
       }
       if(popped.growth){
         let restore = scene.ungrownPlants.pop();
+        if(restore.length > 0) console.log("redo growth");
         scene.grownPlants.push(restore);
-        restore.forEach(plant => {  
-          let restoreToLevel = plant.growth_lvl+1;
+        restore.forEach(cell => {
+          // restore (step back) growth at cell
+          let restoreToLevel = cell.growth_lvl + 1;
           if(restoreToLevel > 3) restoreToLevel = 3;
+          cell.growth_lvl = restoreToLevel;
+          scene.grid.setCell(cell.x, cell.y, cell);
+
+          // update sprite
           let plantSprite = {
-            x: (plant.x + 0.5) * scene.tile_size,
-            y: (plant.y + 0.5) * scene.tile_size,
-            img: `plant${plant.plant_type}_${restoreToLevel}`
+            x: (cell.x + 0.5) * scene.tile_size,
+            y: (cell.y + 0.5) * scene.tile_size,
+            img: `plant${cell.plant_type}_${cell.growth_lvl}`
           }
           scene.updateSprite(
-            (plant.x + 0.5) * scene.tile_size,
-            (plant.y + 0.5) * scene.tile_size,
+            (cell.x + 0.5) * scene.tile_size,
+            (cell.y + 0.5) * scene.tile_size,
             scene.plantSprites,
             plantSprite
           );
+
           renderPlantSprites([plantSprite], scene);
-          plant.growth_lvl = restoreToLevel;
         });
       }
 
@@ -192,7 +222,6 @@ export function loadFile(scene, savedData) {
     console.log('Loading game...');
 
     // index with whatever save the player wants to get
-    //const savedData = localStorage.getItem('saveFiles');
 
     if (savedData) {
         const parsedData = (JSON.parse(savedData));
@@ -217,7 +246,6 @@ export function loadFile(scene, savedData) {
         scene.plantSprites = sessionData.plantSprites.active;
         renderPlantSprites(scene.plantSprites, scene);
         scene.destroyedSprites = sessionData.plantSprites.destroyed;
-        //scene.setPlantsFromData(); //untested
 
         // Restore undo/redo stacks
         scene.undoStack = sessionData.undoStack || [];

@@ -1,5 +1,4 @@
 export function initUIX(scene, undo, redo, endDay, saveFile, quit){
-    console.log(scene)
     //buttons
     makeButton(
       scene,
@@ -149,7 +148,7 @@ export function cellPreview(scene, ptr) {
         ];
         let cell = scene.grid.getCell(gridX, gridY);
         scene.levelsText.setText(
-        `sun: ${cell.sun_lvl}\nrain: ${cell.rain_lvl}`,
+        `sun: ${cell.sun_lvl}\nrain: ${cell.rain_lvl}\nplant type: ${cell.plant_type}\ngrowth: ${cell.growth_lvl}`,
         );
     }
 }
