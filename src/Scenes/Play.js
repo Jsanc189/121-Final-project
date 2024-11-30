@@ -573,109 +573,54 @@ loadFile(savedData) {
     return null;
   }
 
+
   updatePlants() {
     let dayGrowth = [];
-
     for (let x = 0; x < this.grid.height; x++) {
-        for (let y = 0; y < this.grid.width; y++) {
-            const cell = this.grid.getCell(x, y); // Get the tile of the plant
-            const plant = cell.plant_type;
+      for (let y = 0; y < this.grid.width; y++) {
+        const cell = this.grid.getCell(x, y); //get the tile of the plant
+        const plant = cell.plant_type;
 
-            // Skip if no plant or if already fully grown
-            if (plant === 0 || cell.growth_lvl >= 3) continue;
+        //skip if no plant or plan is full grown
+        if (plant == 0 ||  cell.growth_lvl >= 3) continue;
 
-            // Find the associated sprite
-            const plantSprite = this.findSpriteInArray(
-                (x + 0.5) * this.tile_size,
-                (y + 0.5) * this.tile_size,
-                this.plantSprites
-            );
+        //find correct sprite 
+        const plantSprite = this.findSpriteInArray( (x + 0.5) * this.tile_size, (y + 0.5) * this.tile_size, this.plantSprites);
+        switch (cell.plant_type) {
+          case 1:
+            if (cell.sun_lvl >= 10 && cell.rain_lvl >= 10) { // check for plant type 1 growth conditions
+                const newGrowth = cell.growth_lvl + 1; //increase growth level
+                plantSprite.img = "plant1_" + newGrowth;
+                this.grid.setCell(x, y, { ...cell, growth_lvl: newGrowth }); //update the growth level in the grid
+                console.log("Plant 1 grew!" + newGrowth)
 
-            if (!plantSprite) {
-                console.error(`No sprite found for plant at (${x}, ${y}).`);
-                continue;
             }
+            break;
+          case 2:
+            if (cell.sun_lvl >= 20 && cell.rain_lvl >= 20) { // check for plant type 2 growth conditions
+                const newGrowth = cell.growth_lvl + 1; //increase growth level
+                plantSprite.img = "plant2_" + newGrowth;
+                this.grid.setCell(x, y, { ...cell, growth_lvl: newGrowth }); //update the growth level in the grid
+                console.log("Plant 2 grew!" + newGrowth);
 
-            // Growth logic
-            let growthConditionsMet = false;
-            switch (cell.plant_type) {
-                case 1:
-                    growthConditionsMet = cell.sun_lvl >= 10 && cell.rain_lvl >= 10;
-                    break;
-                case 2:
-                    growthConditionsMet = cell.sun_lvl >= 20 && cell.rain_lvl >= 20;
-                    break;
-                case 3:
-                    growthConditionsMet = cell.sun_lvl >= 30 && cell.rain_lvl >= 30;
-                    break;
             }
-
-            if (growthConditionsMet) {
-                cell.growth_lvl++; // Increment growth level
-
-                console.log(`Plant ${cell.plant_type} grew to level ${cell.growth_lvl}!`);
-
-                // Add to dayGrowth if growth level > 1
-                if (cell.growth_lvl > 1) dayGrowth.push(cell);
+            break;
+          case 3:
+            if (cell.sun_lvl >= 30 && cell.rain_lvl >= 30) { // check for plant type 3 growth conditions
+                const newGrowth = cell.growth_lvl + 1; //increase growth level
+                plantSprite.img = "plant3_" + newGrowth;
+                this.grid.setCell(x, y, { ...cell, growth_lvl: newGrowth }); //update the growth level in the grid
+                console.log("Plant 3 is ready to harvest! " + newGrowth)
             }
-
-            // Update sprite reference
-            this.updateSprite(plantSprite.x, plantSprite.y, this.plantSprites, plantSprite);
+            break;
         }
+        this.updateSprite(plantSprite.x, plantSprite.y, this.plantSprites, plantSprite);
+        if(cell.growth_lvl > 1) dayGrowth.push(cell);
+      }
     }
-
-    // Store daily growth
     this.grownPlants.push(dayGrowth);
-
-    // Re-render all plant sprites
     this.renderPlantSprites(this.plantSprites);
-}
-
-
-//   updatePlants() {
-//     let dayGrowth = [];
-//     for (let x = 0; x < this.grid.height; x++) {
-//       for (let y = 0; y < this.grid.width; y++) {
-//         const cell = this.grid.getCell(x, y); //get the tile of the plant
-//         const plant = cell.plant_type;
-
-//         //skip if no plant or plan is full grown
-//         if (plant == 0 ||  cell.growth_lvl >= 3) continue;
-
-//         //find correct sprite 
-//         const plantSprite = this.findSpriteInArray( (x + 0.5) * this.tile_size, (y + 0.5) * this.tile_size, this.plantSprites);
-//         switch (cell.plant_type) {
-//           case 1:
-//             if (cell.sun_lvl >= 10 && cell.rain_lvl >= 10) { // check for plant type 1 growth conditions
-//                 cell.growth_lvl++; 
-//                 plantSprite.img = "plant1_" + cell.growth_lvl;
-//                 console.log("Plant 1 grew!")
-
-//             }
-//             break;
-//           case 2:
-//             if (cell.sun_lvl >= 20 && cell.rain_lvl >= 20) { // check for plant type 2 growth conditions
-//                 cell.growth_lvl++; 
-//                 plantSprite.img = "plant2_" + cell.growth_lvl;
-//                 console.log("Plant 2 grew!" + plantSprite.img);
-
-//             }
-//             break;
-//           case 3:
-//             if (cell.sun_lvl >= 30 && cell.rain_lvl >= 30) { // check for plant type 3 growth conditions
-//                 cell.growth_lvl++; 
-//                 plantSprite.img = "plant3_" + cell.growth_lvl;
-//                 console.log("Plant 3 is ready to harvest! " + plantSprite.img)
-//             }
-//             break;
-//         }
-//         this.updateSprite(plantSprite.x, plantSprite.y, this.plantSprites, plantSprite);
-//         if(cell.growth_lvl > 1) dayGrowth.push(cell);
-//       }
-//     }
-//     this.grownPlants.push(dayGrowth);
-//     this.renderPlantSprites(this.plantSprites);
-//   }
+  }
 
   initUIX(){
     //buttons
