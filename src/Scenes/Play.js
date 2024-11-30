@@ -1,6 +1,7 @@
 import { Grid } from "../Scripts/Grid.js";
 import { Player } from "../Scripts/Player.js";
 //import { Plants } from "../Scripts/Plant.js";
+import { plantHandler, updatePlantCount, renderPlantSprites, updatePlants } from "../Scripts/Plant.js"
 
 export class PlayScene extends Phaser.Scene {
   constructor() {
@@ -109,7 +110,7 @@ export class PlayScene extends Phaser.Scene {
     this.input.on("pointerdown", (ptr) => {
       if (!(ptr.x >= this.width || ptr.y >= this.width)) {
         console.log("doot")
-        this.plantHandler(ptr);
+        plantHandler(ptr, this);
       }
     });
   }
@@ -179,19 +180,23 @@ export class PlayScene extends Phaser.Scene {
       if(popped.plant){ 
         // update sprites
         let destroy = this.plantSprites.pop();
-        this.findSpriteAt(destroy.x, destroy.y).destroy();
-        this.destroyedSprites.push(destroy);
+        this.findSprite(destroy.x, destroy.y).destroy();
+        console.log(destroy.x, destroy.y, this.children.getAll())
         
+        this.destroyedSprites.push(destroy);
+
+        console.log(popped.plant)
         this.updateWorld("plant", popped.plant); 
       }
       if(popped.harvested){
         let restore = this.destroyedSprites.pop();
         console.log(popped.harvested, restore)
 
-        this.renderPlantSprites([restore]);
+        renderPlantSprites([restore], this);
         this.plantSprites.push(restore);
 
-        this.updatePlantCount(restore.type, -1);
+        console.log(popped.harvested)
+        updatePlantCount(restore.type, -1, this);
         this.updateWorld("plant", popped.harvested); 
       }
       if(popped.growth){
@@ -211,7 +216,7 @@ export class PlayScene extends Phaser.Scene {
             this.plantSprites,
             plantSprite
           );
-          this.renderPlantSprites([plantSprite]);
+          renderPlantSprites([plantSprite], this);
           plant.growth_lvl = restoreToLevel;
           console.log(plant, popped)
         });
@@ -229,17 +234,17 @@ export class PlayScene extends Phaser.Scene {
       if(popped.plant){ 
         // update sprites
         let restore = this.destroyedSprites.pop();
-        this.renderPlantSprites([restore]);
+        renderPlantSprites([restore], this);
         this.plantSprites.push(restore);
         
         this.updateWorld("plant", popped.plant); 
       }
       if(popped.harvested){
         let destroy = this.plantSprites.pop();
-        this.findSpriteAt(destroy.x, destroy.y).destroy();
+        this.findSprite(destroy.x, destroy.y).destroy();
         this.destroyedSprites.push(destroy);
 
-        this.updatePlantCount(destroy.type, 1);
+        updatePlantCount(destroy.type, 1, this);
         this.updateWorld("plant", popped.harvested);  
       }
       if(popped.growth){
@@ -259,7 +264,7 @@ export class PlayScene extends Phaser.Scene {
             this.plantSprites,
             plantSprite
           );
-          this.renderPlantSprites([plantSprite]);
+          renderPlantSprites([plantSprite], this);
           plant.growth_lvl = restoreToLevel;
           console.log(plant, popped)
         });
@@ -270,132 +275,132 @@ export class PlayScene extends Phaser.Scene {
   }
 
   saveFile(isAuto) {
-    if(isAuto === true && this.autosaveEnabled === false) return;
-    console.log('Saving game...');
-    
-    const gridState = this.grid.copyAttributesToArray(["sun_lvl", "rain_lvl", "plant_type", "growth_lvl"]); // Assuming this returns the grid state as an array
-    console.log("Grid state:")
-    console.log(gridState)
-    const playerState = {
-        x: this.player.x,
-        y: this.player.y,
-    };
+      if(isAuto === true && this.autosaveEnabled === false) return;
+      console.log('Saving game...');
+      
+      const gridState = this.grid.copyAttributesToArray(["sun_lvl", "rain_lvl", "plant_type", "growth_lvl"]); // Assuming this returns the grid state as an array
+      console.log("Grid state:")
+      console.log(gridState)
+      const playerState = {
+          x: this.player.x,
+          y: this.player.y,
+      };
 
-    const saveData = {
-        grid: gridState,
-        player: playerState,
-        toggles: {
-          autosave: this.autosaveEnabled,
-          heatmap: this.heatmapEnabled
-        },
-        plantCounts: {
-            plantOneCount: this.plantOneCount,
-            plantTwoCount: this.plantTwoCount,
-            plantThreeCount: this.plantThreeCount
-        },
-        plantSprites: {
-          active: this.plantSprites,
-          destroyed: this.destroyedSprites
-        },
-        undoStack: this.undoStack,
-        redoStack: this.redoStack
-    };
+      const saveData = {
+          grid: gridState,
+          player: playerState,
+          toggles: {
+            autosave: this.autosaveEnabled,
+            heatmap: this.heatmapEnabled
+          },
+          plantCounts: {
+              plantOneCount: this.plantOneCount,
+              plantTwoCount: this.plantTwoCount,
+              plantThreeCount: this.plantThreeCount
+          },
+          plantSprites: {
+            active: this.plantSprites,
+            destroyed: this.destroyedSprites
+          },
+          undoStack: this.undoStack,
+          redoStack: this.redoStack
+      };
 
-    // push to save files array
-    if(isAuto === true){
-      this.handleAutosave(saveData);
-    } else{ 
-      this.scene.pause();
-      this.scene.start("savesScene", {mode: "save", saveData: saveData, scene: this});
-    }
-
-    localStorage.setItem('saveFiles', JSON.stringify(this.saveFiles));
-    console.log('Game saved:', this.saveFiles);
-}
-
-handleAutosave(saveData){
-  // if we're in a loaded file, save to same index
-  if(this.load === true){
-    this.saveFiles[this.load_index] = saveData;
-    return;
-  }
-  // if not, find first null in saveFiles
-  let saved = false;
-  for(let i = 0; i < this.saveFiles.length; i++){
-    if(this.saveFiles[i] === null){
-      this.saveFiles[i] = saveData;
-      this.load = true;
-      this.load_index = i;
-      return;
-    }
-  }
-  // no null found
-  if(!saved){
-    // if there's space, push
-    if(this.saveFiles.length < this.game.MAX_SAVES){
-      this.saveFiles.push(saveData); 
-      this.load = true;
-      this.load_index = this.saveFiles.length - 1;
-      return;
-    }
-    // if no space, ask if user wants to overwrite
-    else{
-      const overwrite = window.confirm("All save slots in use. Overwrite?");
-      // if user declines, turn off autosave
-      if(!overwrite){ 
-        this.autosaveToggle.emit("pointerup");
-        return;
-      }
-      // is user accepts, let them pick which slot to overwrite
-      else{
+      // push to save files array
+      if(isAuto === true){
+        this.handleAutosave(saveData);
+      } else{ 
         this.scene.pause();
         this.scene.start("savesScene", {mode: "save", saveData: saveData, scene: this});
+      }
+
+      localStorage.setItem('saveFiles', JSON.stringify(this.saveFiles));
+      console.log('Game saved:', this.saveFiles);
+  }
+
+  handleAutosave(saveData){
+    // if we're in a loaded file, save to same index
+    if(this.load === true){
+      this.saveFiles[this.load_index] = saveData;
+      return;
+    }
+    // if not, find first null in saveFiles
+    let saved = false;
+    for(let i = 0; i < this.saveFiles.length; i++){
+      if(this.saveFiles[i] === null){
+        this.saveFiles[i] = saveData;
+        this.load = true;
+        this.load_index = i;
         return;
       }
     }
-  }
-}
-
-loadFile(savedData) {
-    console.log('Loading game...');
-
-    // index with whatever save the player wants to get
-    //const savedData = localStorage.getItem('saveFiles');
-
-    if (savedData) {
-        const parsedData = (JSON.parse(savedData));
-        this.saveFiles = parsedData;
-
-        // get session data by index
-        const sessionData = parsedData[this.load_index];
-        // Restore grid state
-        this.grid.setStateFromArray(sessionData.grid);
-
-        // Restore player state
-        this.player.setPosition(sessionData.player.x, sessionData.player.y);
-        this.autosaveEnabled = sessionData.toggles.autosave;
-        this.heatmapEnabled = sessionData.toggles.heatmap;
-
-        // Restore plant counts
-        this.plantOneCount = sessionData.plantCounts.plantOneCount;
-        this.plantTwoCount = sessionData.plantCounts.plantTwoCount;
-        this.plantThreeCount = sessionData.plantCounts.plantThreeCount;
-
-        // restore sprites
-        this.plantSprites = sessionData.plantSprites.active;
-        this.renderPlantSprites(this.plantSprites);
-        this.destroyedSprites = sessionData.plantSprites.destroyed;
-        //this.setPlantsFromData(); //untested
-
-        // Restore undo/redo stacks
-        this.undoStack = sessionData.undoStack || [];
-        this.redoStack = sessionData.redoStack || [];
-
-        console.log('Game loaded:', sessionData);
-    } else {
-        console.log('No saved game found.');
+    // no null found
+    if(!saved){
+      // if there's space, push
+      if(this.saveFiles.length < this.game.MAX_SAVES){
+        this.saveFiles.push(saveData); 
+        this.load = true;
+        this.load_index = this.saveFiles.length - 1;
+        return;
+      }
+      // if no space, ask if user wants to overwrite
+      else{
+        const overwrite = window.confirm("All save slots in use. Overwrite?");
+        // if user declines, turn off autosave
+        if(!overwrite){ 
+          this.autosaveToggle.emit("pointerup");
+          return;
+        }
+        // is user accepts, let them pick which slot to overwrite
+        else{
+          this.scene.pause();
+          this.scene.start("savesScene", {mode: "save", saveData: saveData, scene: this});
+          return;
+        }
+      }
     }
-}
+  }
+
+  loadFile(savedData) {
+      console.log('Loading game...');
+
+      // index with whatever save the player wants to get
+      //const savedData = localStorage.getItem('saveFiles');
+
+      if (savedData) {
+          const parsedData = (JSON.parse(savedData));
+          this.saveFiles = parsedData;
+
+          // get session data by index
+          const sessionData = parsedData[this.load_index];
+          // Restore grid state
+          this.grid.setStateFromArray(sessionData.grid);
+
+          // Restore player state
+          this.player.setPosition(sessionData.player.x, sessionData.player.y);
+          this.autosaveEnabled = sessionData.toggles.autosave;
+          this.heatmapEnabled = sessionData.toggles.heatmap;
+
+          // Restore plant counts
+          this.plantOneCount = sessionData.plantCounts.plantOneCount;
+          this.plantTwoCount = sessionData.plantCounts.plantTwoCount;
+          this.plantThreeCount = sessionData.plantCounts.plantThreeCount;
+
+          // restore sprites
+          this.plantSprites = sessionData.plantSprites.active;
+          renderPlantSprites(this.plantSprites, this);
+          this.destroyedSprites = sessionData.plantSprites.destroyed;
+          //this.setPlantsFromData(); //untested
+
+          // Restore undo/redo stacks
+          this.undoStack = sessionData.undoStack || [];
+          this.redoStack = sessionData.redoStack || [];
+
+          console.log('Game loaded:', sessionData);
+      } else {
+          console.log('No saved game found.');
+      }
+  }
 
   quit() {
     console.log("Quitting game...");
@@ -445,128 +450,6 @@ loadFile(savedData) {
     }
   }
 
-  plantHandler(ptr) {
-    const tileSize = this.tile_size;
-
-    // Get the cell offset for the player's current position
-    const playerCellOffset = this.grid.getCellAt(this.player.x, this.player.y, tileSize);
-    if (playerCellOffset === false) {
-        console.log("Player is out of bounds!");
-        return;
-    }
-
-    // Get the cell offset for the clicked position
-    const clickedCellOffset = this.grid.getCellAt(ptr.x, ptr.y, tileSize);
-    if (clickedCellOffset === false) {
-        console.log("Clicked position is out of bounds!");
-        return;
-    }
-
-    // Check if the clicked cell is adjacent to the player's cell
-    if (!this.grid.isAdjacentCell(playerCellOffset, clickedCellOffset)) {
-        console.log("Clicked cell is not adjacent to the player's cell!");
-        return;
-    }
-
-    // Retrieve the clicked cell's data
-    const clickedCell = this.grid.getCell(
-        Math.floor(ptr.x / tileSize),
-        Math.floor(ptr.y / tileSize)
-    );
-
-    // Check if the cell already has a plant
-    if (clickedCell.plant_type === 0) {
-        // No plant exists, plant a new one
-        const randomType = Math.floor(Math.random() * 3) + 1;
-
-        // Create a sprite for the new plant
-        let plantX = (Math.floor(ptr.x / tileSize) + 0.5) * tileSize;
-        let plantY = (Math.floor(ptr.y / tileSize) + 0.5) * tileSize;
-        const plantSprite = this.add.sprite(
-            plantX, 
-            plantY, 
-            `plant${randomType}_1`
-        ).setScale(this.GRID_SCALE - 2)
-        .setName("plant");
-
-        this.plantSprites.push({
-          x: plantX,
-          y: plantY,
-          img: `plant${randomType}_1`
-        }); 
-
-        // save grid state before changing
-        let plantState = this.grid.copyAttributesToArray(["plant_type"]);
-        this.undoStack.push({plant: plantState});
-
-        // Update the grid cell with the plant data
-        this.grid.setCell(
-            Math.floor(ptr.x / tileSize),
-            Math.floor(ptr.y / tileSize),
-            {
-                ...clickedCell,
-                plant_type: randomType,
-                growth_lvl: 1,
-            }
-        );
-
-        console.log(`Planted a type ${randomType} plant at (${ptr.x}, ${ptr.y}).`);
-        clickedCell.plant_type = randomType;
-    } else {
-        let x =  (Math.floor(ptr.x / tileSize) + 0.5) * tileSize;
-        let y =  (Math.floor(ptr.y / tileSize) + 0.5) * tileSize;
-        if(clickedCell.growth_lvl >= 3){
-          console.log("Harvesting plant!");
-
-          let plantState = this.grid.copyAttributesToArray(["plant_type"]);
-          this.undoStack.push({harvested: plantState});
-
-          let harvestSprite = this.findSpriteAt(x, y);
-          this.destroyedSprites.push({
-            x: x,
-            y: y,
-            img: `plant${clickedCell.plant_type}_${clickedCell.growth_lvl}`,
-            type: clickedCell.plant_type
-          });
-          harvestSprite.destroy();
-
-          // update plant type count
-          this.updatePlantCount(clickedCell.plant_type, 1);
-
-        }
-    }
-  }
-  
-  updatePlantCount(type, amount){
-    switch(type){
-      case 1:
-        this.plantOneCount += amount;
-        break;
-      case 2:
-        this.plantTwoCount += amount;
-        break;
-      case 3:
-        this.plantThreeCount += amount;
-        break;
-      default:
-        throw new Error(`Unknown plant type: ${type}`);
-    }
-  }
-
-  renderPlantSprites(sprites){
-    for(const plant of sprites){
-      // if there's already a cell here, destroy it so we aren't rendering
-      //  sprites on top of each other
-      let cellSprite = this.findSpriteAt(plant.x, plant.y);
-      if(cellSprite){
-        cellSprite.destroy();
-      }
-      this.add.sprite(plant.x, plant.y, plant.img)
-        .setScale(this.GRID_SCALE - 2)
-        .setName("plant");
-    }
-  }
-
   updateWorld(target, arr) {
     switch(target){
       case "weather":
@@ -588,7 +471,7 @@ loadFile(savedData) {
           this.grid.setStateFromArray(arr);
         }
         else {
-          this.updatePlants(); //end of day growth
+          updatePlants(this); //end of day growth
         }
         break;
       default:
@@ -597,20 +480,10 @@ loadFile(savedData) {
 
   }
 
-  findSpriteAt(x, y) {
-    // get scene children and filter by name (plant)
-    const objects = this.children.getAll().filter(child => child.name === "plant");
-    for (let obj of objects) {
-        if (obj.x === x && obj.y === y) {
-            return obj; // return the plant at x y
-        }
-    }
-    return null; // If no object matches
-  }
-
-  findSpriteInArray(x, y, arr) {
+  findSprite(x, y, arr){
+    if(!arr){ arr = this.children.getAll().filter(child => child.name === "plant"); }
     for(const sprite of arr) {
-      if(sprite.x == x && sprite.y == y) {
+      if(sprite.x === x && sprite.y === y) {
         return sprite;
       }
     }
@@ -625,56 +498,6 @@ loadFile(savedData) {
       }
     }
     return null;
-  }
-
-
-  updatePlants() {
-    let dayGrowth = [];
-    for (let x = 0; x < this.grid.height; x++) {
-      for (let y = 0; y < this.grid.width; y++) {
-        const cell = this.grid.getCell(x, y); //get the tile of the plant
-        const plant = cell.plant_type;
-
-        //skip if no plant or plan is full grown
-        if (plant == 0 ||  cell.growth_lvl >= 3) continue;
-
-        //find correct sprite 
-        const plantSprite = this.findSpriteInArray( (x + 0.5) * this.tile_size, (y + 0.5) * this.tile_size, this.plantSprites);
-        switch (cell.plant_type) {
-          case 1:
-            if (cell.sun_lvl >= 10 && cell.rain_lvl >= 10) { // check for plant type 1 growth conditions
-                const newGrowth = cell.growth_lvl + 1; //increase growth level
-                plantSprite.img = "plant1_" + newGrowth;
-                this.grid.setCell(x, y, { ...cell, growth_lvl: newGrowth }); //update the growth level in the grid
-                console.log("Plant 1 grew!" + newGrowth)
-
-            }
-            break;
-          case 2:
-            if (cell.sun_lvl >= 15 && cell.rain_lvl >= 20) { // check for plant type 2 growth conditions
-                const newGrowth = cell.growth_lvl + 1; //increase growth level
-                plantSprite.img = "plant2_" + newGrowth;
-                this.grid.setCell(x, y, { ...cell, growth_lvl: newGrowth }); //update the growth level in the grid
-                console.log("Plant 2 grew!" + newGrowth);
-
-            }
-            break;
-          case 3:
-            if (cell.sun_lvl >= 20 && cell.rain_lvl >= 30) { // check for plant type 3 growth conditions
-                const newGrowth = cell.growth_lvl + 1; //increase growth level
-                plantSprite.img = "plant3_" + newGrowth;
-                console.log(toString(plantSprite.img));
-                this.grid.setCell(x, y, { ...cell, growth_lvl: newGrowth }); //update the growth level in the grid
-                console.log("Plant 3 is ready to harvest! " + newGrowth)
-            }
-            break;
-        }
-        this.updateSprite(plantSprite.x, plantSprite.y, this.plantSprites, plantSprite);
-        if(cell.growth_lvl > 1) dayGrowth.push(cell);
-      }
-    }
-    this.grownPlants.push(dayGrowth);
-    this.renderPlantSprites(this.plantSprites);
   }
 
   initUIX(){
