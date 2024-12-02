@@ -29,8 +29,8 @@ export class Load extends Phaser.Scene {
     // load assets here
     this.load.setPath("./assets/");
 
-    // load YAML file
-    this.load.text("plantData", "config/plantData.yaml");
+    //load the YAML file in the preload function
+    this.load.text('plantData', 'config/plants.yaml');
 
     this.load.image("tileset", "tilemap_packed.png");
     this.load.tilemapTiledJSON("tilemap", "tilemap.json");
@@ -48,8 +48,28 @@ export class Load extends Phaser.Scene {
     console.log("Load finished...");
 
     //Parse YAML file and save data to the scene
-    const yamlText = this.cache.text.get("plantData");
-    this.registry.set("plantData", yaml.load(yamlText));
+    const plantData = this.cache.text.get("plantData");
+    const parsedPlantData = yaml.load(plantData);
+    console.log(parsedPlantData);
+
+    const sunlightRequirements = parsedPlantData.growthConditions.sunlightRequirements;
+    const waterRequirements = parsedPlantData.growthConditions.waterRequirements;
+    const plants = parsedPlantData.plants;
+
+    const plantTypes = plants.map(plant => {
+      return {
+        name: plant.name,
+        growthStages: plant.growthStages.map(stage => ({
+          growthLvl: stage.growth_lvl,
+          image: stage.image
+        })
+      )}
+    });
+
+    console.log("Sunlight Requirements: ", sunlightRequirements);
+    console.log("water requirements: ", waterRequirements);
+    console.log("plant types: ", plantTypes);
+
 
     this.scene.start("menuScene"); // start next scene
   }
