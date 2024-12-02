@@ -1,0 +1,37 @@
+growthConditions:
+  sunlightRequirements:
+    - 10  #lvl 1 growth requirement
+    - 15  #lvl 2 growth requirement
+    - 20  #lvl 3 growth requirement
+  waterRequirements:
+    - 10
+    - 20
+    - 30
+
+plants:
+  - name: "Carrot"
+  	- growth_lvl: 1
+      image: "plant1_1.png"
+    - growth_lvl: 2
+      image: "plant1_2.png"
+    - growth_lvl: 3
+      image: "plant1_3.png"
+
+  - name: "Corn"
+  	- growth_lvl: 1
+      image: "plant2_1.png"
+    - growth_lvl: 2
+      image: "plant2_2.png"
+    - growth_lvl: 3
+      image: "plant2_3.png"
+
+  - name: "Tomato"
+  	- growth_lvl: 1
+    	image: "plant3_1.png"
+    - growth_lvl: 2
+      image: "plant3_2.png"
+    - growth_lvl: 3
+      image: "plant3_3.png"
+
+  
+

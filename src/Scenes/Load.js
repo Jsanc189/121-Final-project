@@ -1,4 +1,5 @@
 import { Scene } from "phaser";
+import * as yaml from "js-yaml";
 //import { playScene } from "./Scene";
 
 // this is where we'll init and load assets (like tilemaps, tilesets, etc.)
@@ -27,6 +28,10 @@ export class Load extends Phaser.Scene {
 
     // load assets here
     this.load.setPath("./assets/");
+
+    // load YAML file
+    this.load.text("plantData", "config/plantData.yaml");
+
     this.load.image("tileset", "tilemap_packed.png");
     this.load.tilemapTiledJSON("tilemap", "tilemap.json");
     this.load.atlas("idle", "player_idle.png", "player_idle.JSON");
@@ -41,6 +46,11 @@ export class Load extends Phaser.Scene {
 
   create() {
     console.log("Load finished...");
+
+    //Parse YAML file and save data to the scene
+    const yamlText = this.cache.text.get("plantData");
+    this.registry.set("plantData", yaml.load(yamlText));
+
     this.scene.start("menuScene"); // start next scene
   }
 }
