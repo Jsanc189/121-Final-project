@@ -12,26 +12,26 @@ plants:
   - name: "Carrot"
     growthStages:
       - growth_lvl: 1
-        image: "plant1_1.png"
+        image: "plant1_1"
       - growth_lvl: 2
-        image: "plant1_2.png"
+        image: "plant1_2"
       - growth_lvl: 3
-        image: "plant1_3.png"
+        image: "plant1_3"
 
   - name: "Corn"
     growthStages:
       - growth_lvl: 1
-        image: "plant2_1.png"
+        image: "plant2_1"
       - growth_lvl: 2
-        image: "plant2_2.png"
+        image: "plant2_2"
       - growth_lvl: 3
-        image: "plant2_3.png"
+        image: "plant2_3"
 
   - name: "Tomato"
     growthStages:
       - growth_lvl: 1
-        image: "plant3_1.png"
+        image: "plant3_1"
       - growth_lvl: 2
-        image: "plant3_2.png"
+        image: "plant3_2"
       - growth_lvl: 3
-        image: "plant3_3.png"
+        image: "plant3_3"

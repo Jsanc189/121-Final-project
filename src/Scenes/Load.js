@@ -50,25 +50,31 @@ export class Load extends Phaser.Scene {
     //Parse YAML file and save data to the scene
     const plantData = this.cache.text.get("plantData");
     const parsedPlantData = yaml.load(plantData);
+    this. parsedPlantData = parsedPlantData;
+
     console.log(parsedPlantData);
 
-    const sunlightRequirements = parsedPlantData.growthConditions.sunlightRequirements;
-    const waterRequirements = parsedPlantData.growthConditions.waterRequirements;
-    const plants = parsedPlantData.plants;
+    this.sunlightRequirements = parsedPlantData.growthConditions.sunlightRequirements;
+    this.waterRequirements = parsedPlantData.growthConditions.waterRequirements;
+    this.plants = parsedPlantData.plants;
 
-    const plantTypes = plants.map(plant => {
-      return {
-        name: plant.name,
-        growthStages: plant.growthStages.map(stage => ({
-          growthLvl: stage.growth_lvl,
-          image: stage.image
-        })
-      )}
-    });
+    this.plantTypes = parsedPlantData.plants.map(plant => ({
+      name: plant.name,
+      growthStages: plant.growthStages.map(stage => ({
+        growthLvl: stage.growth_lvl,
+        image: stage.image
+      }))
+    }));
 
-    console.log("Sunlight Requirements: ", sunlightRequirements);
-    console.log("water requirements: ", waterRequirements);
-    console.log("plant types: ", plantTypes);
+
+    // this.data.set('plantTypes', this.plantTypes);
+    this.game.globals = this.game.globals || {};
+    this.game.globals.plantTypes = this.plantTypes;
+    this.game.globals.sunlightRequirements = this.sunlightRequirements;
+    this.game.globals.waterRequirements = this.waterRequirements;
+
+
+
 
 
     this.scene.start("menuScene"); // start next scene
