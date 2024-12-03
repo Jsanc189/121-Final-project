@@ -15,13 +15,13 @@ export function undo(scene) {
         scene.findSprite(destroy.x, destroy.y).destroy();
         scene.destroyedSprites.push({
           ...destroy,
-          type: popped.cell.plant_type
+          type: popped.plant.cell.plant_type
         });
 
         // update grid at cell
-        popped.cell.plant_type = 0;
-        popped.cell.growth_lvl = 0;
-        scene.grid.setCell(popped.cell.x, popped.cell.y, popped.cell);
+        popped.plant.cell.plant_type = 0;
+        popped.plant.cell.growth_lvl = 0;
+        scene.grid.setCell(popped.plant.cell.x, popped.plant.cell.y, popped.plant.cell);
       }
       if(popped.harvested){
         console.log("undo harvest")
@@ -30,11 +30,11 @@ export function undo(scene) {
         renderPlantSprites([restore], scene);
         scene.plantSprites.push(restore);
 
-        updatePlantCount(restore.type, -1, scene);
+        updatePlantCount(scene, popped.harvested.type, -1);
 
-        popped.cell.plant_type = restore.type;
-        popped.cell.growth_lvl = 3;
-        scene.grid.setCell(popped.cell.x, popped.cell.y, popped.cell);
+        popped.harvested.cell.plant_type = popped.harvested.type_index;
+        popped.harvested.cell.growth_lvl = 3;
+        scene.grid.setCell(popped.harvested.cell.x, popped.harvested.cell.y, popped.harvested.cell);
       }
       if(popped.growth){
         let restore = scene.grownPlants.pop();
@@ -83,9 +83,9 @@ export function redo(scene) {
         scene.plantSprites.push(restore);
 
         // update grid at cell
-        popped.cell.plant_type = restore.type;
-        popped.cell.growth_lvl = 1;
-        scene.grid.setCell(popped.cell.x, popped.cell.y, popped.cell);
+        popped.plant.cell.plant_type = restore.type;
+        popped.plant.cell.growth_lvl = 1;
+        scene.grid.setCell(popped.plant.cell.x, popped.plant.cell.y, popped.plant.cell);
       }
       if(popped.harvested){
         console.log("redo harvest");
@@ -93,11 +93,11 @@ export function redo(scene) {
         scene.findSprite(destroy.x, destroy.y).destroy();
         scene.destroyedSprites.push(destroy);
 
-        updatePlantCount(destroy.type, 1, scene);
+        updatePlantCount(scene, popped.harvested.type, 1);
 
-        popped.cell.plant_type = 0;
-        popped.cell.growth_lvl = 0;
-        scene.grid.setCell(popped.cell.x, popped.cell.y, popped.cell);
+        popped.harvested.cell.plant_type = 0;
+        popped.harvested.cell.growth_lvl = 0;
+        scene.grid.setCell(popped.harvested.cell.x, popped.harvested.cell.y, popped.harvested.cell);
       }
       if(popped.growth){
         let restore = scene.ungrownPlants.pop();
@@ -132,7 +132,7 @@ export function redo(scene) {
 }
 
 export function saveFile(scene, isAuto) {
-    if(isAuto === true && scene.autosaveEnabled === false) return;
+    if(isAuto === true && scene.toggles.autosave === false) return;
     console.log('Saving game...');
     console.log(scene)
     const gridState = scene.grid.copyAttributesToArray(["sun_lvl", "rain_lvl", "plant_type", "growth_lvl"]); // Assuming scene returns the grid state as an array
@@ -147,8 +147,8 @@ export function saveFile(scene, isAuto) {
         grid: gridState,
         player: playerState,
         toggles: {
-        autosave: scene.autosaveEnabled,
-        heatmap: scene.heatmapEnabled
+        autosave: scene.toggles.autosave,
+        heatmap: scene.toggles.heatmap
         },
         plantCounts: {
             plantOneCount: scene.plantOneCount,
@@ -234,8 +234,8 @@ export function loadFile(scene, savedData) {
 
         // Restore player state
         scene.player.setPosition(sessionData.player.x, sessionData.player.y);
-        scene.autosaveEnabled = sessionData.toggles.autosave;
-        scene.heatmapEnabled = sessionData.toggles.heatmap;
+        scene.toggles.autosave = sessionData.toggles.autosave;
+        scene.toggles.heatmap = sessionData.toggles.heatmap;
 
         // Restore plant counts
         scene.plantOneCount = sessionData.plantCounts.plantOneCount;

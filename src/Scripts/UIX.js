@@ -69,14 +69,14 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
       scene.autosaveToggle.setFillStyle(0x3CAD24);
     });
     scene.autosaveToggle.on("pointerout", () => {
-      if(!scene.autosaveEnabled) scene.autosaveToggle.setFillStyle(0xFFFFFF);
+      if(!scene.toggles.autosave) scene.autosaveToggle.setFillStyle(0xFFFFFF);
     });
     scene.autosaveToggle.on("pointerdown", () => {
       scene.autosaveToggle.setFillStyle(0x3CAD24);
     });
     scene.autosaveToggle.on("pointerup", () => {
-      scene.autosaveEnabled = !scene.autosaveEnabled;
-      if(scene.autosaveEnabled) scene.autosaveToggle.setFillStyle(0x06402B);
+      scene.toggles.autosave = !scene.toggles.autosave;
+      if(scene.toggles.autosave) scene.autosaveToggle.setFillStyle(0x06402B);
       else scene.autosaveToggle.setFillStyle(0xFFFFFF);
     });
 
@@ -93,14 +93,14 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
       scene.heatmapToggle.setFillStyle(0x3CAD24);
     });
     scene.heatmapToggle.on("pointerout", () => {
-      if(!scene.heatmapEnabled) scene.heatmapToggle.setFillStyle(0xFFFFFF);
+      if(!scene.toggles.heatmap) scene.heatmapToggle.setFillStyle(0xFFFFFF);
     });
     scene.heatmapToggle.on("pointerdown", () => {
       scene.heatmapToggle.setFillStyle(0x3CAD24);
     });
     scene.heatmapToggle.on("pointerup", () => {
-      scene.heatmapEnabled = !scene.heatmapEnabled;
-      if(scene.heatmapEnabled){ 
+      scene.toggles.heatmap = !scene.toggles.heatmap;
+      if(scene.toggles.heatmap){ 
         scene.heatmapToggle.setFillStyle(0x06402B);
         scene.weatherMap = scene.grid.render(scene.tile_size);
       }
