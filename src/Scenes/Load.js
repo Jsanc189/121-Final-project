@@ -31,6 +31,7 @@ export class Load extends Phaser.Scene {
 
     //load the YAML file in the preload function
     this.load.text('plantData', 'config/plants.yaml');
+    this.load.text('worldData', 'config/world.yaml');
 
     this.load.image("tileset", "tilemap_packed.png");
     this.load.tilemapTiledJSON("tilemap", "tilemap.json");
@@ -47,18 +48,22 @@ export class Load extends Phaser.Scene {
   create() {
     console.log("Load finished...");
 
-    //Parse YAML file and save data to the scene
+    //* EXTERNAL DSL PARSING *//
+    // Parse YAML file and save data to the scene
+    // TODO: parse
+
+    //* INTERNAL DSL PARSING *//
+    // Parse YAML file and save data to the scene
     const plantData = this.cache.text.get("plantData");
-    const parsedPlantData = yaml.load(plantData);
-    this. parsedPlantData = parsedPlantData;
+    this.parsedPlantData = yaml.load(plantData);
 
-    console.log(parsedPlantData);
+    console.log(this.parsedPlantData);
 
-    this.sunlightRequirements = parsedPlantData.growthConditions.sunlightRequirements;
-    this.waterRequirements = parsedPlantData.growthConditions.waterRequirements;
-    this.plants = parsedPlantData.plants;
+    this.sunlightRequirements = this.parsedPlantData.growthConditions.sunlightRequirements;
+    this.waterRequirements = this.parsedPlantData.growthConditions.waterRequirements;
+    this.plants = this.parsedPlantData.plants;
 
-    this.plantTypes = parsedPlantData.plants.map(plant => ({
+    this.plantTypes = this.parsedPlantData.plants.map(plant => ({
       name: plant.name,
       growthStages: plant.growthStages.map(stage => ({
         growthLvl: stage.growth_lvl,
@@ -67,7 +72,6 @@ export class Load extends Phaser.Scene {
     }));
 
 
-    // this.data.set('plantTypes', this.plantTypes);
     this.game.globals = this.game.globals || {};
     this.game.globals.plantTypes = this.plantTypes;
     this.game.globals.sunlightRequirements = this.sunlightRequirements;

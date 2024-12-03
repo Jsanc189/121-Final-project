@@ -1,121 +1,28 @@
-export function plantHandler(ptr, scene) {
-  const tileSize = scene.tile_size;
-  // Get the cell offset for the player's current position
-  const playerCellOffset = scene.grid.getCellAt(scene.player.x, scene.player.y, tileSize);
-  if (playerCellOffset === false) {
-      console.log("Player is out of bounds!");
-      return;
-  }
-
-  // Get the cell offset for the clicked position
-  const clickedCellOffset = scene.grid.getCellAt(ptr.x, ptr.y, tileSize);
-  if (clickedCellOffset === false) {
-      console.log("Clicked position is out of bounds!");
-      return;
-  }
-
-  // Check if the clicked cell is adjacent to the player's cell
-  if (!scene.grid.isAdjacentCell(playerCellOffset, clickedCellOffset)) {
-      console.log("Clicked cell is not adjacent to the player's cell!");
-      return;
-  }
-
-  // Retrieve the clicked cell's data
-  const clickedCell = scene.grid.getCell(
-      Math.floor(ptr.x / tileSize),
-      Math.floor(ptr.y / tileSize)
-  );
-
-  const plantTypes = scene.game.globals.plantTypes;
-  
-
-
+export function plantHandler(scene, pixelCoord, clickedCell, plantTypes) {
   // Check if the cell already has a plant
   if (clickedCell.plant_type === 0) {
       // No plant exists, plant a new one
       const randomType = Math.floor(Math.random() * plantTypes.length);
-      const plant = plantTypes[randomType];
-      const plantStage = plant.growthStages[0].image;
+      const plant = {
+        type: plantTypes[randomType],
+        type_index: randomType,
+        x: pixelCoord.x,
+        y: pixelCoord.y,
+      }
+      putRandomPlant(scene, plant, clickedCell);
 
-
-      // Create a sprite for the new plant
-      let plantX = (Math.floor(ptr.x / tileSize) + 0.5) * tileSize;
-      let plantY = (Math.floor(ptr.y / tileSize) + 0.5) * tileSize;
-      scene.add.sprite(
-          plantX, 
-          plantY, 
-          plantStage
-      ).setScale(scene.GRID_SCALE - 2)
-      .setName("plant");
-
-      scene.plantSprites.push({
-        x: plantX,
-        y: plantY,
-        img: plantStage
-      }); 
-
-      // save grid state before changing
-      let plantState = scene.grid.copyAttributesToArray(["x", "y", "sun_lvl", "rain_lvl", "plant_type", "growth_lvl"]);
-      scene.undoStack.push({cell: clickedCell, plant: plantState});
-
-      // Update the grid cell with the plant data
-      scene.grid.setCell(
-          Math.floor(ptr.x / tileSize),
-          Math.floor(ptr.y / tileSize),
-          {
-              ...clickedCell,
-              plant_type: randomType + 1,
-              growth_lvl: 1,
-          }
-      );
-
-      console.log(`Planted a type ${plant.name} plant at (${ptr.x}, ${ptr.y}).`);
+      console.log(`Planted a type ${plant.type.name} plant at cell (${clickedCell.x}, ${clickedCell.y}).`);
       clickedCell.plant_type = randomType;
   } else {
-    console.log("plant here...", clickedCell);
-
-      let x =  (Math.floor(ptr.x / tileSize) + 0.5) * tileSize;
-      let y =  (Math.floor(ptr.y / tileSize) + 0.5) * tileSize;
       if(clickedCell.growth_lvl >= 3){
-        console.log("Harvesting plant!");
-
-        let plantState = scene.grid.copyAttributesToArray(["plant_type"]);
-        scene.undoStack.push({cell: clickedCell, harvested: plantState});
-
-        // find sprite to destroy
-        let harvestSprite = scene.findSprite(x, y);
-
-        // remove harvest sprite from plantSprites
-        scene.plantSprites = scene.plantSprites.filter(sprite =>
-          sprite !== scene.findSprite(harvestSprite.x, harvestSprite.y, scene.plantSprites)
-        );
-
-        // destroy sprite
-        scene.destroyedSprites.push({
-          x: harvestSprite.x,
-          y: harvestSprite.y,
-          img: harvestSprite.img,
-          type: clickedCell.plant_type
-        });
-        harvestSprite.destroy();
-
-        // update plant type count
-        updatePlantCount(clickedCell.plant_type, 1, scene);
-
-        // update cell data
-        clickedCell.plant_type = 0;
-        clickedCell.growth_lvl = 0;
-        scene.grid.setCell(clickedCell.x, clickedCell.y, clickedCell);
+        // If growth level is high enough, harvest plant
+        harvestPlant(scene, clickedCell, pixelCoord);
       }
   }
 }
 
-export function updatePlants(scene) {
-  let growthToTrack = false;
+export function updatePlants(scene, plantTypes, requirements) {
   let dayGrowth = [];
-  const plantTypes = scene.game.globals.plantTypes;
-  const sunRequirements = scene.game.globals.sunlightRequirements;
-  const waterRequirements = scene.game.globals.waterRequirements;
 
   for (let x = 0; x < scene.grid.height; x++) {
     for (let y = 0; y < scene.grid.width; y++) {
@@ -125,92 +32,40 @@ export function updatePlants(scene) {
       //skip if no plant or plan is full grown
       if (plant == 0 ||  cell.growth_lvl >= 3) continue;
 
-      //find correct sprite 
-      let plantSprite = scene.findSprite(
-        (x + 0.5) * scene.tile_size, 
-        (y + 0.5) * scene.tile_size, 
-        scene.plantSprites
-      );
-
-      if(plantSprite === null){
-        plantSprite = {
-          x: (x + 0.5) * scene.tile_size,
-          y: (y + 0.5) * scene.tile_size,
-          img: ""
-        }
-      }
-
-      const sunlightRequired = sunRequirements[cell.growth_lvl -1];
-      const waterRequired = waterRequirements[cell.growth_lvl -1];
+      const sunlightRequired = requirements.sun[cell.growth_lvl -1];
+      const waterRequired = requirements.water[cell.growth_lvl -1];
 
       // Check if the plant can grow
       if (cell.sun_lvl >= sunlightRequired && cell.rain_lvl >= waterRequired) {
-        const newGrowth = cell.growth_lvl + 1;
-        const plantType = plantTypes[cell.plant_type - 1];
+        let pixelCoord = {
+          x: (x + 0.5) * scene.tile_size, 
+          y: (y + 0.5) * scene.tile_size, 
+        };
 
-        // Update sprite image to the new growth stage
-        plantSprite.img = plantType.growthStages[cell.growth_lvl].image;
+        let plant = {
+          type: plantTypes[cell.plant_type - 1],
+          newGrowth: cell.growth_lvl + 1,
+          sprite: scene.findSprite(pixelCoord.x, pixelCoord.y, scene.plantSprites)
+        };
 
-        // Update grid cell with new growth level
-        cell.growth_lvl = newGrowth;
-        scene.grid.setCell(x, y, cell);
+        if(plant.sprite === null){
+          plant.sprite = {
+            x: pixelCoord.x,
+            y: pixelCoord.y,
+            img: ""
+          }
+        }
 
-        console.log(`Plant ${cell.plant_type} grew to stage ${newGrowth}!`);
-        growthToTrack = true;
+        growPlant(scene, plant, cell);
+        dayGrowth.push(cell);
       }
-
-      // Update the sprite with the new image
-      scene.updateSprite(plantSprite.x, plantSprite.y, scene.plantSprites, plantSprite);
-
-      if (growthToTrack) dayGrowth.push(cell);
     }
   }
-
-      // switch (plant) {
-      //   case 1:
-      //     if (cell.sun_lvl >=  sunRequirements[0] && cell.rain_lvl >= waterRequirements[0]) { // check for plant type 1 growth conditions
-      //         console.log(plant);
-      //         const newGrowth = cell.growth_lvl + 1; //increase growth level
-      //         console.log("case 1 plant type: ", plantTypes[plant-1])
-      //         plantSprite.img = plantTypes[plant].growthStages[cell.growth_lvl - 1].image;
-      //         cell.growth_lvl = newGrowth;
-      //         scene.grid.setCell(x, y, cell); //update the growth level in the grid
-      //         console.log("Plant 1 grew!" + newGrowth)
-      //         growthToTrack = true;
-      //     }
-      //     break;
-      //   case 2:
-      //     if (cell.sun_lvl >= sunRequirements[1] && cell.rain_lvl >= waterRequirements[1]) { // check for plant type 2 growth conditions
-      //         console.log(plant);
-      //         console.log("case 1 plant type: ", plantTypes[plant-1])
-      //         const newGrowth = cell.growth_lvl + 1; //increase growth level
-      //         plantSprite.img = plantTypes[plant-1].growthStages[cell.growth_lvl - 1].image;
-      //         cell.growth_lvl = newGrowth;
-      //         scene.grid.setCell(x, y, cell); //update the growth level in the grid
-      //         console.log("Plant 2 grew!" + newGrowth);
-      //         growthToTrack = true;
-      //     }
-      //     break;
-      //   case 3:
-      //     if (cell.sun_lvl >= sunRequirements[2] && cell.rain_lvl >= waterRequirements[2]) { // check for plant type 3 growth conditions
-      //         const newGrowth = cell.growth_lvl + 1; //increase growth level
-      //         plantSprite.img = plantTypes[plant-1].growthStages[cell.growth_lvl - 1].image;
-      //         console.log(toString(plantSprite.img));
-      //         cell.growth_lvl = newGrowth;
-      //         scene.grid.setCell(x, y, cell); //update the growth level in the grid
-      //         console.log("Plant 3 is ready to harvest! " + newGrowth)
-      //         growthToTrack = true;
-      //     }
-      //     break;
-      // }
-  //     scene.updateSprite(plantSprite.x, plantSprite.y, scene.plantSprites, plantSprite);
-  //     if(growthToTrack === true) dayGrowth.push(cell);
-  //   }
-  // }
   scene.grownPlants.push(dayGrowth);
   renderPlantSprites(scene.plantSprites, scene);
 }
 
+//* functions called by yaml *//
 export function updatePlantCount(type, amount, scene){
   if(type === null) return;
   switch(type){
@@ -240,4 +95,82 @@ export function renderPlantSprites(sprites, scene){
       .setScale(scene.GRID_SCALE - 2)
       .setName("plant");
   }
+}
+
+function putRandomPlant(scene, plant, clickedCell){
+  const plantStage = plant.type.growthStages[0].image;
+
+    scene.add.sprite(
+        plant.x, 
+        plant.y, 
+        plantStage
+    ).setScale(scene.GRID_SCALE - 2)
+    .setName("plant");
+
+    scene.plantSprites.push({
+      x: plant.x,
+      y: plant.y,
+      img: plantStage
+    }); 
+
+    // save grid state before changing
+    let plantState = scene.grid.copyAttributesToArray(["x", "y", "sun_lvl", "rain_lvl", "plant_type", "growth_lvl"]);
+    scene.undoStack.push({cell: clickedCell, plant: plantState});
+
+    // Update the grid cell with the plant data
+    scene.grid.setCell(
+        clickedCell.x,
+        clickedCell.y,
+        {
+            ...clickedCell,
+            plant_type: plant.type_index + 1,
+            growth_lvl: 1,
+        }
+    );
+}
+
+function harvestPlant(scene, clickedCell, pixelCoord){
+  console.log("Harvesting plant!");
+
+  let plantState = scene.grid.copyAttributesToArray(["plant_type"]);
+  scene.undoStack.push({cell: clickedCell, harvested: plantState});
+
+  // find sprite to destroy
+  let harvestSprite = scene.findSprite(pixelCoord.x, pixelCoord.y);
+
+  // remove harvest sprite from plantSprites
+  scene.plantSprites = scene.plantSprites.filter(sprite =>
+    sprite !== scene.findSprite(harvestSprite.x, harvestSprite.y, scene.plantSprites)
+  );
+
+  // destroy sprite
+  scene.destroyedSprites.push({
+    x: harvestSprite.x,
+    y: harvestSprite.y,
+    img: harvestSprite.img,
+    type: clickedCell.plant_type
+  });
+  harvestSprite.destroy();
+
+  // update plant type count
+  updatePlantCount(clickedCell.plant_type, 1, scene);
+
+  // update cell data
+  clickedCell.plant_type = 0;
+  clickedCell.growth_lvl = 0;
+  scene.grid.setCell(clickedCell.x, clickedCell.y, clickedCell);
+}
+
+function growPlant(scene, plant, cell){
+  // Update sprite image to the new growth stage
+  plant.sprite.img = plant.type.growthStages[cell.growth_lvl].image;
+
+  // Update the sprite with the new image
+  scene.updateSprite(plant.sprite.x, plant.sprite.y, scene.plantSprites, plant.sprite);
+
+  // Update grid cell with new growth level
+  cell.growth_lvl = plant.newGrowth;
+  scene.grid.setCell(cell.x, cell.y, cell);
+
+  console.log(`Plant ${cell.plant_type} grew to stage ${plant.newGrowth}!`);
 }

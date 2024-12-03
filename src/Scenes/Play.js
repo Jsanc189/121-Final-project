@@ -110,8 +110,37 @@ export class PlayScene extends Phaser.Scene {
     this.input.on("pointermove", (ptr) => cellPreview(this, ptr));
     this.input.on("pointerdown", (ptr) => {
       if (!(ptr.x >= this.width || ptr.y >= this.width)) {
-        console.log("doot")
-        plantHandler(ptr, this);
+        console.log("doot");
+
+        // Get the cell offset for the player's current position
+        const playerCellOffset = this.grid.getCellAt(this.player.x, this.player.y, this.tile_size);
+        if (playerCellOffset === false) {
+            console.log("Player is out of bounds!");
+            return;
+        }
+
+        // Get the cell offset for the clicked position
+        const clickedCellOffset = this.grid.getCellAt(ptr.x, ptr.y, this.tile_size);
+        if (clickedCellOffset === false) {
+            console.log("Clicked position is out of bounds!");
+            return;
+        }
+
+        // Check if the clicked cell is adjacent to the player's cell
+        if (!this.grid.isAdjacentCell(playerCellOffset, clickedCellOffset)) {
+            console.log("Clicked cell is not adjacent to the player's cell!");
+            return;
+        }
+        const clickedCell = this.grid.getCell(
+            Math.floor(ptr.x / this.tile_size),
+            Math.floor(ptr.y / this.tile_size)
+        );
+        const plantTypes = this.game.globals.plantTypes;
+        const pixelCoord = {
+            x: (Math.floor(ptr.x / this.tile_size) + 0.5) * this.tile_size,
+            y: (Math.floor(ptr.y / this.tile_size) + 0.5) * this.tile_size
+        }
+        plantHandler(this, pixelCoord, clickedCell, plantTypes);
       }
     });
   }
@@ -200,7 +229,14 @@ export class PlayScene extends Phaser.Scene {
         break;
       case "plant":
         if(arr) { this.grid.setStateFromArray(arr); }
-        else { updatePlants(this); } //end of day growth 
+        else { updatePlants( //end of day growth 
+            this,
+            this.game.globals.plantTypes,
+            {
+                sun: this.game.globals.sunlightRequirements,
+                water: this.game.globals.waterRequirements
+            }
+        ); } 
         break;
       default:
         throw new Error(`Unkown target: ${target}`)
