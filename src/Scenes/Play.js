@@ -12,6 +12,7 @@ export class PlayScene extends Phaser.Scene {
   init(data) {
     this.load = data.load;
     this.load_index = data.load_index;
+    this.initState = this.game.globals.initConditions;
   }
 
   create() {
@@ -25,10 +26,10 @@ export class PlayScene extends Phaser.Scene {
     this.sessionSaved = this.load;
 
     //create tilemap & grid
-    this.GRID_WIDTH = 10;
-    this.GRID_HEIGHT = 10;
-    this.GRID_SCALE = 5; //og tilemap size: 512x320
-    this.tile_size = 16 * this.GRID_SCALE;
+    this.grid_dims = structuredClone(this.initState.grid)
+    this.tile_size = this.grid_dims.tile_size * this.grid_dims.scale;
+
+    // play window
     this.width = this.game.config.width - 100;
     this.height = this.game.config.height - 100;
 
@@ -36,8 +37,8 @@ export class PlayScene extends Phaser.Scene {
     this.tilemap = this.make.tilemap({ key: "tilemap" });
     this.tileset = this.tilemap.addTilesetImage("tileset");
     this.layer = this.tilemap.createLayer("Main", this.tileset);
-    this.layer.setScale(this.GRID_SCALE);
-    this.grid = new Grid(this.GRID_WIDTH, this.GRID_HEIGHT, this, this.load);
+    this.layer.setScale(this.grid_dims.scale);
+    this.grid = new Grid(this, this.grid_dims, this.load);
     this.makeGridLines();
 
     //player movement keys
@@ -63,14 +64,12 @@ export class PlayScene extends Phaser.Scene {
       8,
       this.tile_size,
     );
-    this.player.scale = this.GRID_SCALE;
+    this.player.scale = this.grid_dims.scale;
 
     //set game condition
-    this.gameOver = false;
-    this.endOfDay = false;
-    this.plantOneCount = 0;
-    this.plantTwoCount = 0;
-    this.plantThreeCount = 0;
+    this.gameStates = structuredClone(this.initState.game);
+    this.counts = structuredClone(this.initState.counts);
+    this.winCounts = structuredClone(this.game.globals.winConditions.counts);
     this.plantSprites = [];
     this.destroyedSprites = []; // for undo/redo
     this.grownPlants = [];
@@ -81,8 +80,7 @@ export class PlayScene extends Phaser.Scene {
     this.redoStack = [];
 
     this.weatherMap = [] // this.grid.render(this.tile_size);
-    this.heatmapEnabled = false;
-    this.autosaveEnabled = false;
+    this.toggles = structuredClone(this.initState.toggles);
     //Load save file data before we render the heatmap
     if(this.load){
       loadFile(this, savedData);
@@ -91,12 +89,12 @@ export class PlayScene extends Phaser.Scene {
     // buttons and toggles
     // undo, redo, endDay, saveFile, quit
     initUIX(this, undo, redo, this.endDay, saveFile, this.quit);
-    if(this.autosaveEnabled === true){
-      this.autosaveEnabled = !this.autosaveEnabled;
+    if(this.toggles.autosave === true){
+      this.toggles.autosave = !this.toggles.autosave;
       this.autosaveToggle.emit("pointerup")
     }
-    if(this.heatmapEnabled === true){
-      this.heatmapEnabled = !this.heatmapEnabled;
+    if(this.toggles.heatmap === true){
+      this.toggles.heatmap = !this.toggles.heatmap;
       this.heatmapToggle.emit("pointerup")
     }
 
@@ -109,7 +107,7 @@ export class PlayScene extends Phaser.Scene {
 
     this.input.on("pointermove", (ptr) => cellPreview(this, ptr));
     this.input.on("pointerdown", (ptr) => {
-      if (!(ptr.x >= this.width || ptr.y >= this.width)) {
+      if (!(ptr.x >= this.width || ptr.y >= this.height)) {
         console.log("doot");
 
         // Get the cell offset for the player's current position
@@ -147,17 +145,17 @@ export class PlayScene extends Phaser.Scene {
 
   update() {
     this.player.update(this);
-    if (!this.gameOver) {
+    if (!this.gameStates.gameOver) {
       //check if end conditions are met
       this.checkWin();
 
       //check plants for growth in each tile
-      if (this.endOfDay) {
+      if (this.gameStates.eod) {
         //console.log("checking grid");
         
         this.updateWorld("plant");
         this.updateWorld("weather");
-        this.endOfDay = false;
+        this.gameStates.eod = false;
       }
     } else {
       console.log("Game Over");
@@ -166,15 +164,20 @@ export class PlayScene extends Phaser.Scene {
   }
 
   checkWin() {
-    if (
-      this.plantOneCount >= 3 && this.plantTwoCount >= 3 &&
-      this.plantThreeCount >= 3
-    ) {
+    if (this.allCountsSatisfied()) {
       console.log("You win!");
       // autosave 
       saveFile(this, true);
-      this.gameOver = true;
+      this.gameStates.gameOver = true;
     }
+    //console.log(this.counts)
+  }
+
+  allCountsSatisfied(){
+    for(const id in this.counts){
+      if(this.counts[id] !== this.winCounts[id]) return false;
+    }
+    return true;
   }
 
   makeGridLines() {
@@ -196,7 +199,7 @@ export class PlayScene extends Phaser.Scene {
     this.redoStack = [];
     // autosave 
     saveFile(this, true);
-    this.endOfDay = true;
+    this.gameStates.eod = true;
     console.log("end day");
   }
 
@@ -211,7 +214,7 @@ export class PlayScene extends Phaser.Scene {
     switch(target){
       case "weather":
         // destroy old heatmap
-        if(this.heatmapEnabled){
+        if(this.toggles.heatmap){
           if(this.weatherMap.length > 0){ 
             for(const rect of this.weatherMap){ rect.destroy(); }
           }
@@ -223,7 +226,7 @@ export class PlayScene extends Phaser.Scene {
         else this.grid.setStateFromArray(arr); // set from array
 
         // re-render heatmap
-        if(this.heatmapEnabled){
+        if(this.toggles.heatmap){
           this.weatherMap = this.grid.render(this.tile_size);
         }
         break;

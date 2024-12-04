@@ -50,14 +50,25 @@ export class Load extends Phaser.Scene {
 
     //* EXTERNAL DSL PARSING *//
     // Parse YAML file and save data to the scene
-    // TODO: parse
+    const worldData = this.cache.text.get("worldData");
+    this.parsedWorldData = yaml.load(worldData);
+
+    //console.log(this.parsedWorldData);
+
+    this.initConditions = this.parsedWorldData.init;
+    this.winConditions = this.parsedWorldData.win_state;
+    this.weatherProtocol = this.parsedWorldData.weather;
+
+    console.log(this.initConditions);
+    console.log(this.winConditions);
+    console.log(this.weatherProtocol);
 
     //* INTERNAL DSL PARSING *//
     // Parse YAML file and save data to the scene
     const plantData = this.cache.text.get("plantData");
     this.parsedPlantData = yaml.load(plantData);
 
-    console.log(this.parsedPlantData);
+    //console.log(this.parsedPlantData);
 
     this.sunlightRequirements = this.parsedPlantData.growthConditions.sunlightRequirements;
     this.waterRequirements = this.parsedPlantData.growthConditions.waterRequirements;
@@ -72,14 +83,18 @@ export class Load extends Phaser.Scene {
     }));
 
 
+    //* load parsed DSL data into game global variables *//
     this.game.globals = this.game.globals || {};
+
+    // external DSL
+    this.game.globals.initConditions = this.initConditions;
+    this.game.globals.winConditions = this.winConditions;
+    this.game.globals.weatherProtocol = this.weatherProtocol;
+
+    // internal DSL
     this.game.globals.plantTypes = this.plantTypes;
     this.game.globals.sunlightRequirements = this.sunlightRequirements;
     this.game.globals.waterRequirements = this.waterRequirements;
-
-
-
-
 
     this.scene.start("menuScene"); // start next scene
   }

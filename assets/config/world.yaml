@@ -1,69 +1,31 @@
-# starting conditions
+# Starting conditions
 init:
-  - item: state 
-    contents:
-    - key: game_over
-      value: false
-    - key: eod
-      value: false
-  - item: counts
-    contents:
-    - key: carrot
-      value: 0
-    - key: corn
-      value: 0
-    - key: tomato
-      value: 0
-  - item: toggles
-    - key: heatmap
-      value: false
-    - key: autosave
-      value: false
-  - item: grid
-    - key: width
-      value: 10
-    - key: height
-      value: 10
-    - key: scale
-      value: 5
-    - key: tile_size
-      value: 16
+  game:
+    game_over: false
+    eod: false
+  counts:
+    carrot: 0
+    corn: 0
+    tomato: 0
+  toggles:
+    heatmap: false
+    autosave: false
+  grid:
+    width: 10
+    height: 10
+    scale: 5
+    tile_size: 16
 
-# weather randomization protocol
+# Weather randomization protocol
 weather:
   library: perlin.js
   noise:
-    - scale: 5
-    - seed: random
+    scale: 5
+    seed: random
 
-# event scheduling:
-events:
-  - plants:
-    - function: putRandomPlant
-      args:
-        - "$scene"
-        - "$plant"
-        - "$cell"
-    - function: harvestPlant
-      args:
-        - "$scene"
-        - "$cell"
-        - "$coords"
-    - function: updatePlantCount
-      args:
-        - "$scene"
-        - "$plant"
-        - "$cell"
-
-#victory conditions
+# Victory conditions
 win_state:
   counts:
-    - name: carrot
-      value: 3
-    - name: corn
-      value: 3
-    - name: tomato
-      value: 3
-
-
-      
+    carrot: 3
+    corn: 3
+    tomato: 3

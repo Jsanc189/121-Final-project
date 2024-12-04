@@ -1,23 +1,27 @@
 import { TileWeather, Weather } from "./Weather.js";
 
 export class Grid {
-  constructor(width, height, scene, load) {
-    this.width = width;
-    this.height = height;
+  constructor(scene, dimensions, load) {
+    this.dimensions = dimensions;
     this.scene = scene;
 
     // 20 bytes per cell: x, y, sun_lvl, rain_lvl, plant_type, growth_lvl, water_diffusion_rate
     this.bytesPerCell = 20;
-    this.byteArray = new ArrayBuffer(width * height * this.bytesPerCell);
+    this.byteArray = new ArrayBuffer(this.dimensions.width * this.dimensions.height * this.bytesPerCell);
     this.view = new DataView(this.byteArray);
 
     // Initialize weather system
-    this.weather = new Weather(); // Global weather instance
+    this.weatherProtocol = scene.game.globals.weatherProtocol;
+    this.weather = new Weather({
+      sample: this.weatherProtocol.noise.size,
+      seed: this.weatherProtocol.noise.seed === "random" ? 
+        null : this.weatherProtocol.noise.seed
+    }); // Global weather instance
 
     // Initialize the byte array with cell and weather data (only if not a loaded file)
     if(!load){
-      for (let x = 0; x < height; x++) {
-        for (let y = 0; y < width; y++) {
+      for (let x = 0; x < this.dimensions.height; x++) {
+        for (let y = 0; y < this.dimensions.width; y++) {
           // Generate weather using TileWeather
           const tileWeather = new TileWeather(x, y, this.weather).generate();
 
@@ -39,7 +43,7 @@ export class Grid {
   }
 
   byteOffset(x, y) {
-    return (x * this.width + y) * this.bytesPerCell;
+    return (x * this.dimensions.width + y) * this.bytesPerCell;
   }
 
   offsetByAttribute(x, y, attribute) {
@@ -104,8 +108,8 @@ export class Grid {
     // Update the global weather instance
     this.weather = new Weather({ seed: seed });
 
-    for (let x = 0; x < this.height; x++) {
-      for (let y = 0; y < this.width; y++) {
+    for (let x = 0; x < this.dimensions.height; x++) {
+      for (let y = 0; y < this.dimensions.width; y++) {
         // Generate new weather values for each cell
         const tileWeather = new TileWeather(x, y, this.weather).generate();
 
@@ -120,8 +124,8 @@ export class Grid {
 
   render(tile_size) {
     let rendered = [];
-    for (let x = 0; x < this.height; x++) {
-      for (let y = 0; y < this.width; y++) {
+    for (let x = 0; x < this.dimensions.height; x++) {
+      for (let y = 0; y < this.dimensions.width; y++) {
         const cell = this.getCell(x, y);
         const color = Phaser.Display.Color.GetColor(
           cell.sun_lvl * 2.55,
@@ -145,7 +149,7 @@ export class Grid {
   }
 
   getCellOffset(x, y) {
-    return (x * this.bytesPerCell * this.height) + (y * this.bytesPerCell);
+    return (x * this.bytesPerCell * this.dimensions.height) + (y * this.bytesPerCell);
   }
 
   getCellAt(phaserX, phaserY, tile_size) {
@@ -175,8 +179,8 @@ export class Grid {
   copyAttributesToArray(data) {
     let array = [];
 
-    for (let x = 0; x < this.height; x++) {
-      for (let y = 0; y < this.width; y++) {
+    for (let x = 0; x < this.dimensions.height; x++) {
+      for (let y = 0; y < this.dimensions.width; y++) {
         let cell = this.getCell(x, y);
         let attributesToArray = { x: x, y: y };
         for (let attribute of data) {
