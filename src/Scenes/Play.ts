@@ -49,6 +49,7 @@ export class PlayScene extends Phaser.Scene {
     init(data) {
         this.load = data.load;
         // this.load_index = data.load_index;
+        console.log(this.game);
         this.initState = this.game.globals.initConditions;
     }
 
