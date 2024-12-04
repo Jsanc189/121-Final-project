@@ -58,76 +58,105 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
 
     // make toggle for autosaving
     scene.autosaveToggle = scene.add.rectangle(
-      scene.game.config.width - 50, 50, 50, 50, 0xFFFFFF)
-      .setOrigin(0.5);
-    scene.add.text(scene.autosaveToggle.x, scene.autosaveToggle.y + 50, "autosave", {
-      fontSize: 16,
-      color: "#3CAD24",
-    }).setOrigin(0.5);
+      scene.game.width - 50, 
+      50, 
+      50, 
+      50, 
+      0xFFFFFF,
+    ).setOrigin(0.5);
+    scene.add.text(scene.autosaveToggle.x, 
+        scene.autosaveToggle.y + 50, 
+        "autosave", 
+        {
+            fontSize: 16,
+            color: "#3CAD24",
+        },
+    ).setOrigin(0.5);
     scene.autosaveToggle.setInteractive();
     scene.autosaveToggle.on("pointerover", () => {
-      scene.autosaveToggle.setFillStyle(0x3CAD24);
+        scene.autosaveToggle.setFillStyle(0x3CAD24);
     });
     scene.autosaveToggle.on("pointerout", () => {
-      if(!scene.autosaveEnabled) scene.autosaveToggle.setFillStyle(0xFFFFFF);
+        if (!scene.toggles.autosave) {
+            scene.autosaveToggle.setFillStyle(0xFFFFFF);
+        }
     });
     scene.autosaveToggle.on("pointerdown", () => {
-      scene.autosaveToggle.setFillStyle(0x3CAD24);
+        scene.autosaveToggle.setFillStyle(0x3CAD24);
     });
     scene.autosaveToggle.on("pointerup", () => {
-      scene.autosaveEnabled = !scene.autosaveEnabled;
-      if(scene.autosaveEnabled) scene.autosaveToggle.setFillStyle(0x06402B);
-      else scene.autosaveToggle.setFillStyle(0xFFFFFF);
+        scene.toggles.autosave = !scene.toggles.autosave;
+        if (scene.toggles.autosave) {
+            scene.autosaveToggle.setFillStyle(0x06402B);
+        }
+        else {
+            scene.autosaveToggle.setFillStyle(0xFFFFFF);
+        }
     });
 
     // make toggle for heatmap
     scene.heatmapToggle = scene.add.rectangle(
-      scene.game.config.width - 50, 200, 50, 50, 0xFFFFFF)
-      .setOrigin(0.5);
-    scene.add.text(scene.heatmapToggle.x, scene.heatmapToggle.y + 50, "weather\n layer", {
-      fontSize: 16,
-      color: "#3CAD24",
-    }).setOrigin(0.5);
+        scene.game.width - 50, 
+        200, 
+        50, 
+        50, 
+        0xFFFFFF,
+    ).setOrigin(0.5);
+    scene.add.text(
+        scene.heatmapToggle.x, 
+        scene.heatmapToggle.y + 50, 
+        "weather\n layer", 
+        {
+        fontSize: 16,
+        color: "#3CAD24",
+        }
+    ).setOrigin(0.5);
     scene.heatmapToggle.setInteractive();
     scene.heatmapToggle.on("pointerover", () => {
-      scene.heatmapToggle.setFillStyle(0x3CAD24);
+        scene.heatmapToggle.setFillStyle(0x3CAD24);
     });
     scene.heatmapToggle.on("pointerout", () => {
-      if(!scene.heatmapEnabled) scene.heatmapToggle.setFillStyle(0xFFFFFF);
+        if (!scene.toggles.heatmap) {
+            scene.heatmapToggle.setFillStyle(0xFFFFFF);
+        }
     });
     scene.heatmapToggle.on("pointerdown", () => {
-      scene.heatmapToggle.setFillStyle(0x3CAD24);
+        scene.heatmapToggle.setFillStyle(0x3CAD24);
     });
     scene.heatmapToggle.on("pointerup", () => {
-      scene.heatmapEnabled = !scene.heatmapEnabled;
-      if(scene.heatmapEnabled){ 
-        scene.heatmapToggle.setFillStyle(0x06402B);
-        scene.weatherMap = scene.grid.render(scene.tile_size);
-      }
-      else {
-        scene.heatmapToggle.setFillStyle(0xFFFFFF);
-        if(scene.weatherMap.length > 0) for(const rect of scene.weatherMap) rect.destroy();
-        scene.weatherMap = [];
-      }
+        scene.toggles.heatmap = !scene.toggles.heatmap;
+        if (scene.toggles.heatmap) { 
+            scene.heatmapToggle.setFillStyle(0x06402B);
+            scene.weatherMap = scene.grid.render(scene.tile_size);
+        }
+        else {
+            scene.heatmapToggle.setFillStyle(0xFFFFFF);
+            if (scene.weatherMap.length > 0) {
+                for (const rect of scene.weatherMap) {
+                    rect.destroy();
+                }
+            }
+            scene.weatherMap = [];
+        }
     });
 }
 
-function makeButton(scene, x, y, width, height, text, textColor, textSize, functionCall) {
+function makeButton(scene: Phaser.Scene, x: number, y: number, width: number, height: number, text: string, textColor, textSize, functionCall) {
     const buttonBG = scene.add.rectangle(x, y, width, height, 0xFFFFFF);
     const button = scene.add.text(x, y, text, {
-      fontSize: textSize,
-      color: textColor,
+        fontSize: textSize,
+        color: textColor,
     }).setOrigin(0.5);
     buttonBG.setInteractive();
     button.setInteractive();
     buttonBG.on("pointerover", () => {
-      button.setStyle({ color: "#3CAD24" });
+        button.setStyle({ color: "#3CAD24" });
     });
     button.on("pointerover", () => {
-      button.setStyle({ color: "#3CAD24" });
+        button.setStyle({ color: "#3CAD24" });
     });
     buttonBG.on("pointerout", () => {
-      button.setStyle({ color: textColor });
+        button.setStyle({ color: textColor });
     });
     button.on("pointerup", functionCall());
     buttonBG.on("pointerup", functionCall());
@@ -143,12 +172,14 @@ export function cellPreview(scene, ptr) {
         scene.levelsText.y = y - h;
 
         let [gridX, gridY] = [
-        Math.floor(x / scene.tile_size),
-        Math.floor(y / scene.tile_size),
+            Math.floor(x / scene.tile_size),
+            Math.floor(y / scene.tile_size),
         ];
         let cell = scene.grid.getCell(gridX, gridY);
-        scene.levelsText.setText(
-        `sun: ${cell.sun_lvl}\nrain: ${cell.rain_lvl}\nplant type: ${cell.plant_type}\ngrowth: ${cell.growth_lvl}`,
+        scene.levelsText.setText(`sun: ${cell.sun_lvl}\n
+            rain: ${cell.rain_lvl}\n
+            plant type: ${cell.plant_type}\n
+            growth: ${cell.growth_lvl}`,
         );
     }
 }

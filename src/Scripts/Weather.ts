@@ -15,13 +15,11 @@ export class Weather {
         isSunny: undefined
     };
 
-    constructor(options=this.defaultOptions) {
-        if(options == this.defaultOptions){
-            this.seed = (options.seed) ? options.seed : Math.random();
-            this.sample = (options.sample) ? options.sample : 5;
-            this.multiplier = (options.multiplier) ? options.multiplier : 100;
-            this.isSunny = (options.isSunny !== undefined) ? options.isSunny : coinflip();
-        }
+    constructor(options) {
+        this.seed = (options.seed) ? options.seed : Math.random();
+        this.sample = (options.sample) ? options.sample : 5;
+        this.multiplier = (options.multiplier) ? options.multiplier : 100;
+        this.isSunny = (options.isSunny !== undefined) ? options.isSunny : coinflip();
     }
 }
 

@@ -11,7 +11,7 @@ export class Load extends Phaser.Scene {
   preload() {
     //loading bar to show progress
     let loadingBar = this.add.graphics();
-    this.load.on("progress", (value) => {
+    this.load.on("progress", (value: number) => {
       loadingBar.clear(); // reset fill style
       loadingBar.fillStyle(0xdfe036, 1); // (color, alpha)
       loadingBar.fillRect(
@@ -50,7 +50,18 @@ export class Load extends Phaser.Scene {
 
     //* EXTERNAL DSL PARSING *//
     // Parse YAML file and save data to the scene
-    // TODO: parse
+    const worldData = this.cache.text.get("worldData");
+    const parsedWorldData = yaml.load(worldData);
+
+    //console.log(this.parsedWorldData);
+
+    let initConditions = parsedWorldData.init;
+    let winConditions = parsedWorldData.win_state;
+    let weatherProtocol = parsedWorldData.weather;
+
+    console.log(initConditions);
+    console.log(winConditions);
+    console.log(weatherProtocol);
 
     //* INTERNAL DSL PARSING *//
     // Parse YAML file and save data to the scene
@@ -61,7 +72,7 @@ export class Load extends Phaser.Scene {
 
     let sunlightRequirements = parsedPlantData.growthConditions.sunlightRequirements;
     let waterRequirements = parsedPlantData.growthConditions.waterRequirements;
-    let plants = parsedPlantData.plants;
+    // let plants = parsedPlantData.plants;
 
     let plantTypes = parsedPlantData.plants.map(plant => ({
       name: plant.name,
@@ -71,11 +82,19 @@ export class Load extends Phaser.Scene {
       }))
     }));
 
-
+    //* load parsed DSL data into game global variables *//
     this.game.globals = this.game.globals || {};
+
+    // external DSL
+    this.game.globals.initConditions = initConditions;
+    this.game.globals.winConditions = winConditions;
+    this.game.globals.weatherProtocol = weatherProtocol;
+
+    // internal DSL
     this.game.globals.plantTypes = plantTypes;
     this.game.globals.sunlightRequirements = sunlightRequirements;
     this.game.globals.waterRequirements = waterRequirements;
+
     this.scene.start("menuScene"); // start next scene
   }
 }

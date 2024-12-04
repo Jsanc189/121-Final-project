@@ -1,4 +1,5 @@
 import { TileWeather, Weather } from "./Weather.js";
+// import { Weather } from "./Weather.ts";
 
 //slight module augmentation
 declare module "phaser" {
@@ -9,8 +10,7 @@ declare module "phaser" {
 }
 
 export class Grid {
-    private width: number;
-    private height: number;
+    private dimensions;
     private scene: Phaser.Scene;
     private bytesPerCell: number;
     private byteArray: ArrayBuffer;
@@ -18,23 +18,22 @@ export class Grid {
     private weather: Weather;
 
 
-    constructor(width: number, height: number, scene: Phaser.Scene, load) {
-        this.width = width;
-        this.height = height;
+    constructor(scene: Phaser.Scene, dimensions, load) {
+        this.dimensions = dimensions;
         this.scene = scene;
 
         // 20 bytes per cell: x, y, sun_lvl, rain_lvl, plant_type, growth_lvl, water_diffusion_rate
         this.bytesPerCell = 20;
-        this.byteArray = new ArrayBuffer(width * height * this.bytesPerCell);
+        this.byteArray = new ArrayBuffer(this.dimensions.width * this.dimensions.height * this.bytesPerCell);
         this.view = new DataView(this.byteArray);
 
         // Initialize weather system
-        this.weather = new Weather(); // Global weather instance
+        this.weather = new Weather({}); // Global weather instance
 
         // Initialize the byte array with cell and weather data (only if not a loaded file)
         if(!load){
-            for (let x = 0; x < height; x++) {
-                for (let y = 0; y < width; y++) {
+            for (let x = 0; x < this.dimensions.height; x++) {
+                for (let y = 0; y < this.dimensions.width; y++) {
                 // Generate weather using TileWeather
                 const tileWeather = new TileWeather(x, y, this.weather).generate();
 
@@ -56,7 +55,7 @@ export class Grid {
     }
 
     byteOffset(x: number, y: number) {
-        return (x * this.width + y) * this.bytesPerCell;
+        return (x * this.dimensions.width + y) * this.bytesPerCell;
     }
 
     offsetByAttribute(x: number, y: number, attribute: string) {
@@ -117,12 +116,12 @@ export class Grid {
         if(data.water_diffusion_rate !== null) this.view.setUint8(this.offsetByAttribute(x,y,"water_diffusion_rate"), data.water_diffusion_rate);
     }
 
-    updateWeather(seed = Math.random()) {
+    updateWeather(seed=Math.random()) {
         // Update the global weather instance
         this.weather = new Weather({ seed: seed });
 
-        for (let x = 0; x < this.height; x++) {
-            for (let y = 0; y < this.width; y++) {
+        for (let x = 0; x < this.dimensions.height; x++) {
+            for (let y = 0; y < this.dimensions.width; y++) {
                 // Generate new weather values for each cell
                 const tileWeather = new TileWeather(x, y, this.weather).generate();
 
@@ -137,8 +136,8 @@ export class Grid {
 
     render(tile_size: number) {
         let rendered: Phaser.GameObjects.Rectangle[] = [];
-        for (let x = 0; x < this.height; x++) {
-            for (let y = 0; y < this.width; y++) {
+        for (let x = 0; x < this.dimensions.height; x++) {
+            for (let y = 0; y < this.dimensions.width; y++) {
                 const cell = this.getCell(x, y);
                 const color = Phaser.Display.Color.GetColor(
                     cell.sun_lvl * 2.55,
@@ -162,7 +161,7 @@ export class Grid {
     }
 
     getCellOffset(x, y) {
-        return (x * this.bytesPerCell * this.height) + (y * this.bytesPerCell);
+        return (x * this.bytesPerCell * this.dimensions.height) + (y * this.bytesPerCell);
     }
 
     getCellAt(phaserX, phaserY, tile_size) {
@@ -192,8 +191,8 @@ export class Grid {
     copyAttributesToArray(data) {
         let array: object[] = [];
 
-        for (let x = 0; x < this.height; x++) {
-            for (let y = 0; y < this.width; y++) {
+        for (let x = 0; x < this.dimensions.height; x++) {
+            for (let y = 0; y < this.dimensions.width; y++) {
                 let cell = this.getCell(x, y);
                 let attributesToArray = { x: x, y: y };
                 for (let attribute of data) {
