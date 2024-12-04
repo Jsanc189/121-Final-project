@@ -9,6 +9,7 @@ export class Load extends Phaser.Scene {
   }
 
   preload() {
+    console.log("hi im in load");
     //loading bar to show progress
     let loadingBar = this.add.graphics();
     this.load.on("progress", (value: number) => {
@@ -60,6 +61,9 @@ export class Load extends Phaser.Scene {
     let weatherProtocol = parsedWorldData.weather;
 
     console.log(initConditions);
+
+    this.game.globals.initConditions = initConditions;
+
     console.log(winConditions);
     console.log(weatherProtocol);
 

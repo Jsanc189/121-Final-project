@@ -3,6 +3,7 @@ import { Load } from "./Scenes/Load.ts";
 import { PlayScene } from "./Scenes/Play.ts";
 import { MenuScene } from "./Scenes/Menu.ts";
 import { SavesScene } from "./Scenes/Saves.ts";
+import { LanguagesScene } from "./Scenes/Languages.ts"
 
 //see: TypeScript module augmentation + https://stackoverflow.com/questions/44557308/adding-properties-to-an-existing-type-with-typescript
 declare module "phaser" {
@@ -24,7 +25,7 @@ let config = {
   },
   width: 900,
   height: 900,
-  scene: [Load, MenuScene, SavesScene, PlayScene],
+  scene: [Load, MenuScene, SavesScene, LanguagesScene, PlayScene],
 };
 
 const game = new Game(config);

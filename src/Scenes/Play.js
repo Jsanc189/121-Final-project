@@ -79,7 +79,7 @@ export class PlayScene extends Phaser.Scene {
     this.undoStack = [];
     this.redoStack = [];
 
-    this.weatherMap = [] // this.grid.render(this.tile_size);
+    this.weatherMap = []
     this.toggles = structuredClone(this.initState.toggles);
     //Load save file data before we render the heatmap
     if(this.load){
@@ -151,8 +151,6 @@ export class PlayScene extends Phaser.Scene {
 
       //check plants for growth in each tile
       if (this.gameStates.eod) {
-        //console.log("checking grid");
-        
         this.updateWorld("plant");
         this.updateWorld("weather");
         this.gameStates.eod = false;
@@ -170,7 +168,6 @@ export class PlayScene extends Phaser.Scene {
       saveFile(this, true);
       this.gameStates.gameOver = true;
     }
-    //console.log(this.counts)
   }
 
   allCountsSatisfied(){
@@ -183,12 +180,10 @@ export class PlayScene extends Phaser.Scene {
   makeGridLines() {
     //Draw vertical line
     for (let x = this.tile_size; x < this.width; x += this.tile_size) {
-      // let line = new Phaser.Geom.Line(x, 0, x, this.scene.height);
       this.add.line(0, 0, x, 0, x, 2 * this.height, 0xffffff);
     }
     // horizontal lines
     for (let y = this.tile_size; y < this.height; y += this.tile_size) {
-      // let line = new Phaser.Geom.Line(0, y, this.scene.height, y);
       this.add.line(0, 0, 0, y, 2 * this.height, y, 0xffffff);
     }
   }

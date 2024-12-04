@@ -53,8 +53,6 @@ export class Load extends Phaser.Scene {
     const worldData = this.cache.text.get("worldData");
     this.parsedWorldData = yaml.load(worldData);
 
-    //console.log(this.parsedWorldData);
-
     this.initConditions = this.parsedWorldData.init;
     this.winConditions = this.parsedWorldData.win_state;
     this.weatherProtocol = this.parsedWorldData.weather;
@@ -67,8 +65,6 @@ export class Load extends Phaser.Scene {
     // Parse YAML file and save data to the scene
     const plantData = this.cache.text.get("plantData");
     this.parsedPlantData = yaml.load(plantData);
-
-    //console.log(this.parsedPlantData);
 
     this.sunlightRequirements = this.parsedPlantData.growthConditions.sunlightRequirements;
     this.waterRequirements = this.parsedPlantData.growthConditions.waterRequirements;
