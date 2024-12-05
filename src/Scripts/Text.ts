@@ -62,7 +62,7 @@ const cant_strings: String[] = [
     "備份", // indicating a save slot (eg. save 1)
     "返回", // indicating a "go back" button
     "刪除所有備份", // button that deletes all saves
-    "", // indicates empty save slot
+    "空白備份", // indicates empty save slot
     "撤銷", // undo last game action
     "重做", // redo last undid game action
     "快進一天", // end the day, in-game
