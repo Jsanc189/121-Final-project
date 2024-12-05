@@ -1,0 +1,16 @@
+{
+  "appId": "com.PlantHarvest",
+  "appName": "PlantHarvest",
+  "webDir": "dist",
+  "bundleWebRuntime": false,
+  "CAPACITOR_ANDROID_STUDIO_PATH": "C:\\Program Files\\Android\\Android Studio\\bin\\studio64.exe",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "server": {
+    "api": "http://localhost: 5175",
+    "cors": true
+  }
+}
