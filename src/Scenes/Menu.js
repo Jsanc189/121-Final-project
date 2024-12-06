@@ -1,3 +1,5 @@
+import { eng_strings, swe_strings, chi_strings, hebr_strings } from "../Scripts/Text.js"
+
 export class MenuScene extends Phaser.Scene {
   constructor() {
     super("menuScene");
@@ -34,6 +36,17 @@ export class MenuScene extends Phaser.Scene {
     )
     this.loadButton.on('pointerup', () => {
       this.scene.start("savesScene", {mode: "load", scene: this});
+    });
+
+    // select language button
+    this.languagesButton = this.makeButton(
+      this.game.config.width / 2,
+      (this.game.config.height / 2) + 150,
+      "Select Language",
+      { fontSize: '30px', fill: 'darkgreen' }
+    )
+    this.languagesButton.on('pointerup', () => {
+      this.scene.start("languagesScene", {mode: "load", scene: this});
     });
   }
 

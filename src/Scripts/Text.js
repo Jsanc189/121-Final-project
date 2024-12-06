@@ -1,7 +1,12 @@
-export const eng_strings: String[] = [
+export const eng_strings = [
     "Plant Harvest", // name of the game
     "New Game", // to start a new game
     "Load Game", // to load a previous save
+    "Select Language", // to select language
+    "English", // English
+    "Swedish", // Swedish
+    "Hebrew", // Hebrew
+    "Chinese", // Chinese 
     "Save", // indicating a save slot (eg. save 1)
     "Back", // indicating a "go back" button
     "Delete saves", // button that deletes all saves
@@ -17,10 +22,15 @@ export const eng_strings: String[] = [
     "rain" // rain level per tile
 ]
 
-export const swe_strings: String[] = [
+export const swe_strings = [
     "Växtskörd", // name of the game
     "Nytt Spel", // to start a new game
     "Ladda Spel", // to load a previous save
+    "Välj Språk", // to select language
+    "Engelska", // English
+    "Svenska", // Swedish
+    "Hebreiska", // Hebrew
+    "Kinesiska", // Chinese 
     "Sparfil", // indicating a save slot (eg. save 1)
     "Tillbaka", // indicating a "go back" button
     "Radera sparfilar", // button that deletes all saves
@@ -36,10 +46,15 @@ export const swe_strings: String[] = [
     "regn" // rain level per tile
 ];
 
-export const hebr_strings: String[] = [
+export const hebr_strings = [
     "קציר צמחים", // name of the game
     "משחק חדש", // to start a new game
     "לטעון משחק", // to load a previous save
+    "בוחר שפה", // to select language
+    "אנגלית", // English
+    "שוודית", // Swedish
+    "עברית", // Hebrew
+    "סינית", // Chinese 
     "שמירה", // indicating a save slot (eg. save 1)
     "הקודם", // indicating a "go back" button
     "למחוק את השמירות", // button that deletes all saves
@@ -55,10 +70,15 @@ export const hebr_strings: String[] = [
     "גשם" // rain level per tile
 ]
 
-export const cant_strings: String[] = [
+export const chi_strings = [
     "收割植物", // name of the game
     "新遊戲", // to start a new game
     "加載遊戲", // to load a previous save
+    "語言選擇", // to select language
+    "英文", // English
+    "瑞典文", // Swedish
+    "希伯來文", // Hebrew
+    "中文", // Cantonese 
     "備份", // indicating a save slot (eg. save 1)
     "返回", // indicating a "go back" button
     "刪除所有備份", // button that deletes all saves
