@@ -19,7 +19,6 @@ export class PlayScene extends Phaser.Scene {
   }
 
   create() {
-    console.log("Language:", this.game.globals.language);
     // create save array
     this.saveFiles = [];
     const savedData = localStorage.getItem('saveFiles');
@@ -112,25 +111,20 @@ export class PlayScene extends Phaser.Scene {
     this.input.on("pointermove", (ptr) => cellPreview(this, ptr));
     this.input.on("pointerdown", (ptr) => {
       if (!(ptr.x >= this.width || ptr.y >= this.height)) {
-        console.log("doot");
-
         // Get the cell offset for the player's current position
         const playerCellOffset = this.grid.getCellAt(this.player.x, this.player.y, this.tile_size);
         if (playerCellOffset === false) {
-            console.log("Player is out of bounds!");
-            return;
+          return;
         }
 
         // Get the cell offset for the clicked position
         const clickedCellOffset = this.grid.getCellAt(ptr.x, ptr.y, this.tile_size);
         if (clickedCellOffset === false) {
-            console.log("Clicked position is out of bounds!");
             return;
         }
 
         // Check if the clicked cell is adjacent to the player's cell
         if (!this.grid.isAdjacentCell(playerCellOffset, clickedCellOffset)) {
-            console.log("Clicked cell is not adjacent to the player's cell!");
             return;
         }
         const clickedCell = this.grid.getCell(
@@ -160,14 +154,12 @@ export class PlayScene extends Phaser.Scene {
         this.gameStates.eod = false;
       }
     } else {
-      console.log("Game Over");
-      this.scene.start("playScene");
+      this.scene.start("EndingScene");
     }
   }
 
   checkWin() {
     if (this.allCountsSatisfied()) {
-      console.log("You win!");
       // autosave 
       saveFile(this, true);
       this.gameStates.gameOver = true;
@@ -202,12 +194,9 @@ export class PlayScene extends Phaser.Scene {
     // autosave 
     saveFile(this, true);
     this.gameStates.eod = true;
-    console.log("end day");
   }
 
-  quit() {
-    console.log("Quitting game...");
-    
+  quit() {  
     this.scene.stop();
     this.scene.start("menuScene");
   }

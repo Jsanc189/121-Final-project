@@ -15,8 +15,6 @@ export function plantHandler(scene, pixelCoord, clickedCell, plantTypes) {
       plant.type = plantTypes[randomType];
       
       putRandomPlant(scene, plant);
-
-      console.log(`Planted a type ${plant.type.name} plant at cell (${clickedCell.x}, ${clickedCell.y}).`);
       clickedCell.plant_type = randomType;
   } else {
       if(clickedCell.growth_lvl >= 3){
@@ -126,8 +124,6 @@ function putRandomPlant(scene, plant){
 }
 
 function harvestPlant(scene, plant){
-  console.log("Harvesting plant!");
-
   scene.undoStack.push({harvested: plant});
 
   // find sprite to destroy
@@ -166,6 +162,4 @@ function growPlant(scene, plant, cell){
   // Update grid cell with new growth level
   cell.growth_lvl = plant.newGrowth;
   scene.grid.setCell(cell.x, cell.y, cell);
-
-  console.log(`Plant ${cell.plant_type} grew to stage ${plant.newGrowth}!`);
 }

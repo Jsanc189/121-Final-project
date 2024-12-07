@@ -14,24 +14,24 @@ export class EndingScene extends Phaser.Scene {
             { fontSize: "100px", fill: "#c2df48" },
         ).setOrigin(0.5, 0.5);
 
-        this.restartButton = this.makebutton(
+        this.restartButton = this.makeButton(
             this.game.config.width / 2,
             this.game.config.height / 3 + 60,
             "Restart",
             { fontSize: '40px', fill: '#c2df48' }
         )
         this.restartButton.on('pointerup', () => {
-            this.scene.start('PlayScene')
+            this.scene.start('playScene')
         });
 
-        this.mainMenuButton = this.makebutton(
+        this.mainMenuButton = this.makeButton(
             this.game.config.width / 2,
             this.game.config.height / 3 + 120,
             "Main Menu",
             { fontSize: '40px', fill: '#c2df48' }
         )
         this.mainMenuButton.on('pointerup', () => {
-            this.scene.start('MenuScene')
+            this.scene.start('menuScene')
         });
 
     }
@@ -46,7 +46,7 @@ export class EndingScene extends Phaser.Scene {
           button.setStyle(colors[1]);
         });
         return button;
-      }
+    }
 
 
 }
