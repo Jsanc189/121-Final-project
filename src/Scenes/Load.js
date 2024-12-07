@@ -35,7 +35,7 @@ export class Load extends Phaser.Scene {
 
     this.load.image("tileset", "tilemap_packed.png");
     this.load.tilemapTiledJSON("tilemap", "tilemap.json");
-    this.load.atlas("idle", "player_idle.png", "player_idle.JSON");
+    this.load.atlas("idle", "player_idle.png", "player_idle.json");
 
     // load plant sprites
     for (let i = 1; i <= 3; i++) {
