@@ -16,7 +16,7 @@ let config = {
   height: window.innerHeight,
    backgroundColor: "#2f7833",
 
-  scene: [Load, MenuScene, LanguagesScene, SavesScene, PlayScene],
+  scene: [Load, MenuScene, LanguagesScene, SavesScene, PlayScene, EndingScene],
 };
 
 const game = new Game(config);
