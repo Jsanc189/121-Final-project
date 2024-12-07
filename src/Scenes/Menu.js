@@ -12,7 +12,7 @@ export class MenuScene extends Phaser.Scene {
       this.game.config.width / 2,
       this.game.config.height / 3,
       languages[this.game.globals.language]["game_name"],
-      { fontSize: "80px", fill: "darkgreen" },
+      { fontSize: "100px", fill: "#c2df48" },
     ).setOrigin(0.5, 0.5);
 
     console.log("in the menu scene");
@@ -22,7 +22,7 @@ export class MenuScene extends Phaser.Scene {
       this.game.config.width / 2,
       this.game.config.height / 2,
       languages[this.game.globals.language]["new_game"],
-      { fontSize: "40px", fill: "darkgreen" }
+      { fontSize: "40px", fill: "#c2df48" }
     )
     this.newGameButton.on("pointerup", () => {
       this.scene.start("playScene", {load: false, load_index: -1});
@@ -31,9 +31,9 @@ export class MenuScene extends Phaser.Scene {
     //load game button
     this.loadButton = this.makeButton(
       this.game.config.width / 2,
-      (this.game.config.height / 2) + 35,
+      (this.game.config.height / 2) + 60,
       languages[this.game.globals.language]["load_game"],
-      { fontSize: '30px', fill: 'darkgreen' }
+      { fontSize: '40px', fill: '#c2df48' }
     )
     this.loadButton.on('pointerup', () => {
       this.scene.start("savesScene", {mode: "load", scene: this});
@@ -42,9 +42,9 @@ export class MenuScene extends Phaser.Scene {
     // select language button
     this.languagesButton = this.makeButton(
       this.game.config.width / 2,
-      (this.game.config.height / 2) + 150,
+      (this.game.config.height / 2) + 120,
       languages[this.game.globals.language]["select_lang"],
-      { fontSize: '30px', fill: 'darkgreen' }
+      { fontSize: '40px', fill: '#c2df48' }
     )
     this.languagesButton.on('pointerup', () => {
       this.scene.start("languagesScene", {mode: "load", scene: this});
