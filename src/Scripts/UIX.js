@@ -9,7 +9,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
       860,
       100,
       50,
-      languages[this.game.globals.language]["undo"],
+      languages[scene.game.globals.language]["undo"],
       0xffffff,
       "16px",
       () => undo.bind(scene, scene),
@@ -20,7 +20,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
       860,
       100,
       50,
-      languages[this.game.globals.language]["redo"],
+      languages[scene.game.globals.language]["redo"],
       0xffffff,
       "16px",
       () => redo.bind(scene, scene),
@@ -31,7 +31,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
       860,
       100,
       50,
-      languages[this.game.globals.language]["end_day"],
+      languages[scene.game.globals.language]["end_day"],
       0xffffff,
       "16px",
       () => endDay.bind(scene, scene),
@@ -42,7 +42,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
       860,
       100,
       50,
-      languages[this.game.globals.language]["save_verb"],
+      languages[scene.game.globals.language]["save_verb"],
       0xffffff,
       "16px",
       () => saveFile.bind(scene, scene),
@@ -53,7 +53,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
       860,
       100,
       50,
-      languages[this.game.globals.language]["quit"],
+      languages[scene.game.globals.language]["quit"],
       0xffffff,
       "16px",
       () => quit.bind(scene, scene),
@@ -62,9 +62,9 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
     // make toggle for autosaving
     let gridWidth = scene.grid_dims.scale * scene.grid_dims.tile_size * scene.grid_dims.width;
     scene.autosaveToggle = scene.add.rectangle(
-      gridWidth + 50, 50, 50, 50, 0xFFFFFF)
+      gridWidth + 100, 50, 50, 50, 0xFFFFFF)
       .setOrigin(0.5);
-    scene.add.text(scene.autosaveToggle.x, scene.autosaveToggle.y + 50, languages[this.game.globals.language]["autosave"], {
+    scene.add.text(scene.autosaveToggle.x, scene.autosaveToggle.y + 50, languages[scene.game.globals.language]["autosave"], {
       fontSize: 16,
       color: "#3CAD24",
     }).setOrigin(0.5);
@@ -86,9 +86,9 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
 
     // make toggle for heatmap
     scene.heatmapToggle = scene.add.rectangle(
-      gridWidth + 50, 200, 50, 50, 0xFFFFFF)
+      gridWidth + 100, 200, 50, 50, 0xFFFFFF)
       .setOrigin(0.5);
-    scene.add.text(scene.heatmapToggle.x, scene.heatmapToggle.y + 50, languages[this.game.globals.language]["weather_layer"], {
+    scene.add.text(scene.heatmapToggle.x, scene.heatmapToggle.y + 50, languages[scene.game.globals.language]["weather_layer"], {
       fontSize: 16,
       color: "#3CAD24",
     }).setOrigin(0.5);
@@ -114,6 +114,12 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
         scene.weatherMap = [];
       }
     });
+
+    // make sidebar for harvested plant counts
+    console.log(scene.counts);
+    scene.add.text(gridWidth + 50, 300, `${10 - scene.counts["carrot"]} ${languages[scene.game.globals.language]["carrots"]}`);
+    scene.add.text(gridWidth + 50, 325, `${10 - scene.counts["tomato"]} ${languages[scene.game.globals.language]["tomatoes"]}`);
+    scene.add.text(gridWidth + 50, 350, `${10 - scene.counts["corn"]} ${languages[scene.game.globals.language]["corn"]}`);
 }
 
 function makeButton(scene, x, y, width, height, text, textColor, textSize, functionCall) {
@@ -152,7 +158,7 @@ export function cellPreview(scene, ptr) {
         ];
         let cell = scene.grid.getCell(gridX, gridY);
         scene.levelsText.setText(
-        `${languages[this.game.globals.language]["sun"]}: ${cell.sun_lvl}\n${languages[this.game.globals.language]["rain"]}: ${cell.rain_lvl}\nplant type: ${cell.plant_type}\ngrowth: ${cell.growth_lvl}`,
+        `${languages[scene.game.globals.language]["sun"]}: ${cell.sun_lvl}\n${languages[scene.game.globals.language]["rain"]}: ${cell.rain_lvl}\nplant type: ${cell.plant_type}\ngrowth: ${cell.growth_lvl}`,
         );
     }
 }

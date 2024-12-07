@@ -20,7 +20,12 @@ const eng = {
     autosave: "Autosave", // toggle autosave functions
     weather_layer: "Weather layer", // show the weather layer overlay
     sun: "sun", // sun level per tile
-    rain: "rain" // rain level per tile
+    rain: "rain", // rain level per tile
+    plant_type: "plant", // the type of plant - carrot, corn, or tomato
+    growth: "growth", // growth level from 1-3
+    carrots: "carrots needed", // [x] more carrots needed to fulfill win conditions
+    tomatoes: "tomatoes needed", // [x] more tomatoes needed to fulfill win conditions
+    corn: "corn needed", // [x] more corn needed to fulfill win conditions
 }
 
 const swe = {

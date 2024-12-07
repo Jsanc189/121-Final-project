@@ -26,6 +26,6 @@ weather:
 # Victory conditions
 win_state:
   counts:
-    carrot: 3
-    corn: 3
-    tomato: 3
+    carrot: 10
+    corn: 10
+    tomato: 10

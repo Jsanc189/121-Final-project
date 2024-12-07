@@ -67,6 +67,7 @@ export class LanguagesScene extends Phaser.Scene {
       });
     }
 
+    // only made it for this scene b/c it needs to update on click, other scenes update automatically
     updateLanguage() {
         this.backButton.setText(languages[this.game.globals.language]["back"]);
         this.engButton.setText(languages[this.game.globals.language]["eng"]);
