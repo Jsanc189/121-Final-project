@@ -1,4 +1,4 @@
-import "phaser";
+import { Game } from"phaser";
 import { Load } from "./Scenes/Load.js";
 import { PlayScene } from "./Scenes/Play.js";
 import { MenuScene } from "./Scenes/Menu.js";
