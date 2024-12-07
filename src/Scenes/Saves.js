@@ -62,17 +62,17 @@ export class SavesScene extends Phaser.Scene {
           .setOrigin(0.5);
         const deleteText = this.add.text(this.deleteToggle.x, this.deleteToggle.y + 50, "delete saves", {
           fontSize: 16,
-          color: "#3CAD24",
+          color: "#c2df48",
         }).setOrigin(0.5);
         this.deleteToggle.setInteractive();
         this.deleteToggle.on("pointerover", () => {
-          this.deleteToggle.setFillStyle(0x3CAD24);
+          this.deleteToggle.setFillStyle(0xc2df48);
         });
         this.deleteToggle.on("pointerout", () => {
           if(!this.deleting) this.deleteToggle.setFillStyle(0xFFFFFF);
         });
         this.deleteToggle.on("pointerdown", () => {
-          this.deleteToggle.setFillStyle(0x3CAD24);
+          this.deleteToggle.setFillStyle(0xc2df48);
         });
         this.deleteToggle.on("pointerup", () => {
           this.deleting = !this.deleting;
@@ -83,7 +83,7 @@ export class SavesScene extends Phaser.Scene {
           }
           else {
             this.deleteToggle.setFillStyle(0xFFFFFF);
-            deleteText.setStyle({color: "#3CAD24"});
+            deleteText.setStyle({color: "#c2df48"});
             this.mode = lastMode;
           }
         });
