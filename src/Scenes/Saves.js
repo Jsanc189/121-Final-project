@@ -15,7 +15,7 @@ export class SavesScene extends Phaser.Scene {
   
     create() {
       // back to previous scene
-      this.backButton = this.makeButton(80, 30, "Back", {fontSize: "50px", fill: "darkgreen"});
+      this.backButton = this.makeButton(80, 30, "Back", {fontSize: "50px", fill: "#c2df48"});
       this.backButton.on('pointerup', () => {
           this.scene.run(this.previousScene);
           this.scene.stop();
@@ -135,7 +135,7 @@ export class SavesScene extends Phaser.Scene {
       this.scene.stop();
     }
 
-    makeButton(x, y, text, style, colors=[ { fill: "green" }, { fill: 'darkgreen' } ]) {
+    makeButton(x, y, text, style, colors=[ { fill: "#b18b1c" }, { fill: '#c2df48' } ]) {
       const button = this.add.text(x, y, text, style)
         .setOrigin(0.5, 0.5)
         .setStyle(colors[1]);
