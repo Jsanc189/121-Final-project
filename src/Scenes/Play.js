@@ -31,7 +31,7 @@ export class PlayScene extends Phaser.Scene {
     //create tilemap & grid
     this.grid_dims = structuredClone(this.initState.grid)
     this.tile_size = this.grid_dims.tile_size * this.grid_dims.scale;
-
+    
     // play window
     this.width = this.game.config.width - 100;
     this.height = this.game.config.height - 100;
@@ -181,13 +181,16 @@ export class PlayScene extends Phaser.Scene {
   }
 
   makeGridLines() {
+    let drawToWidth = this.grid_dims.scale * this.grid_dims.tile_size * this.grid_dims.width;
+    let drawToHeight = this.grid_dims.scale * this.grid_dims.tile_size * this.grid_dims.height;
+
     //Draw vertical line
-    for (let x = this.tile_size; x < this.width; x += this.tile_size) {
-      this.add.line(0, 0, x, 0, x, 2 * this.height, 0xffffff);
+    for (let x = this.tile_size; x < drawToWidth; x += this.tile_size) {
+      this.add.line(0, 0, x, 0, x, 2 * drawToHeight, 0xffffff);
     }
     // horizontal lines
-    for (let y = this.tile_size; y < this.height; y += this.tile_size) {
-      this.add.line(0, 0, 0, y, 2 * this.height, y, 0xffffff);
+    for (let y = this.tile_size; y < drawToHeight; y += this.tile_size) {
+      this.add.line(0, 0, 0, y, 2 * drawToWidth, y, 0xffffff);
     }
   }
 
