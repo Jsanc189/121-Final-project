@@ -46,8 +46,6 @@ export class Load extends Phaser.Scene {
   }
 
   create() {
-    console.log("Load finished...");
-
     //* EXTERNAL DSL PARSING *//
     // Parse YAML file and save data to the scene
     const worldData = this.cache.text.get("worldData");
@@ -56,10 +54,6 @@ export class Load extends Phaser.Scene {
     this.initConditions = this.parsedWorldData.init;
     this.winConditions = this.parsedWorldData.win_state;
     this.weatherProtocol = this.parsedWorldData.weather;
-
-    console.log(this.initConditions);
-    console.log(this.winConditions);
-    console.log(this.weatherProtocol);
 
     //* INTERNAL DSL PARSING *//
     // Parse YAML file and save data to the scene

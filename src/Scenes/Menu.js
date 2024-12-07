@@ -15,8 +15,6 @@ export class MenuScene extends Phaser.Scene {
       { fontSize: "100px", fill: "#c2df48" },
     ).setOrigin(0.5, 0.5);
 
-    console.log("in the menu scene");
-
     // I want to add a button to select new game
     this.newGameButton = this.makeButton(
       this.game.config.width / 2,

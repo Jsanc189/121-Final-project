@@ -155,7 +155,6 @@ export class Grid {
       const bufferY = Math.floor(phaserY / tile_size);
       return this.getCellOffset(bufferX, bufferY);
     }
-    console.log("couldn't get cell: out of bounds");
     return false;
   }
 

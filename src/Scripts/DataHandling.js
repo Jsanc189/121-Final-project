@@ -6,11 +6,9 @@ export function undo(scene) {
     if (popped) {
       scene.redoStack.push(popped);
       if(popped.weather){ 
-        console.log("undo weather");
         scene.updateWorld("weather", popped.weather);
       }
       if(popped.plant){ 
-        console.log("undo plant")
         // update sprites
         let destroy = scene.plantSprites.pop();
         scene.findSprite(destroy.x, destroy.y).destroy();
@@ -25,7 +23,6 @@ export function undo(scene) {
         scene.grid.setCell(popped.plant.cell.x, popped.plant.cell.y, popped.plant.cell);
       }
       if(popped.harvested){
-        console.log("undo harvest")
         let restore = scene.destroyedSprites.pop();
 
         renderPlantSprites([restore], scene);
@@ -39,7 +36,6 @@ export function undo(scene) {
       }
       if(popped.growth){
         let restore = scene.grownPlants.pop();
-        if(restore.length > 0) console.log("undo growth");
         scene.ungrownPlants.push(restore);
         restore.forEach(cell => {
           // restore (step back) growth at cell
@@ -64,8 +60,7 @@ export function undo(scene) {
           renderPlantSprites([plantSprite], scene);
         });
       }
-      console.log("undone");
-    } else console.log("undo failed: nothing to undo");
+    } 
 }
 
 export function redo(scene) {
@@ -73,11 +68,9 @@ export function redo(scene) {
     if (popped) {
       scene.undoStack.push(popped);
       if(popped.weather){ 
-        console.log("redo weather");
         scene.updateWorld("weather", popped.weather); 
       }
       if(popped.plant){ 
-        console.log("redo plant");
         // update sprites
         let restore = scene.destroyedSprites.pop();
         renderPlantSprites([restore], scene);
@@ -89,7 +82,6 @@ export function redo(scene) {
         scene.grid.setCell(popped.plant.cell.x, popped.plant.cell.y, popped.plant.cell);
       }
       if(popped.harvested){
-        console.log("redo harvest");
         let destroy = scene.plantSprites.pop();
         scene.findSprite(destroy.x, destroy.y).destroy();
         scene.destroyedSprites.push(destroy);
@@ -102,7 +94,6 @@ export function redo(scene) {
       }
       if(popped.growth){
         let restore = scene.ungrownPlants.pop();
-        if(restore.length > 0) console.log("redo growth");
         scene.grownPlants.push(restore);
         restore.forEach(cell => {
           // restore (step back) growth at cell
@@ -127,18 +118,12 @@ export function redo(scene) {
           renderPlantSprites([plantSprite], scene);
         });
       }
-
-      console.log("redone");
-    } else console.log("redo failed: nothing to redo");
+    }
 }
 
 export function saveFile(scene, isAuto) {
     if(isAuto === true && scene.toggles.autosave === false) return;
-    console.log('Saving game...');
-    console.log(scene)
     const gridState = scene.grid.copyAttributesToArray(["sun_lvl", "rain_lvl", "plant_type", "growth_lvl"]); // Assuming scene returns the grid state as an array
-    console.log("Grid state:")
-    console.log(gridState)
     const playerState = {
         x: scene.player.x,
         y: scene.player.y,
@@ -173,7 +158,7 @@ export function saveFile(scene, isAuto) {
     }
 
     localStorage.setItem('saveFiles', JSON.stringify(scene.saveFiles));
-    console.log('Game saved:', scene.saveFiles);
+
 }
 
 function handleAutosave(scene, saveData){
@@ -220,8 +205,6 @@ if(!saved){
 }
 
 export function loadFile(scene, savedData) {
-    console.log('Loading game...');
-
     // index with whatever save the player wants to get
 
     if (savedData) {
@@ -252,8 +235,5 @@ export function loadFile(scene, savedData) {
         scene.undoStack = sessionData.undoStack || [];
         scene.redoStack = sessionData.redoStack || [];
 
-        console.log('Game loaded:', sessionData);
-    } else {
-        console.log('No saved game found.');
     }
 }

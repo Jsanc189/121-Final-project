@@ -116,7 +116,6 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
     });
 
     // make sidebar for harvested plant counts
-    console.log(scene.counts);
     scene.add.text(gridWidth + 50, 300, `${10 - scene.counts["carrot"]} ${languages[scene.game.globals.language]["carrots"]}`);
     scene.add.text(gridWidth + 50, 325, `${10 - scene.counts["tomato"]} ${languages[scene.game.globals.language]["tomatoes"]}`);
     scene.add.text(gridWidth + 50, 350, `${10 - scene.counts["corn"]} ${languages[scene.game.globals.language]["corn"]}`);
