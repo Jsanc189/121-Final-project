@@ -82,9 +82,6 @@ export class Load extends Phaser.Scene {
     //* load parsed DSL data into game global variables *//
     this.game.globals = this.game.globals || {};
 
-    // add default language - set to english
-    this.game.globals.language = "eng";
-
     // external DSL
     this.game.globals.initConditions = this.initConditions;
     this.game.globals.winConditions = this.winConditions;
