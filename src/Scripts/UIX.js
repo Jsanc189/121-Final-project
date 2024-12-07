@@ -1,3 +1,4 @@
+import "phaser";
 import { languages } from "../Scripts/Text.js";
 
 export function initUIX(scene, undo, redo, endDay, saveFile, quit){
@@ -59,8 +60,9 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
     );
 
     // make toggle for autosaving
+    let gridWidth = scene.grid_dims.scale * scene.grid_dims.tile_size * scene.grid_dims.width;
     scene.autosaveToggle = scene.add.rectangle(
-      scene.game.config.width - 50, 50, 50, 50, 0xFFFFFF)
+      gridWidth + 50, 50, 50, 50, 0xFFFFFF)
       .setOrigin(0.5);
     scene.add.text(scene.autosaveToggle.x, scene.autosaveToggle.y + 50, languages[this.game.globals.language]["autosave"], {
       fontSize: 16,
@@ -84,7 +86,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
 
     // make toggle for heatmap
     scene.heatmapToggle = scene.add.rectangle(
-      scene.game.config.width - 50, 200, 50, 50, 0xFFFFFF)
+      gridWidth + 50, 200, 50, 50, 0xFFFFFF)
       .setOrigin(0.5);
     scene.add.text(scene.heatmapToggle.x, scene.heatmapToggle.y + 50, languages[this.game.globals.language]["weather_layer"], {
       fontSize: 16,

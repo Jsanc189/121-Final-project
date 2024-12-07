@@ -1,3 +1,4 @@
+import "phaser";
 import { TileWeather, Weather } from "./Weather.js";
 
 export class Grid {
@@ -12,11 +13,7 @@ export class Grid {
 
     // Initialize weather system
     this.weatherProtocol = scene.game.globals.weatherProtocol;
-    this.weather = new Weather({
-      sample: this.weatherProtocol.noise.size,
-      seed: this.weatherProtocol.noise.seed === "random" ? 
-        null : this.weatherProtocol.noise.seed
-    }); // Global weather instance
+    this.weather = new Weather({}); // Global weather instance
 
     // Initialize the byte array with cell and weather data (only if not a loaded file)
     if(!load){

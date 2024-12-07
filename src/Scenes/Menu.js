@@ -1,3 +1,4 @@
+import "phaser";
 import { languages } from "../Scripts/Text.js"
 
 export class MenuScene extends Phaser.Scene {
@@ -50,7 +51,7 @@ export class MenuScene extends Phaser.Scene {
     });
   }
 
-  makeButton(x, y, text, style, colors=[ { fill: "green" }, { fill: 'darkgreen' } ]) {
+  makeButton(x, y, text, style, colors=[ { fill: "#b18b1c" }, { fill: '#c2df48' } ]) {
     const button = this.add.text(x, y, text, style).setOrigin(0.5, 0.5);
     button.setInteractive();
     button.on("pointerover", () => {
