@@ -14,6 +14,8 @@ let config = {
   },
   width: window.innerWidth,
   height: window.innerHeight,
+   backgroundColor: "#2f7833",
+
   scene: [Load, MenuScene, LanguagesScene, SavesScene, PlayScene],
 };
 
