@@ -27,7 +27,7 @@ export class Load extends Phaser.Scene {
     });
 
     // load assets here
-    this.load.setPath("./public/assets/");
+    this.load.setPath("./public/public/assets/");
 
     //load the YAML file in the preload function
     this.load.text('plantData', 'config/plants.yaml');

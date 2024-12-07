@@ -18,7 +18,7 @@ export class PlayScene extends Phaser.Scene {
   }
 
   create() {
-    console.log(this.game.globals.language);
+    console.log("Language:", this.game.globals.language);
     // create save array
     this.saveFiles = [];
     const savedData = localStorage.getItem('saveFiles');
