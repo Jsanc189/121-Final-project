@@ -24,7 +24,7 @@ const eng = {
 }
 
 const swe = {
-    game_name: "Växtskördt", // name of the game
+    game_name: "Växtskörd", // name of the game
     new_game: "Nytt Spel", // to start a new game
     load_game: "Ladda Spel", // to load a previous save
     select_lang: "Välj Språk", // to select language

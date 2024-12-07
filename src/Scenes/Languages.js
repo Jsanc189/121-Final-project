@@ -5,13 +5,9 @@ export class LanguagesScene extends Phaser.Scene {
       super("languagesScene");
     }
   
-    init() {
-
-    }
-  
     create() {
         // back to previous scene
-      this.backButton = this.makeButton(80, 30, "Back", {fontSize: "50px", fill: "darkgreen"});
+      this.backButton = this.makeButton(80, 30, languages[this.game.globals.language]["back"], {fontSize: "30px", fill: "darkgreen"});
       this.backButton.on('pointerup', () => {
           this.scene.run("menuScene");
           this.scene.stop();
@@ -21,49 +17,61 @@ export class LanguagesScene extends Phaser.Scene {
     this.engButton = this.makeButton(
       this.game.config.width / 2,
       (this.game.config.height - 600),
-      "English",
+      languages[this.game.globals.language]["eng"],
       { fontSize: '30px', fill: 'darkgreen' }
     )
     this.engButton.on('pointerup', () => {
       // set language to english
       this.game.globals.language = "eng";
+      this.updateLanguage();
     });
 
     // swedish button
     this.sweButton = this.makeButton(
         this.game.config.width / 2,
         (this.game.config.height - 550),
-        "Swedish",
+        languages[this.game.globals.language]["swe"],
         { fontSize: '30px', fill: 'darkgreen' }
       )
       this.sweButton.on('pointerup', () => {
         // set language to swedish
         this.game.globals.language = "swe";
+        this.updateLanguage();
       });
 
       // hebrew button
     this.hebrButton = this.makeButton(
         this.game.config.width / 2,
         (this.game.config.height - 500),
-        "Hebrew",
+        languages[this.game.globals.language]["hebr"],
         { fontSize: '30px', fill: 'darkgreen' }
       )
       this.hebrButton.on('pointerup', () => {
         // set language to hebrew
         this.game.globals.language = "hebr";
+        this.updateLanguage();
       });
 
       // chinese button
     this.chiButton = this.makeButton(
         this.game.config.width / 2,
         (this.game.config.height - 450),
-        "Chinese",
+        languages[this.game.globals.language]["chi"],
         { fontSize: '30px', fill: 'darkgreen' }
       )
       this.chiButton.on('pointerup', () => {
         // set language to chinese
-        this.game.globals.language = "eng";
+        this.game.globals.language = "chi";
+        this.updateLanguage();
       });
+    }
+
+    updateLanguage() {
+        this.backButton.setText(languages[this.game.globals.language]["back"]);
+        this.engButton.setText(languages[this.game.globals.language]["eng"]);
+        this.sweButton.setText(languages[this.game.globals.language]["swe"]);
+        this.hebrButton.setText(languages[this.game.globals.language]["hebr"]);
+        this.chiButton.setText(languages[this.game.globals.language]["chi"]);
     }
   
     makeButton(x, y, text, style, colors=[ { fill: "green" }, { fill: 'darkgreen' } ]) {

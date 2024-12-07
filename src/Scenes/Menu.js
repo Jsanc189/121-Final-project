@@ -10,7 +10,7 @@ export class MenuScene extends Phaser.Scene {
     this.title = this.add.text(
       this.game.config.width / 2,
       this.game.config.height / 3,
-      "Plant Harvest",
+      languages[this.game.globals.language]["game_name"],
       { fontSize: "80px", fill: "darkgreen" },
     ).setOrigin(0.5, 0.5);
 
@@ -20,7 +20,7 @@ export class MenuScene extends Phaser.Scene {
     this.newGameButton = this.makeButton(
       this.game.config.width / 2,
       this.game.config.height / 2,
-      "New Game",
+      languages[this.game.globals.language]["new_game"],
       { fontSize: "40px", fill: "darkgreen" }
     )
     this.newGameButton.on("pointerup", () => {
@@ -31,7 +31,7 @@ export class MenuScene extends Phaser.Scene {
     this.loadButton = this.makeButton(
       this.game.config.width / 2,
       (this.game.config.height / 2) + 35,
-      "Load Game",
+      languages[this.game.globals.language]["load_game"],
       { fontSize: '30px', fill: 'darkgreen' }
     )
     this.loadButton.on('pointerup', () => {
@@ -42,7 +42,7 @@ export class MenuScene extends Phaser.Scene {
     this.languagesButton = this.makeButton(
       this.game.config.width / 2,
       (this.game.config.height / 2) + 150,
-      "Select Language",
+      languages[this.game.globals.language]["select_lang"],
       { fontSize: '30px', fill: 'darkgreen' }
     )
     this.languagesButton.on('pointerup', () => {

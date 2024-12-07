@@ -8,7 +8,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
       860,
       100,
       50,
-      "Undo",
+      languages[this.game.globals.language]["undo"],
       0xffffff,
       "16px",
       () => undo.bind(scene, scene),
@@ -19,7 +19,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
       860,
       100,
       50,
-      "Redo",
+      languages[this.game.globals.language]["redo"],
       0xffffff,
       "16px",
       () => redo.bind(scene, scene),
@@ -30,7 +30,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
       860,
       100,
       50,
-      "End Day",
+      languages[this.game.globals.language]["end_day"],
       0xffffff,
       "16px",
       () => endDay.bind(scene, scene),
@@ -41,7 +41,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
       860,
       100,
       50,
-      "Save",
+      languages[this.game.globals.language]["save_verb"],
       0xffffff,
       "16px",
       () => saveFile.bind(scene, scene),
@@ -52,7 +52,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
       860,
       100,
       50,
-      "Quit",
+      languages[this.game.globals.language]["quit"],
       0xffffff,
       "16px",
       () => quit.bind(scene, scene),
@@ -62,7 +62,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
     scene.autosaveToggle = scene.add.rectangle(
       scene.game.config.width - 50, 50, 50, 50, 0xFFFFFF)
       .setOrigin(0.5);
-    scene.add.text(scene.autosaveToggle.x, scene.autosaveToggle.y + 50, "autosave", {
+    scene.add.text(scene.autosaveToggle.x, scene.autosaveToggle.y + 50, languages[this.game.globals.language]["autosave"], {
       fontSize: 16,
       color: "#3CAD24",
     }).setOrigin(0.5);
@@ -86,7 +86,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
     scene.heatmapToggle = scene.add.rectangle(
       scene.game.config.width - 50, 200, 50, 50, 0xFFFFFF)
       .setOrigin(0.5);
-    scene.add.text(scene.heatmapToggle.x, scene.heatmapToggle.y + 50, "weather\n layer", {
+    scene.add.text(scene.heatmapToggle.x, scene.heatmapToggle.y + 50, languages[this.game.globals.language]["weather_layer"], {
       fontSize: 16,
       color: "#3CAD24",
     }).setOrigin(0.5);
@@ -150,7 +150,7 @@ export function cellPreview(scene, ptr) {
         ];
         let cell = scene.grid.getCell(gridX, gridY);
         scene.levelsText.setText(
-        `sun: ${cell.sun_lvl}\nrain: ${cell.rain_lvl}\nplant type: ${cell.plant_type}\ngrowth: ${cell.growth_lvl}`,
+        `${languages[this.game.globals.language]["sun"]}: ${cell.sun_lvl}\n${languages[this.game.globals.language]["rain"]}: ${cell.rain_lvl}\nplant type: ${cell.plant_type}\ngrowth: ${cell.growth_lvl}`,
         );
     }
 }

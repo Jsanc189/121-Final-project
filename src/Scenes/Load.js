@@ -92,6 +92,9 @@ export class Load extends Phaser.Scene {
     this.game.globals.sunlightRequirements = this.sunlightRequirements;
     this.game.globals.waterRequirements = this.waterRequirements;
 
+    // langauge
+    this.game.globals.language = "eng";
+
     this.scene.start("menuScene"); // start next scene
   }
 }
