@@ -1,3 +1,4 @@
+import "phaser";
 function coinflip(weight = 5, range = 10) {
   let rand = Math.floor(Math.random() * range);
   return rand <= weight;

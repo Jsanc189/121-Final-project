@@ -1,3 +1,4 @@
+import "phaser";
 export function plantHandler(scene, pixelCoord, clickedCell, plantTypes) {
   const plant = {
     type: plantTypes[clickedCell.plant_type-1],

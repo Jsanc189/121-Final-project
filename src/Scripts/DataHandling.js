@@ -1,3 +1,4 @@
+import "phaser";
 import { renderPlantSprites, updatePlantCount } from "./Plant.js";
 
 export function undo(scene) {

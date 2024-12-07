@@ -1,4 +1,4 @@
-import { Scene } from "phaser";
+import "phaser";
 import * as yaml from "js-yaml";
 //import { playScene } from "./Scene";
 
@@ -27,7 +27,7 @@ export class Load extends Phaser.Scene {
     });
 
     // load assets here
-    this.load.setPath("./assets/");
+    this.load.setPath("./public/assets/");
 
     //load the YAML file in the preload function
     this.load.text('plantData', 'config/plants.yaml');

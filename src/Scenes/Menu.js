@@ -1,3 +1,4 @@
+import "phaser";
 import { languages } from "../Scripts/Text.js"
 
 export class MenuScene extends Phaser.Scene {

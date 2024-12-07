@@ -1,3 +1,4 @@
+import "phaser";
 import { TileWeather, Weather } from "./Weather.js";
 
 export class Grid {

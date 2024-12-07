@@ -1,3 +1,4 @@
+import "phaser";
 import { Grid } from "../Scripts/Grid.js";
 import { Player } from "../Scripts/Player.js";
 import { plantHandler, updatePlants } from "../Scripts/Plant.js"
