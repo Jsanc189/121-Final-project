@@ -1,4 +1,6 @@
-export class SavesScene extends Phaser.Scene { //file name match class?
+import { languages } from "../Scripts/Text.js";
+
+export class SavesScene extends Phaser.Scene {
     constructor() {
       super("savesScene");
     }

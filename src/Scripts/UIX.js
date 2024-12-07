@@ -1,3 +1,5 @@
+import { languages } from "../Scripts/Text.js";
+
 export function initUIX(scene, undo, redo, endDay, saveFile, quit){
     //buttons
     makeButton(

@@ -1,4 +1,4 @@
-const eng_strings: String[] = [
+export const eng_strings: String[] = [
     "Plant Harvest", // name of the game
     "New Game", // to start a new game
     "Load Game", // to load a previous save
@@ -17,7 +17,7 @@ const eng_strings: String[] = [
     "rain" // rain level per tile
 ]
 
-const swe_strings: String[] = [
+export const swe_strings: String[] = [
     "Växtskörd", // name of the game
     "Nytt Spel", // to start a new game
     "Ladda Spel", // to load a previous save
@@ -36,7 +36,7 @@ const swe_strings: String[] = [
     "regn" // rain level per tile
 ];
 
-const hebr_strings: String[] = [
+export const hebr_strings: String[] = [
     "קציר צמחים", // name of the game
     "משחק חדש", // to start a new game
     "לטעון משחק", // to load a previous save
@@ -55,7 +55,7 @@ const hebr_strings: String[] = [
     "גשם" // rain level per tile
 ]
 
-const cant_strings: String[] = [
+export const cant_strings: String[] = [
     "收割植物", // name of the game
     "新遊戲", // to start a new game
     "加載遊戲", // to load a previous save
