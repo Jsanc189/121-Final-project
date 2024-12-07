@@ -27,8 +27,8 @@ export function plantHandler(scene, pixelCoord, clickedCell, plantTypes) {
 export function updatePlants(scene, plantTypes, requirements) {
   let dayGrowth = [];
 
-  for (let x = 0; x < scene.grid.dimensions.height; x++) {
-    for (let y = 0; y < scene.grid.dimensions.width; y++) {
+  for (let x = 0; x < scene.grid.dimensions.width; x++) {
+    for (let y = 0; y < scene.grid.dimensions.height; y++) {
       const cell = scene.grid.getCell(x, y); //get the tile of the plant
       let plant = cell.plant_type;
 

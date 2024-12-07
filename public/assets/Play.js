@@ -19,6 +19,7 @@ export class PlayScene extends Phaser.Scene {
   }
 
   create() {
+    console.log("Language:", this.game.globals.language);
     // create save array
     this.saveFiles = [];
     const savedData = localStorage.getItem('saveFiles');
@@ -31,13 +32,13 @@ export class PlayScene extends Phaser.Scene {
     // play window
     this.width = this.game.config.width - 100;
     this.height = this.game.config.height - 100;
-    
+
     //create tilemap & grid
     this.grid_dims = structuredClone(this.initState.grid)
     this.tile_size = this.grid_dims.tile_size * this.grid_dims.scale;
     this.grid_dims.width = Math.floor(this.width / this.grid_dims.tile_size / this.grid_dims.scale);
     this.grid_dims.height = Math.floor(this.height / this.grid_dims.tile_size / this.grid_dims.scale);
-    
+
     // init game world
     this.drawGround();
     this.grid = new Grid(this, this.grid_dims, this.load);
@@ -110,20 +111,25 @@ export class PlayScene extends Phaser.Scene {
     this.input.on("pointermove", (ptr) => cellPreview(this, ptr));
     this.input.on("pointerdown", (ptr) => {
       if (!(ptr.x >= this.width || ptr.y >= this.height)) {
+        console.log("doot");
+
         // Get the cell offset for the player's current position
         const playerCellOffset = this.grid.getCellAt(this.player.x, this.player.y, this.tile_size);
         if (playerCellOffset === false) {
-          return;
+            console.log("Player is out of bounds!");
+            return;
         }
 
         // Get the cell offset for the clicked position
         const clickedCellOffset = this.grid.getCellAt(ptr.x, ptr.y, this.tile_size);
         if (clickedCellOffset === false) {
+            console.log("Clicked position is out of bounds!");
             return;
         }
 
         // Check if the clicked cell is adjacent to the player's cell
         if (!this.grid.isAdjacentCell(playerCellOffset, clickedCellOffset)) {
+            console.log("Clicked cell is not adjacent to the player's cell!");
             return;
         }
         const clickedCell = this.grid.getCell(
@@ -153,12 +159,14 @@ export class PlayScene extends Phaser.Scene {
         this.gameStates.eod = false;
       }
     } else {
-      this.scene.start("EndingScene");
+      console.log("Game Over");
+      this.scene.start("playScene");
     }
   }
 
   checkWin() {
     if (this.allCountsSatisfied()) {
+      console.log("You win!");
       // autosave 
       saveFile(this, true);
       this.gameStates.gameOver = true;
@@ -181,6 +189,7 @@ export class PlayScene extends Phaser.Scene {
       this.add.line(0, 0, x, 0, x, 2 * drawToHeight, 0xffffff);
     }
     // horizontal lines
+    console.log(this.width)
     for (let y = this.tile_size; y < drawToHeight; y += this.tile_size) {
       this.add.line(0, 0, 0, y, 2 * drawToWidth, y, 0xffffff);
     }
@@ -193,9 +202,12 @@ export class PlayScene extends Phaser.Scene {
     // autosave 
     saveFile(this, true);
     this.gameStates.eod = true;
+    console.log("end day");
   }
 
-  quit() {  
+  quit() {
+    console.log("Quitting game...");
+    
     this.scene.stop();
     this.scene.start("menuScene");
   }

@@ -43,6 +43,13 @@ export class Load extends Phaser.Scene {
         this.load.image("plant" + i + "_" + j, "plant" + i + "_" + j + ".png");
       }
     }
+
+    // load ground tiles
+    let positions = ["BOTTOM", "BOTTOMLEFT", "BOTTOMRIGHT", "LEFT",
+        "MIDDLE", "RIGHT", "TOP", "TOPLEFT", "TOPRIGHT"]
+    for(let pos of positions){
+      this.load.image(`ground_${pos}`, `ground_${pos}.png`);
+    }
   }
 
   create() {

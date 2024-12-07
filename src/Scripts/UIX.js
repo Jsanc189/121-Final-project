@@ -143,7 +143,7 @@ function makeButton(scene, x, y, width, height, text, textColor, textSize, funct
 }
 
 export function cellPreview(scene, ptr) {
-    if (!(ptr.x >= 800 || ptr.y >= 800)) {
+    if (!(ptr.x >= scene.width - scene.tile_size || ptr.y >= scene.height - scene.tile_size)) {
         let [x, y] = [ptr.x, ptr.y];
         let [w, h] = [scene.levelsText.width, scene.levelsText.height];
         if (x < w) w = 0;

@@ -17,8 +17,8 @@ export class Grid {
 
     // Initialize the byte array with cell and weather data (only if not a loaded file)
     if(!load){
-      for (let x = 0; x < this.dimensions.height; x++) {
-        for (let y = 0; y < this.dimensions.width; y++) {
+      for (let x = 0; x < this.dimensions.width; x++) {
+        for (let y = 0; y < this.dimensions.height; y++) {
           // Generate weather using TileWeather
           const tileWeather = new TileWeather(x, y, this.weather).generate();
 
@@ -40,7 +40,7 @@ export class Grid {
   }
 
   byteOffset(x, y) {
-    return (x * this.dimensions.width + y) * this.bytesPerCell;
+    return (x * this.dimensions.height + y) * this.bytesPerCell;
   }
 
   offsetByAttribute(x, y, attribute) {
@@ -105,8 +105,8 @@ export class Grid {
     // Update the global weather instance
     this.weather = new Weather({ seed: seed });
 
-    for (let x = 0; x < this.dimensions.height; x++) {
-      for (let y = 0; y < this.dimensions.width; y++) {
+    for (let x = 0; x < this.dimensions.width; x++) {
+      for (let y = 0; y < this.dimensions.height; y++) {
         // Generate new weather values for each cell
         const tileWeather = new TileWeather(x, y, this.weather).generate();
 
@@ -121,8 +121,8 @@ export class Grid {
 
   render(tile_size) {
     let rendered = [];
-    for (let x = 0; x < this.dimensions.height; x++) {
-      for (let y = 0; y < this.dimensions.width; y++) {
+    for (let x = 0; x < this.dimensions.width; x++) {
+      for (let y = 0; y < this.dimensions.height; y++) {
         const cell = this.getCell(x, y);
         const color = Phaser.Display.Color.GetColor(
           cell.sun_lvl * 2.55,
@@ -175,8 +175,8 @@ export class Grid {
   copyAttributesToArray(data) {
     let array = [];
 
-    for (let x = 0; x < this.dimensions.height; x++) {
-      for (let y = 0; y < this.dimensions.width; y++) {
+    for (let x = 0; x < this.dimensions.width; x++) {
+      for (let y = 0; y < this.dimensions.height; y++) {
         let cell = this.getCell(x, y);
         let attributesToArray = { x: x, y: y };
         for (let attribute of data) {
