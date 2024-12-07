@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('https://jsanc189.github.io/121-Final-project/sw.js', { scope: 'https://jsanc189.github.io/121-Final-project/' })})}
