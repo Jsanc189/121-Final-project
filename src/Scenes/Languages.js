@@ -1,4 +1,4 @@
-import { eng_strings, swe_strings, chi_strings, hebr_strings } from "../Scripts/Text.js"
+import { languages } from "../Scripts/Text.js"
 
 export class LanguagesScene extends Phaser.Scene {
     constructor() {
@@ -13,7 +13,7 @@ export class LanguagesScene extends Phaser.Scene {
         // back to previous scene
       this.backButton = this.makeButton(80, 30, "Back", {fontSize: "50px", fill: "darkgreen"});
       this.backButton.on('pointerup', () => {
-          this.scene.run(this.previousScene);
+          this.scene.run("menuScene");
           this.scene.stop();
       });
 
@@ -26,6 +26,7 @@ export class LanguagesScene extends Phaser.Scene {
     )
     this.engButton.on('pointerup', () => {
       // set language to english
+      this.game.globals.language = "eng";
     });
 
     // swedish button
@@ -37,6 +38,7 @@ export class LanguagesScene extends Phaser.Scene {
       )
       this.sweButton.on('pointerup', () => {
         // set language to swedish
+        this.game.globals.language = "swe";
       });
 
       // hebrew button
@@ -48,6 +50,7 @@ export class LanguagesScene extends Phaser.Scene {
       )
       this.hebrButton.on('pointerup', () => {
         // set language to hebrew
+        this.game.globals.language = "hebr";
       });
 
       // chinese button
@@ -59,6 +62,7 @@ export class LanguagesScene extends Phaser.Scene {
       )
       this.chiButton.on('pointerup', () => {
         // set language to chinese
+        this.game.globals.language = "eng";
       });
     }
   

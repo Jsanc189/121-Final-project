@@ -1,4 +1,4 @@
-import { eng_strings, swe_strings, chi_strings, hebr_strings } from "../Scripts/Text.js"
+import { languages } from "../Scripts/Text.js"
 
 export class MenuScene extends Phaser.Scene {
   constructor() {

@@ -3,6 +3,8 @@ import { Player } from "../Scripts/Player.js";
 import { plantHandler, updatePlants } from "../Scripts/Plant.js"
 import { undo, redo, saveFile, loadFile } from "../Scripts/DataHandling.js";
 import { initUIX, cellPreview } from "../Scripts/UIX.js";
+import { languages } from "../Scripts/Text.js"
+
 
 export class PlayScene extends Phaser.Scene {
   constructor() {
@@ -16,6 +18,7 @@ export class PlayScene extends Phaser.Scene {
   }
 
   create() {
+    console.log(this.game.globals.language);
     // create save array
     this.saveFiles = [];
     const savedData = localStorage.getItem('saveFiles');

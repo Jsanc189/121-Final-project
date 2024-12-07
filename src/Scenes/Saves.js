@@ -1,3 +1,5 @@
+import { languages } from "../Scripts/Text.js";
+
 export class SavesScene extends Phaser.Scene {
     constructor() {
       super("savesScene");
