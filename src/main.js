@@ -4,6 +4,7 @@ import { PlayScene } from "./Scenes/Play.js";
 import { MenuScene } from "./Scenes/Menu.js";
 import { SavesScene } from "./Scenes/Saves.js";
 import { LanguagesScene } from "./Scenes/Languages.js";
+import { EndingScene } from "./Scenes/Ending.js";
 
 // game config
 let config = {
