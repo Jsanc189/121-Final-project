@@ -1,8 +1,8 @@
-import { Grid } from "../Scripts/Grid.ts";
-import { Player } from "../Scripts/Player.ts";
-import { plantHandler, updatePlants } from "../Scripts/Plant.ts";
-import { undo, redo, saveFile, loadFile } from "../Scripts/DataHandling.ts";
-import { initUIX, cellPreview } from "../Scripts/UIX.ts";
+import { Grid } from "./Grid.ts";
+import { Player } from "./Player.ts";
+import { plantHandler, updatePlants } from "./Plant.ts";
+import { undo, redo, saveFile, loadFile } from "./DataHandling.ts";
+import { initUIX, cellPreview } from "./UIX.ts";
 
 export class PlayScene extends Phaser.Scene {
     private saveFiles: any[] = [];

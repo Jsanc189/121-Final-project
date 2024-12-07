@@ -1,4 +1,4 @@
-import { renderPlantSprites, updatePlantCount } from "./Plant.js";
+import { renderPlantSprites, updatePlantCount } from "../Typescript/Plant.js";
 
 export function undo(scene) {
     let popped = scene.undoStack.pop();
