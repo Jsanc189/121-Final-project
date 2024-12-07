@@ -41,9 +41,9 @@ export class TileWeather extends Weather {
   }
 
   perlinValue(seed, mult) {
-    noise.seed(seed);
+    // noise.seed(seed);
     let pVal = Math.abs(
-      noise.perlin2(this.i / this.sample, this.j / this.sample),
+      Math.random(this.i / this.sample, this.j / this.sample),
     );
     pVal *= mult;
     pVal = Math.floor(pVal);
