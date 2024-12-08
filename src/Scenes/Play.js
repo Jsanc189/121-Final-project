@@ -1,11 +1,10 @@
 import "phaser";
 import { Grid } from "../Scripts/Grid.js";
 import { Player } from "../Scripts/Player.js";
-import { plantHandler, updatePlants } from "../Scripts/Plant.js"
-import { undo, redo, saveFile, loadFile } from "../Scripts/DataHandling.js";
-import { initUIX, cellPreview } from "../Scripts/UIX.js";
-import { languages } from "../Scripts/Text.js"
-
+import { plantHandler, updatePlants } from "../Scripts/Plant.js";
+import { loadFile, redo, saveFile, undo } from "../Scripts/DataHandling.js";
+import { cellPreview, initUIX } from "../Scripts/UIX.js";
+import { languages } from "../Scripts/Text.js";
 
 export class PlayScene extends Phaser.Scene {
   constructor() {
@@ -21,23 +20,27 @@ export class PlayScene extends Phaser.Scene {
   create() {
     // create save array
     this.saveFiles = [];
-    const savedData = localStorage.getItem('saveFiles');
+    const savedData = localStorage.getItem("saveFiles");
     if (savedData) {
-        const parsedData = (JSON.parse(savedData));
-        this.saveFiles = parsedData;
+      const parsedData = JSON.parse(savedData);
+      this.saveFiles = parsedData;
     }
     this.sessionSaved = this.load;
 
     // play window
     this.width = this.game.config.width - this.game.config.width / 5;
     this.height = this.game.config.height;
-    
+
     //create tilemap & grid
-    this.grid_dims = structuredClone(this.initState.grid)
+    this.grid_dims = structuredClone(this.initState.grid);
     this.tile_size = this.grid_dims.tile_size * this.grid_dims.scale;
-    this.grid_dims.width = Math.floor(this.width / this.grid_dims.tile_size / this.grid_dims.scale);
-    this.grid_dims.height = Math.floor(this.height / this.grid_dims.tile_size / this.grid_dims.scale);
-    
+    this.grid_dims.width = Math.floor(
+      this.width / this.grid_dims.tile_size / this.grid_dims.scale,
+    );
+    this.grid_dims.height = Math.floor(
+      this.height / this.grid_dims.tile_size / this.grid_dims.scale,
+    );
+
     // init game world
     this.drawGround();
     this.grid = new Grid(this, this.grid_dims, this.load);
@@ -45,16 +48,16 @@ export class PlayScene extends Phaser.Scene {
 
     //player movement keys
     this.leftKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.LEFT
+      Phaser.Input.Keyboard.KeyCodes.LEFT,
     );
     this.rightKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.RIGHT
+      Phaser.Input.Keyboard.KeyCodes.RIGHT,
     );
     this.upKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.UP
+      Phaser.Input.Keyboard.KeyCodes.UP,
     );
     this.downKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.DOWN
+      Phaser.Input.Keyboard.KeyCodes.DOWN,
     );
 
     // this.time = new Clock(this);
@@ -81,23 +84,31 @@ export class PlayScene extends Phaser.Scene {
     this.undoStack = [];
     this.redoStack = [];
 
-    this.weatherMap = []
+    this.weatherMap = [];
     this.toggles = structuredClone(this.initState.toggles);
     //Load save file data before we render the heatmap
-    if(this.load){
+    if (this.load) {
       loadFile(this, savedData);
     }
 
     // buttons and toggles
     // undo, redo, endDay, saveFile, quit
-    initUIX(this, undo, redo, this.endDay, saveFile, this.quit);
-    if(this.toggles.autosave === true){
+    initUIX(
+      this,
+      undo,
+      redo,
+      this.endDay,
+      saveFile,
+      this.quit,
+      this.player.update,
+    );
+    if (this.toggles.autosave === true) {
       this.toggles.autosave = !this.toggles.autosave;
-      this.autosaveToggle.emit("pointerup")
+      this.autosaveToggle.emit("pointerup");
     }
-    if(this.toggles.heatmap === true){
+    if (this.toggles.heatmap === true) {
       this.toggles.heatmap = !this.toggles.heatmap;
-      this.heatmapToggle.emit("pointerup")
+      this.heatmapToggle.emit("pointerup");
     }
 
     // weather levels label on hover
@@ -111,30 +122,38 @@ export class PlayScene extends Phaser.Scene {
     this.input.on("pointerdown", (ptr) => {
       if (!(ptr.x >= this.width || ptr.y >= this.height)) {
         // Get the cell offset for the player's current position
-        const playerCellOffset = this.grid.getCellAt(this.player.x, this.player.y, this.tile_size);
+        const playerCellOffset = this.grid.getCellAt(
+          this.player.x,
+          this.player.y,
+          this.tile_size,
+        );
         if (playerCellOffset === false) {
           return;
         }
 
         // Get the cell offset for the clicked position
-        const clickedCellOffset = this.grid.getCellAt(ptr.x, ptr.y, this.tile_size);
+        const clickedCellOffset = this.grid.getCellAt(
+          ptr.x,
+          ptr.y,
+          this.tile_size,
+        );
         if (clickedCellOffset === false) {
-            return;
+          return;
         }
 
         // Check if the clicked cell is adjacent to the player's cell
         if (!this.grid.isAdjacentCell(playerCellOffset, clickedCellOffset)) {
-            return;
+          return;
         }
         const clickedCell = this.grid.getCell(
-            Math.floor(ptr.x / this.tile_size),
-            Math.floor(ptr.y / this.tile_size)
+          Math.floor(ptr.x / this.tile_size),
+          Math.floor(ptr.y / this.tile_size),
         );
         const plantTypes = this.game.globals.plantTypes;
         const pixelCoord = {
-            x: (Math.floor(ptr.x / this.tile_size) + 0.5) * this.tile_size,
-            y: (Math.floor(ptr.y / this.tile_size) + 0.5) * this.tile_size
-        }
+          x: (Math.floor(ptr.x / this.tile_size) + 0.5) * this.tile_size,
+          y: (Math.floor(ptr.y / this.tile_size) + 0.5) * this.tile_size,
+        };
         plantHandler(this, pixelCoord, clickedCell, plantTypes);
       }
     });
@@ -159,22 +178,24 @@ export class PlayScene extends Phaser.Scene {
 
   checkWin() {
     if (this.allCountsSatisfied()) {
-      // autosave 
+      // autosave
       saveFile(this, true);
       this.gameStates.gameOver = true;
     }
   }
 
-  allCountsSatisfied(){
-    for(const id in this.counts){
-      if(this.counts[id] !== this.winCounts[id]) return false;
+  allCountsSatisfied() {
+    for (const id in this.counts) {
+      if (this.counts[id] !== this.winCounts[id]) return false;
     }
     return true;
   }
 
   makeGridLines() {
-    let drawToWidth = this.grid_dims.scale * this.grid_dims.tile_size * this.grid_dims.width;
-    let drawToHeight = this.grid_dims.scale * this.grid_dims.tile_size * this.grid_dims.height;
+    let drawToWidth = this.grid_dims.scale * this.grid_dims.tile_size *
+      this.grid_dims.width;
+    let drawToHeight = this.grid_dims.scale * this.grid_dims.tile_size *
+      this.grid_dims.height;
 
     //Draw vertical line
     for (let x = this.tile_size; x < drawToWidth; x += this.tile_size) {
@@ -187,26 +208,31 @@ export class PlayScene extends Phaser.Scene {
   }
 
   endDay() {
-    let state = this.grid.copyAttributesToArray(["sun_lvl", "rain_lvl", "growth_lvl", "plant_type"]);
-    this.undoStack.push({weather: state, growth: state});
+    let state = this.grid.copyAttributesToArray([
+      "sun_lvl",
+      "rain_lvl",
+      "growth_lvl",
+      "plant_type",
+    ]);
+    this.undoStack.push({ weather: state, growth: state });
     this.redoStack = [];
-    // autosave 
+    // autosave
     saveFile(this, true);
     this.gameStates.eod = true;
   }
 
-  quit() {  
+  quit() {
     this.scene.stop();
     this.scene.start("menuScene");
   }
 
   updateWorld(target, arr) {
-    switch(target){
+    switch (target) {
       case "weather":
         // destroy old heatmap
-        if(this.toggles.heatmap){
-          if(this.weatherMap.length > 0){ 
-            for(const rect of this.weatherMap){ rect.destroy(); }
+        if (this.toggles.heatmap) {
+          if (this.weatherMap.length > 0) {
+            for (const rect of this.weatherMap) rect.destroy();
           }
           this.weatherMap = [];
         }
@@ -216,31 +242,32 @@ export class PlayScene extends Phaser.Scene {
         else this.grid.setStateFromArray(arr); // set from array
 
         // re-render heatmap
-        if(this.toggles.heatmap){
+        if (this.toggles.heatmap) {
           this.weatherMap = this.grid.render(this.tile_size);
         }
         break;
       case "plant":
-        if(arr) { this.grid.setStateFromArray(arr); }
-        else { updatePlants( //end of day growth 
+        if (arr) this.grid.setStateFromArray(arr);
+        else {updatePlants( //end of day growth
             this,
             this.game.globals.plantTypes,
             {
-                sun: this.game.globals.sunlightRequirements,
-                water: this.game.globals.waterRequirements
-            }
-        ); } 
+              sun: this.game.globals.sunlightRequirements,
+              water: this.game.globals.waterRequirements,
+            },
+          );}
         break;
       default:
-        throw new Error(`Unkown target: ${target}`)
+        throw new Error(`Unkown target: ${target}`);
     }
-
   }
 
-  findSprite(x, y, arr){
-    if(!arr){ arr = this.children.getAll().filter(child => child.name === "plant"); }
-    for(const sprite of arr) {
-      if(sprite.x === x && sprite.y === y) {
+  findSprite(x, y, arr) {
+    if (!arr) {
+      arr = this.children.getAll().filter((child) => child.name === "plant");
+    }
+    for (const sprite of arr) {
+      if (sprite.x === x && sprite.y === y) {
         return sprite;
       }
     }
@@ -248,8 +275,8 @@ export class PlayScene extends Phaser.Scene {
   }
 
   updateSprite(x, y, arr, newSprite) {
-    for(let i = 0; i < arr.length; i++) {
-      if(arr[i].x == x && arr[i].y == y) {
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i].x == x && arr[i].y == y) {
         arr[i] = newSprite; // destroy arr[i] before setting to new sprite??
         return arr[i];
       }
@@ -257,35 +284,34 @@ export class PlayScene extends Phaser.Scene {
     return null;
   }
 
-  drawGround(){
-    let drawToWidth = this.grid_dims.scale * this.grid_dims.tile_size * this.grid_dims.width;
-    let drawToHeight = this.grid_dims.scale * this.grid_dims.tile_size * this.grid_dims.height;
+  drawGround() {
+    let drawToWidth = this.grid_dims.scale * this.grid_dims.tile_size *
+      this.grid_dims.width;
+    let drawToHeight = this.grid_dims.scale * this.grid_dims.tile_size *
+      this.grid_dims.height;
     for (let x = 0; x < drawToWidth; x += this.tile_size) {
       for (let y = 0; y < drawToHeight; y += this.tile_size) {
-        let position = this.getPosition(x,y,drawToWidth,drawToHeight);
+        let position = this.getPosition(x, y, drawToWidth, drawToHeight);
 
-        this.add.image(x,y,`ground_${position}`)
+        this.add.image(x, y, `ground_${position}`)
           .setScale(this.grid_dims.scale)
           .setOrigin(0);
       }
     }
   }
 
-  getPosition(x, y, drawToWidth, drawToHeight){
-    if(x === 0){
-      if(y === 0){ return "TOPLEFT" }
-      else if(y === drawToHeight - this.tile_size){ return "BOTTOMLEFT"}
-      else{ return "LEFT" }
-    }
-    else if(y === 0){
-      if(x === drawToWidth - this.tile_size){ return "TOPRIGHT" }
-      else{ return "TOP" }
-    }
-    else if(x === drawToWidth - this.tile_size){
-      if(y === drawToHeight - this.tile_size){ return "BOTTOMRIGHT"}
-      else{ return "RIGHT" }
-    }
-    else if(y === drawToHeight - this.tile_size){ return "BOTTOM" }
-    else{ return "MIDDLE" }
+  getPosition(x, y, drawToWidth, drawToHeight) {
+    if (x === 0) {
+      if (y === 0) return "TOPLEFT";
+      else if (y === drawToHeight - this.tile_size) return "BOTTOMLEFT";
+      else return "LEFT";
+    } else if (y === 0) {
+      if (x === drawToWidth - this.tile_size) return "TOPRIGHT";
+      else return "TOP";
+    } else if (x === drawToWidth - this.tile_size) {
+      if (y === drawToHeight - this.tile_size) return "BOTTOMRIGHT";
+      else return "RIGHT";
+    } else if (y === drawToHeight - this.tile_size) return "BOTTOM";
+    else return "MIDDLE";
   }
 }
