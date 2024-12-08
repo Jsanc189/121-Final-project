@@ -1,0 +1,10 @@
+{
+    "name": "Farm Game",
+    "short_name": "Farm",
+    "start_url": "/index.html",
+    "icons": [{
+        "src": "https://cdn.glitch.global/4fc6eda5-1313-4a1e-8b76-b859653416cd/brace-logo-symbol.png?v=1733533998031",
+        "sizes": "64x64",
+        "type": "image/png"
+    }]
+}
