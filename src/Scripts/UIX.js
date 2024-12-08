@@ -2,13 +2,14 @@ import "phaser";
 import { languages } from "../Scripts/Text.js";
 
 export function initUIX(scene, undo, redo, endDay, saveFile, quit){
+    let buttonWidth = (scene.game.config. width - scene.width) / 1.5;
     //buttons
     makeButton(
       scene,
-      75,
-      860,
-      100,
-      50,
+      scene.width,
+      25,
+      buttonWidth,
+      25,
       languages[scene.game.globals.language]["undo"],
       0xffffff,
       "16px",
@@ -16,10 +17,10 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
     );
     makeButton(
       scene,
-      225,
-      860,
-      100,
-      50,
+      scene.width,
+      75,
+      buttonWidth,
+      25,
       languages[scene.game.globals.language]["redo"],
       0xffffff,
       "16px",
@@ -27,10 +28,10 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
     );
     makeButton(
       scene,
-      375,
-      860,
-      100,
-      50,
+      scene.width,
+      125,
+      buttonWidth,
+      25,
       languages[scene.game.globals.language]["end_day"],
       0xffffff,
       "16px",
@@ -38,10 +39,10 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
     );
     makeButton(
       scene,
-      575,
-      860,
-      100,
-      50,
+      scene.width,
+      scene.height - 175,
+      buttonWidth,
+      25,
       languages[scene.game.globals.language]["save_verb"],
       0xffffff,
       "16px",
@@ -49,10 +50,10 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
     );
     makeButton(
       scene,
-      725,
-      860,
-      100,
-      50,
+      scene.width,
+      scene.height - 125,
+      buttonWidth,
+      25,
       languages[scene.game.globals.language]["quit"],
       0xffffff,
       "16px",
@@ -61,13 +62,22 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
 
     // make toggle for autosaving
     let gridWidth = scene.grid_dims.scale * scene.grid_dims.tile_size * scene.grid_dims.width;
+    let toggleWidth = Math.min(buttonWidth, 100);
+    let autosave = wrapText(languages[scene.game.globals.language]["autosave"], buttonWidth, 10);
     scene.autosaveToggle = scene.add.rectangle(
-      gridWidth + 100, 50, 50, 50, 0xFFFFFF)
-      .setOrigin(0.5);
-    scene.add.text(scene.autosaveToggle.x, scene.autosaveToggle.y + 50, languages[scene.game.globals.language]["autosave"], {
-      fontSize: 16,
-      color: "#3CAD24",
-    }).setOrigin(0.5);
+      scene.width, 
+      250, 
+      toggleWidth / 2, 
+      toggleWidth / 2, 
+      0xFFFFFF
+    ).setOrigin(0);
+    scene.add.text(
+      scene.autosaveToggle.x, 
+      scene.autosaveToggle.y + scene.autosaveToggle.height + 20, 
+      autosave.text, {
+        fontSize: 16,
+        color: "#3CAD24",
+    }).setOrigin(0);
     scene.autosaveToggle.setInteractive();
     scene.autosaveToggle.on("pointerover", () => {
       scene.autosaveToggle.setFillStyle(0x3CAD24);
@@ -85,13 +95,21 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
     });
 
     // make toggle for heatmap
+    let heatmap = wrapText(languages[scene.game.globals.language]["weather_layer"], buttonWidth, 10);
     scene.heatmapToggle = scene.add.rectangle(
-      gridWidth + 100, 200, 50, 50, 0xFFFFFF)
-      .setOrigin(0.5);
-    scene.add.text(scene.heatmapToggle.x, scene.heatmapToggle.y + 50, languages[scene.game.globals.language]["weather_layer"], {
+      scene.width, 
+      scene.autosaveToggle.y + scene.autosaveToggle.height + 50, 
+      toggleWidth / 2, 
+      toggleWidth / 2,
+      0xFFFFFF
+    ).setOrigin(0);
+    scene.add.text(
+      scene.heatmapToggle.x, 
+      scene.heatmapToggle.y + scene.heatmapToggle.height + 20, 
+      heatmap.text, {
       fontSize: 16,
       color: "#3CAD24",
-    }).setOrigin(0.5);
+    }).setOrigin(0);
     scene.heatmapToggle.setInteractive();
     scene.heatmapToggle.on("pointerover", () => {
       scene.heatmapToggle.setFillStyle(0x3CAD24);
@@ -116,14 +134,27 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit){
     });
 
     // make sidebar for harvested plant counts
-    scene.add.text(gridWidth + 50, 300, `${10 - scene.counts["carrot"]} ${languages[scene.game.globals.language]["carrots"]}`);
-    scene.add.text(gridWidth + 50, 325, `${10 - scene.counts["tomato"]} ${languages[scene.game.globals.language]["tomatoes"]}`);
-    scene.add.text(gridWidth + 50, 350, `${10 - scene.counts["corn"]} ${languages[scene.game.globals.language]["corn"]}`);
-}
+    let wrappedCarrot = wrapText(
+      `${10 - scene.counts["carrot"]} ${languages[scene.game.globals.language]["carrots"]}`,
+      buttonWidth, 10
+    );
+    let wrappedTomato = wrapText(
+      `${10 - scene.counts["tomato"]} ${languages[scene.game.globals.language]["tomatoes"]}`,
+      buttonWidth, 10
+    );
+    let wrappedCorn = wrapText(
+      `${10 - scene.counts["corn"]} ${languages[scene.game.globals.language]["corn"]}`,
+      buttonWidth, 10
+    );
+    let carrotText = scene.add.text(gridWidth + 50, scene.heatmapToggle.y + scene.heatmapToggle.height + 75 * heatmap.lines, wrappedCarrot.text);
+    let tomatoText = scene.add.text(gridWidth + 50, carrotText.y + carrotText.height + 20, wrappedTomato.text);
+    let cornText = scene.add.text(gridWidth + 50, tomatoText.y + tomatoText.height + 20, wrappedCorn.text);
+  }
 
 function makeButton(scene, x, y, width, height, text, textColor, textSize, functionCall) {
-    const buttonBG = scene.add.rectangle(x, y, width, height, 0xFFFFFF);
-    const button = scene.add.text(x, y, text, {
+    const wrapped = wrapText(text, width, 10);
+    const buttonBG = scene.add.rectangle(x, y, width, height * wrapped.lines, 0xFFFFFF).setOrigin(0);
+    const button = scene.add.text(x + buttonBG.width / 2, y + buttonBG.height / 2, wrapped.text, {
       fontSize: textSize,
       color: textColor,
     }).setOrigin(0.5);
@@ -160,4 +191,27 @@ export function cellPreview(scene, ptr) {
         `${languages[scene.game.globals.language]["sun"]}: ${cell.sun_lvl}\n${languages[scene.game.globals.language]["rain"]}: ${cell.rain_lvl}\nplant type: ${cell.plant_type}\ngrowth: ${cell.growth_lvl}`,
         );
     }
+  }
+
+  function wrapText(text, maxWidth, charWidth) {
+    const maxCharsPerLine = Math.floor(maxWidth / charWidth);
+    const words = text.split(' ');
+    let lines = 1;
+    let line = '';
+    let wrappedText = '';
+
+    for (let i = 0; i < words.length; i++) {
+        const testLine = line + words[i] + ' ';
+
+        if (testLine.length > maxCharsPerLine) {
+            wrappedText += line.trim() + '\n';
+            line = words[i] + ' ';
+            lines++;
+        } else {
+            line = testLine;
+        }
+    }
+
+    wrappedText += line.trim(); // Add the last line
+    return {text: wrappedText, lines: lines};
 }

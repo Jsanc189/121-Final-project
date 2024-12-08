@@ -29,8 +29,8 @@ export class PlayScene extends Phaser.Scene {
     this.sessionSaved = this.load;
 
     // play window
-    this.width = this.game.config.width - 100;
-    this.height = this.game.config.height - 100;
+    this.width = this.game.config.width - this.game.config.width / 5;
+    this.height = this.game.config.height;
     
     //create tilemap & grid
     this.grid_dims = structuredClone(this.initState.grid)
