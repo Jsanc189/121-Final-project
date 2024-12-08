@@ -1,7 +1,7 @@
 import "phaser";
 import { languages } from "../Scripts/Text.js";
 
-export function initUIX(scene, undo, redo, endDay, saveFile, quit, movePlayer) {
+export function initUIX(scene, undo, redo, endDay, saveFile, quit, moveUp, moveDown, moveLeft, moveRight) {
   let buttonWidth = (scene.game.config.width - scene.width) / 1.5;
   let arrowWidth = (scene.game.config.width - scene.width) / 5;
   let sidebarDivision = 24;
@@ -178,7 +178,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit, movePlayer) {
     "\u2191",
     0xffffff,
     "16px",
-    () => movePlayer.bind(scene, scene, 0, -1),
+    () => moveUp.bind(scene, scene)
   );
 
   //down button
@@ -191,7 +191,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit, movePlayer) {
     "\u2193",
     0xffffff,
     "16px",
-    () => movePlayer.bind(scene, scene, 0, 1),
+    () => moveDown.bind(scene, scene),
   );
 
   //left button
@@ -204,7 +204,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit, movePlayer) {
     "\u2190",
     0xffffff,
     "16px",
-    () => movePlayer.bind(scene, scene, -1, 0),
+    () => moveLeft.bind(scene, scene),
   );
 
   //right button
@@ -217,7 +217,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit, movePlayer) {
     "\u2192",
     0xffffff,
     "16px",
-    () => movePlayer.bind(scene, scene, 1, 0),
+    () => moveRight.bind(scene, scene),
   );
 
   // harvested plant counts
