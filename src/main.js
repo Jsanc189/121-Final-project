@@ -21,6 +21,7 @@ let config = {
 };
 
 const game = new Game(config);
+window.game = game;
 
 //grid to hold the Play scene's grid of tiles
 game.saveFiles = null;
