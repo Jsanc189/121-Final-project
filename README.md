@@ -155,3 +155,66 @@ As for the DSLs, we gravitated towards YAML for both our internal and external D
 In creating the tilemap & tileset, we used the [Tiled software](https://www.mapeditor.org/) and Kenney's [Tiny Town tileset](https://kenney.nl/assets/tiny-town) as well as the [Pixel Platformer Farm Expansion](https://kenney.nl/assets/pixel-platformer-farm-expansion) for the plant sprites. The player was created from the [Hana Caraka Base Character tileset](https://bagong-games.itch.io/hana-caraka-base-character) with spritesheet support via [TexturePacker](https://www.codeandweb.com/texturepacker).
 
 Perlin noise library used for weather generation is [noisejs by Seph Hentle](https://github.com/josephg/noisejs).
+
+# F3 Devlog - [12/8/24]
+
+## How we satisfied the software requirements
+
+### FOa. Control a character moving in a 2D grid
+Same.
+
+### F0b. You advance time manually in the turn- based simulation
+Same.
+
+### F0c. You can reap or sow plants on a grid cells only when you are near them
+Same.
+
+### F0d. Grid cells have sun and water levels
+Due to problems accessing our Perlin library on mobile builds, we shifted to simple in-house randomization for weather generation. 
+
+### F0e. Each plant on the grid has a distinct type and growth level
+Same.
+
+### F0f. Simple spatial rules govern plant growth based on sun, water, and nearby plants
+Same.
+
+### F0g. A play scenario is completed when some condition is satified
+Same.
+
+### F1.a The important state of your game's grid must be backed by a single contiguous byte array in AoS or SoA format. If your game stores the grid state in multiple format, the byte array format must be the primary format (i.e. other formats are decoded from it as needed).  
+Same.
+
+### F1.b The player must be able to manually save their progress in the game. This must allow them to load state and continue play another day (i.e. after quitting the game app). The player must be able to manage multiple save files/slots.  
+Same.
+
+### F1.c The game must implement an implicit auto-save system to support recovery from unexpected quits. (For example, when the game is launched, if an auto-save entry is present, the game might ask the player "do you want to continue where you left off?" The auto-save entry might or might not be visible among the list of manual save entries available for the player to load as part of F1.b.)  
+Same.
+
+### F1.d The player must be able to undo every major choice (all the way back to the start of play), even from a saved game. They should be able to redo (undo of undo operations) multiple times.  
+Same.
+
+### F2.a External DSL for scenario designs: In separate text file or text block, designers should be able to express the design of different gameplay scenarios, e.g. starting conditions, weather randomization policy, and victory conditions. The language must be able to schedule unique events that happen at specific times.
+Same.
+
+### F2.b Internal DSL for plant types and growth conditions: Within the main programming language used for the rest of your game, you should implement and use a domain-specific language for defining your different types of plants and the unique growth rules that apply to each. (Think about how you could add and remove item types from your D1 code by pushing/popping items from an array or how you could create new types of stickers at runtime in D2.)
+Same.
+
+### F2.c Switch to an alternate platform: Change either your project's primary programming language or your primary user interface library/engine/framework. As more of your design is expressed in DSLs, your design becomes increasingly insulated from changes to your primarily programming language or engine. Using your earlier implementation as a reference, it becomes more realistic that you'd be able to leverage generative AI for the large but mostly mindless translations from one language or engine to another.
+We returned our code's platform to its original language and framework, Javascript in Phaser.
+
+### F3.a The game must be internationalized in way that allows all text visible to the player to be translated into different written languages (i.e. there are no messages that are hard-coded to display only English-language text, but it is fine for this requirement if English is the only supported display language).
+We handle localization with the help of the Text.js script, which exports for each of our supported languages a map that holds all of our user-end text displayed. When the player selects their language of choice, our code references the map's keys and prints the associated values to the player screen. This data-driven localization of on-screen text simplifies translation since all of our game's text is in a single file. The only file that will need to be changed when adding support for a new language is Text.js.
+
+### F3.b The game must be localized to support three different written languages. At least one language must use a logographic script, and at least one language must use a right-to-left script.
+Elliot used his own knowledge and the help of his friends to internationalize all of our game's text. Our game currently supports English, Swedish, Hebrew, and Chinese. The title screen has a "Select Language" button which, when pressed, updates all user-end text to the selected language, including the laguage page, title page, save page, and play scene. Our logographic language is Chinese, and our right-to-left language is Hebrew. 
+
+### F3.c The game must be installable on a smartphone-class mobile device in the sense that there is a way to get it to show up as a home-screen icon that feels similar to other installed apps. (It is okay if you only get this to work on one specific device. You do not need to deploy the game in a way that anyone else can install it without your help because that might be much more difficult for some game platforms.)
+You can install our game by opening the page deployment in your mobile browser and clicking "Add to Home screen" in the drop-down menu. We accomplished this through the use of a mobile web manifest. 
+
+### F3.d Once installed in a mobile device, the game can be launched and satisfactorily played even when the device is not connected to the internet.
+With the exception of weather generation, all previous software requirements behave the same on mobile online and offline as they do on desktop. We had to re-work our UIX to better suit mobile platforms. The player can move arround using arrows in the sidebar, and to place/harvest plants, they can tap their screen. The win conditions remain, and the player is able to change the text language in the same way they would on desktop.
+
+## Reflection
+To get our game to be installable on mobile, we had to make some changes to the file structure of our code (such as moving assets to `./public`). We also returned to our original platform choices so that we could continue to use global data in ways that Typescript in the Pahser framework could not gracefully support. Furthermore, we had to move away from our use of the Perlin.js library in favor of in-house randomization in order to support mobile installation. 
+
+Overall, many of the changes we made during this devolpment phase came from the need to balance global objects and assets usage with different end-user platform choices. We had to ensure that our code could access any assets or libraries it used no matter where the player chooses to play. In the end, we found it simpler to make a few sacrifices to our original gameplan (or previous code implementations).
