@@ -1,47 +1,18 @@
 import "phaser";
 import { languages } from "../Scripts/Text.js";
 
-export function initUIX(scene, undo, redo, endDay, saveFile, quit, movePlayer) {
+export function initUIX(scene, undo, redo, endDay, saveFile, quit, moveUp, moveDown, moveLeft, moveRight) {
   let buttonWidth = (scene.game.config.width - scene.width) / 1.5;
   let arrowWidth = (scene.game.config.width - scene.width) / 5;
+  let sidebarDivision = 24;
+  
   //buttons
+  //save button
+  //makeButton(scene, x, y, width, height, text, textColor, textSize, functionCall)
   makeButton(
     scene,
     scene.width,
-    25,
-    buttonWidth,
-    25,
-    languages[scene.game.globals.language]["undo"],
-    0xffffff,
-    "16px",
-    () => undo.bind(scene, scene),
-  );
-  makeButton(
-    scene,
-    scene.width,
-    75,
-    buttonWidth,
-    25,
-    languages[scene.game.globals.language]["redo"],
-    0xffffff,
-    "16px",
-    () => redo.bind(scene, scene),
-  );
-  makeButton(
-    scene,
-    scene.width,
-    125,
-    buttonWidth,
-    25,
-    languages[scene.game.globals.language]["end_day"],
-    0xffffff,
-    "16px",
-    () => endDay.bind(scene, scene),
-  );
-  makeButton(
-    scene,
-    scene.width,
-    scene.height - 175,
+    (scene.height / sidebarDivision),
     buttonWidth,
     25,
     languages[scene.game.globals.language]["save_verb"],
@@ -49,10 +20,12 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit, movePlayer) {
     "16px",
     () => saveFile.bind(scene, scene),
   );
+    
+  //quit
   makeButton(
     scene,
     scene.width,
-    scene.height - 125,
+    (scene.height / sidebarDivision) * 2,
     buttonWidth,
     25,
     languages[scene.game.globals.language]["quit"],
@@ -60,58 +33,44 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit, movePlayer) {
     "16px",
     () => quit.bind(scene, scene),
   );
-
-  //add movement buttons
-  //up button
+  
+  //undo button
   makeButton(
     scene,
     scene.width,
-    scene.height - 320,
-    arrowWidth,
-    arrowWidth,
-    "\u2191",
+    (scene.height / sidebarDivision) * 3,
+    buttonWidth,
+    25,
+    languages[scene.game.globals.language]["undo"],
     0xffffff,
     "16px",
-    () => movePlayer.bind(scene, scene, 0, -1),
+    () => undo.bind(scene, scene),
   );
 
-  //down button
-  makeButton(
-    scene,
-    scene.width + (arrowWidth * 1.5),
-    scene.height - 320,
-    arrowWidth,
-    arrowWidth,
-    "\u2193",
-    0xffffff,
-    "16px",
-    () => movePlayer.bind(scene, scene, 0, 1),
-  );
-
-  //left button
+  //redo button
   makeButton(
     scene,
     scene.width,
-    scene.height - 250,
-    arrowWidth,
-    arrowWidth,
-    "\u2190",
+    (scene.height / sidebarDivision) * 4,
+    buttonWidth,
+    25,
+    languages[scene.game.globals.language]["redo"],
     0xffffff,
     "16px",
-    () => movePlayer.bind(scene, scene, -1, 0),
+    () => redo.bind(scene, scene),
   );
 
-  //right button
+  //end day button
   makeButton(
     scene,
-    scene.width + (arrowWidth * 1.5),
-    scene.height - 250,
-    arrowWidth,
-    arrowWidth,
-    "\u2192",
+    scene.width,
+    (scene.height / sidebarDivision) * 5,
+    buttonWidth,
+    25,
+    languages[scene.game.globals.language]["end_day"],
     0xffffff,
     "16px",
-    () => movePlayer.bind(scene, scene, 1, 0),
+    () => endDay.bind(scene, scene),
   );
 
   // make toggle for autosaving
@@ -123,16 +82,20 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit, movePlayer) {
     buttonWidth,
     10,
   );
+
+  //autosave square for toggle
   scene.autosaveToggle = scene.add.rectangle(
     scene.width,
-    250,
-    toggleWidth / 2,
-    toggleWidth / 2,
+    (scene.height / sidebarDivision) * 7,
+    toggleWidth / 3,
+    toggleWidth / 3,
     0xFFFFFF,
   ).setOrigin(0);
+
+  //autosavetext
   scene.add.text(
     scene.autosaveToggle.x,
-    scene.autosaveToggle.y + scene.autosaveToggle.height + 20,
+    ((scene.height / sidebarDivision) * 7) + (toggleWidth / 3),
     autosave.text,
     {
       fontSize: 16,
@@ -143,12 +106,15 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit, movePlayer) {
   scene.autosaveToggle.on("pointerover", () => {
     scene.autosaveToggle.setFillStyle(0x3CAD24);
   });
+
   scene.autosaveToggle.on("pointerout", () => {
     if (!scene.toggles.autosave) scene.autosaveToggle.setFillStyle(0xFFFFFF);
   });
+
   scene.autosaveToggle.on("pointerdown", () => {
     scene.autosaveToggle.setFillStyle(0x3CAD24);
   });
+  
   scene.autosaveToggle.on("pointerup", () => {
     scene.toggles.autosave = !scene.toggles.autosave;
     if (scene.toggles.autosave) scene.autosaveToggle.setFillStyle(0x06402B);
@@ -163,14 +129,14 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit, movePlayer) {
   );
   scene.heatmapToggle = scene.add.rectangle(
     scene.width,
-    scene.autosaveToggle.y + scene.autosaveToggle.height + 50,
-    toggleWidth / 2,
-    toggleWidth / 2,
+    (scene.height / sidebarDivision) * 9,
+    toggleWidth / 3,
+    toggleWidth / 3,
     0xFFFFFF,
   ).setOrigin(0);
   scene.add.text(
     scene.heatmapToggle.x,
-    scene.heatmapToggle.y + scene.heatmapToggle.height + 20,
+    ((scene.height / sidebarDivision) * 9) + (toggleWidth / 3),
     heatmap.text,
     {
       fontSize: 16,
@@ -201,7 +167,60 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit, movePlayer) {
     }
   });
 
-  // make sidebar for harvested plant counts
+  //add movement buttons
+  //up button
+  makeButton(
+    scene,
+    scene.width,
+    (scene.height / sidebarDivision) * 12,
+    arrowWidth,
+    arrowWidth,
+    "\u2191",
+    0xffffff,
+    "16px",
+    () => moveUp.bind(scene, scene)
+  );
+
+  //down button
+  makeButton(
+    scene,
+    scene.width + (arrowWidth * 1.5),
+    (scene.height / sidebarDivision) * 12,
+    arrowWidth,
+    arrowWidth,
+    "\u2193",
+    0xffffff,
+    "16px",
+    () => moveDown.bind(scene, scene),
+  );
+
+  //left button
+  makeButton(
+    scene,
+    scene.width,
+    (scene.height / sidebarDivision) * 14,
+    arrowWidth,
+    arrowWidth,
+    "\u2190",
+    0xffffff,
+    "16px",
+    () => moveLeft.bind(scene, scene),
+  );
+
+  //right button
+  makeButton(
+    scene,
+    scene.width + (arrowWidth * 1.5),
+    (scene.height / sidebarDivision) * 14,
+    arrowWidth,
+    arrowWidth,
+    "\u2192",
+    0xffffff,
+    "16px",
+    () => moveRight.bind(scene, scene),
+  );
+
+  // harvested plant counts
   let wrappedCarrot = wrapText(
     `${10 - scene.counts["carrot"]} ${
       languages[scene.game.globals.language]["carrots"]
@@ -209,6 +228,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit, movePlayer) {
     buttonWidth,
     10,
   );
+
   let wrappedTomato = wrapText(
     `${10 - scene.counts["tomato"]} ${
       languages[scene.game.globals.language]["tomatoes"]
@@ -216,6 +236,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit, movePlayer) {
     buttonWidth,
     10,
   );
+
   let wrappedCorn = wrapText(
     `${10 - scene.counts["corn"]} ${
       languages[scene.game.globals.language]["corn"]
@@ -225,16 +246,17 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit, movePlayer) {
   );
 
   let carrotText = scene.add.text(
-    gridWidth + 50,
-    scene.heatmapToggle.y + scene.heatmapToggle.height + 75 * heatmap.lines,
+    gridWidth + 20,
+    (scene.height / sidebarDivision) * 16,
     wrappedCarrot.text,
     {
       fontSize: 16,
       color: '#c2df48',
     }
   );
+
   let tomatoText = scene.add.text(
-    gridWidth + 50,
+    gridWidth + 20,
     carrotText.y + carrotText.height + 20,
     wrappedTomato.text,
     {
@@ -242,8 +264,9 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit, movePlayer) {
       color: '#c2df48',
     }
   );
+  
   let cornText = scene.add.text(
-    gridWidth + 50,
+    gridWidth + 20,
     tomatoText.y + tomatoText.height + 20,
     wrappedCorn.text,
     {

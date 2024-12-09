@@ -46,20 +46,6 @@ export class PlayScene extends Phaser.Scene {
     this.grid = new Grid(this, this.grid_dims, this.load);
     this.makeGridLines();
 
-    //player movement keys
-    this.leftKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.LEFT,
-    );
-    this.rightKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.RIGHT,
-    );
-    this.upKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.UP,
-    );
-    this.downKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.DOWN,
-    );
-
     // this.time = new Clock(this);
     this.player = new Player(
       this,
@@ -100,7 +86,10 @@ export class PlayScene extends Phaser.Scene {
       this.endDay,
       saveFile,
       this.quit,
-      this.player.update,
+      this.moveUp,
+      this.moveDown,
+      this.moveLeft,
+      this.moveRight
     );
     if (this.toggles.autosave === true) {
       this.toggles.autosave = !this.toggles.autosave;
@@ -157,6 +146,8 @@ export class PlayScene extends Phaser.Scene {
         plantHandler(this, pixelCoord, clickedCell, plantTypes);
       }
     });
+
+    this.keyboardInput();
   }
 
   update() {
@@ -313,5 +304,49 @@ export class PlayScene extends Phaser.Scene {
       else return "RIGHT";
     } else if (y === drawToHeight - this.tile_size) return "BOTTOM";
     else return "MIDDLE";
+  }
+
+  keyboardInput() {
+    //player movement keys
+    const leftKey = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.LEFT,
+    );
+    leftKey.on('up', () => {
+      this.player.moveLeft();
+    })
+    const rightKey = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.RIGHT,
+    );
+    rightKey.on('up', () => {
+      this.player.moveRight(this);
+    })
+    const upKey = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.UP,
+    );
+    upKey.on('up', () => {
+      this.player.moveUp();
+    })
+    const downKey = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.DOWN,
+    );
+    downKey.on('up', () => {
+      this.player.moveDown(this);
+    })
+  }
+
+  moveUp() {
+    this.player.moveUp();
+  }
+  
+  moveDown() {
+    this.player.moveDown(this);
+  }
+  
+   moveLeft() {
+    this.player.moveLeft();
+  }
+
+   moveRight() {
+    this.player.moveRight(this);
   }
 }
