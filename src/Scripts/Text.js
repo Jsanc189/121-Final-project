@@ -23,10 +23,11 @@ const eng = {
     rain: "rain", // rain level per tile
     plant_type: "plant", // the type of plant - carrot, corn, or tomato
     growth: "growth", // growth level from 1-3
-    carrots: "carrots needed", // [x] more carrots needed to fulfill win conditions
-    tomatoes: "tomatoes needed", // [x] more tomatoes needed to fulfill win conditions
-    corn: "corn needed", // [x] more corn needed to fulfill win conditions
+    carrots: "Carrots needed", // [x] more carrots needed to fulfill win conditions
+    tomatoes: "Tomatoes needed", // [x] more tomatoes needed to fulfill win conditions
+    corn: "Corn needed", // [x] more corn needed to fulfill win conditions
     you_win: "You win!", // win messsage
+    main_menu: "Main Menu", // main menu
 }
 
 const swe = {
@@ -53,10 +54,11 @@ const swe = {
     rain: "regn", // rain level per tile
     plant_type: "växttyp", // the type of plant - carrot, corn, or tomato
     growth: "tillväxtnivå", // growth level from 1-3
-    carrots: "morötter behövs", // [x] more carrots needed to fulfill win conditions
-    tomatoes: "tomater behövs", // [x] more tomatoes needed to fulfill win conditions
-    corn: "majs behövs", // [x] more corn needed to fulfill win conditions
+    carrots: "Morötter behövs", // [x] more carrots needed to fulfill win conditions
+    tomatoes: "Tomater behövs", // [x] more tomatoes needed to fulfill win conditions
+    corn: "Majs behövs", // [x] more corn needed to fulfill win conditions
     you_win: "Du vinner!", // win messsage
+    main_menu: "Menyn", // main menu
 };
 
 const hebr = {
@@ -83,11 +85,11 @@ const hebr = {
     rain: "גשם", // rain level per tile
     plant_type: "צמח", // the type of plant - carrot, corn, or tomato
     growth: "רמת הצמיחה", // growth level from 1-3
-    carrots: "גזר לקציר", // [x] more carrots needed to fulfill win conditions
+    carrots: "גזרים לקציר", // [x] more carrots needed to fulfill win conditions
     tomatoes: "עגבניות לקציר", // [x] more tomatoes needed to fulfill win conditions
     corn: "תירס לקציר", // [x] more corn needed to fulfill win conditions
     you_win: "אתה מנצח", // win messsage
-    main_menu: "תפריט ראשי" // main menu
+    main_menu: "תפריט ראשי", // main menu
 }
 
 const chi = {
@@ -118,6 +120,7 @@ const chi = {
     tomatoes: "需要_番茄", // [x] more tomatoes needed to fulfill win conditions
     corn: "需要_玉米", // [x] more corn needed to fulfill win conditions
     you_win: "勝利", // win messsage
+    main_menu: "主畫面", // go back to main menu
 }
 
 export const languages = {"eng": eng, "swe": swe, "hebr": hebr, "chi": chi};

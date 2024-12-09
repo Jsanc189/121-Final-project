@@ -3,8 +3,7 @@ import { Grid } from "../Scripts/Grid.js";
 import { Player } from "../Scripts/Player.js";
 import { plantHandler, updatePlants } from "../Scripts/Plant.js";
 import { loadFile, redo, saveFile, undo } from "../Scripts/DataHandling.js";
-import { cellPreview, initUIX } from "../Scripts/UIX.js";
-import { languages } from "../Scripts/Text.js";
+import { cellPreview, plantSidebarUpdate, initUIX } from "../Scripts/UIX.js";
 
 export class PlayScene extends Phaser.Scene {
   constructor() {
@@ -153,6 +152,8 @@ export class PlayScene extends Phaser.Scene {
   update() {
     this.player.update(this);
     if (!this.gameStates.gameOver) {
+      // udpate sidebar text
+      plantSidebarUpdate(this);
       //check if end conditions are met
       this.checkWin();
 

@@ -221,54 +221,54 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit, moveUp, moveD
   );
 
   // harvested plant counts
-  let wrappedCarrot = wrapText(
-    `${10 - scene.counts["carrot"]} ${
+  scene.wrappedCarrot = wrapText(
+    `${
       languages[scene.game.globals.language]["carrots"]
-    }`,
+    }: ${10 - scene.counts["carrot"]}`,
     buttonWidth,
     10,
   );
 
-  let wrappedTomato = wrapText(
-    `${10 - scene.counts["tomato"]} ${
+  scene.wrappedTomato = wrapText(
+    `${
       languages[scene.game.globals.language]["tomatoes"]
-    }`,
+    }: ${10 - scene.counts["tomato"]}`,
     buttonWidth,
     10,
   );
 
-  let wrappedCorn = wrapText(
-    `${10 - scene.counts["corn"]} ${
+  scene.wrappedCorn = wrapText(
+    `${
       languages[scene.game.globals.language]["corn"]
-    }`,
+    }: ${10 - scene.counts["corn"]}`,
     buttonWidth,
     10,
   );
 
-  let carrotText = scene.add.text(
+  scene.carrotText = scene.add.text(
     gridWidth + 20,
     (scene.height / sidebarDivision) * 16,
-    wrappedCarrot.text,
+    scene.wrappedCarrot.text,
     {
       fontSize: 16,
       color: '#c2df48',
     }
   );
 
-  let tomatoText = scene.add.text(
+  scene.tomatoText = scene.add.text(
     gridWidth + 20,
-    carrotText.y + carrotText.height + 20,
-    wrappedTomato.text,
+    scene.carrotText.y + scene.carrotText.height + 20,
+    scene.wrappedTomato.text,
     {
       fontSize: 16,
       color: '#c2df48',
     }
   );
   
-  let cornText = scene.add.text(
+  scene.cornText = scene.add.text(
     gridWidth + 20,
-    tomatoText.y + tomatoText.height + 20,
-    wrappedCorn.text,
+    scene.tomatoText.y + scene.tomatoText.height + 20,
+    scene.wrappedCorn.text,
     {
       fontSize: 16,
       color: '#c2df48',
@@ -346,6 +346,21 @@ export function cellPreview(scene, ptr) {
       }: ${cell.growth_lvl}`,
     );
   }
+}
+
+export function plantSidebarUpdate(scene) {
+  // update text 
+  scene.wrappedCarrot.text = `${languages[scene.game.globals.language]["carrots"]
+    }: ${10 - scene.counts["carrot"]}`;
+  scene.wrappedTomato.text = `${languages[scene.game.globals.language]["tomatoes"]
+    }: ${10 - scene.counts["tomato"]}`;
+  scene.wrappedCorn.text = `${languages[scene.game.globals.language]["corn"]
+    }: ${10 - scene.counts["corn"]}`;
+  
+  // set text
+  scene.carrotText.setText(scene.wrappedCarrot.text);
+  scene.tomatoText.setText(scene.wrappedTomato.text);
+  scene.cornText.setText(scene.wrappedCorn.text);
 }
 
 function wrapText(text, maxWidth, charWidth) {
