@@ -26,6 +26,7 @@ const eng = {
     carrots: "carrots needed", // [x] more carrots needed to fulfill win conditions
     tomatoes: "tomatoes needed", // [x] more tomatoes needed to fulfill win conditions
     corn: "corn needed", // [x] more corn needed to fulfill win conditions
+    you_win: "You win!", // win messsage
 }
 
 const swe = {
@@ -49,7 +50,13 @@ const swe = {
     autosave: "Autospara", // toggle autosave functions
     weather_layer: "Visa väder", // show the weather layer overlay
     sun: "sol", // sun level per tile
-    rain: "regn" // rain level per tile
+    rain: "regn", // rain level per tile
+    plant_type: "växttyp", // the type of plant - carrot, corn, or tomato
+    growth: "tillväxtnivå", // growth level from 1-3
+    carrots: "morötter behövs", // [x] more carrots needed to fulfill win conditions
+    tomatoes: "tomater behövs", // [x] more tomatoes needed to fulfill win conditions
+    corn: "majs behövs", // [x] more corn needed to fulfill win conditions
+    you_win: "Du vinner!", // win messsage
 };
 
 const hebr = {
@@ -73,7 +80,14 @@ const hebr = {
     autosave: "שמירה אוטומטית", // toggle autosave functions
     weather_layer: "מראה את מזג האוויר", // show the weather layer overlay
     sun: "שמש", // sun level per tile
-    rain: "גשם" // rain level per tile
+    rain: "גשם", // rain level per tile
+    plant_type: "צמח", // the type of plant - carrot, corn, or tomato
+    growth: "רמת הצמיחה", // growth level from 1-3
+    carrots: "גזר לקציר", // [x] more carrots needed to fulfill win conditions
+    tomatoes: "עגבניות לקציר", // [x] more tomatoes needed to fulfill win conditions
+    corn: "תירס לקציר", // [x] more corn needed to fulfill win conditions
+    you_win: "אתה מנצח", // win messsage
+    main_menu: "תפריט ראשי" // main menu
 }
 
 const chi = {
@@ -97,7 +111,13 @@ const chi = {
     autosave: "自動儲存", // toggle autosave functions
     weather_layer: "氣候層次", // show the weather layer overlay
     sun: "太陽", // sun level per tile
-    rain: "雨" // rain level per tile
+    rain: "雨", // rain level per tile
+    plant_type: "植物", // the type of plant - carrot, corn, or tomato
+    growth: "生長程度a", // growth level from 1-3
+    carrots: "需要_蘿蔔", // [x] more carrots needed to fulfill win conditions
+    tomatoes: "需要_番茄", // [x] more tomatoes needed to fulfill win conditions
+    corn: "需要_玉米", // [x] more corn needed to fulfill win conditions
+    you_win: "勝利", // win messsage
 }
 
 export const languages = {"eng": eng, "swe": swe, "hebr": hebr, "chi": chi};

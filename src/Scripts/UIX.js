@@ -136,7 +136,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit, movePlayer) {
     autosave.text,
     {
       fontSize: 16,
-      color: "#3CAD24",
+      color: "#c2df48",
     },
   ).setOrigin(0);
   scene.autosaveToggle.setInteractive();
@@ -174,7 +174,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit, movePlayer) {
     heatmap.text,
     {
       fontSize: 16,
-      color: "#3CAD24",
+      color: '#c2df48',
     },
   ).setOrigin(0);
   scene.heatmapToggle.setInteractive();
@@ -223,20 +223,33 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit, movePlayer) {
     buttonWidth,
     10,
   );
+
   let carrotText = scene.add.text(
     gridWidth + 50,
     scene.heatmapToggle.y + scene.heatmapToggle.height + 75 * heatmap.lines,
     wrappedCarrot.text,
+    {
+      fontSize: 16,
+      color: '#c2df48',
+    }
   );
   let tomatoText = scene.add.text(
     gridWidth + 50,
     carrotText.y + carrotText.height + 20,
     wrappedTomato.text,
+    {
+      fontSize: 16,
+      color: '#c2df48',
+    }
   );
   let cornText = scene.add.text(
     gridWidth + 50,
     tomatoText.y + tomatoText.height + 20,
     wrappedCorn.text,
+    {
+      fontSize: 16,
+      color: '#c2df48',
+    }
   );
 }
 
@@ -303,7 +316,11 @@ export function cellPreview(scene, ptr) {
     scene.levelsText.setText(
       `${languages[scene.game.globals.language]["sun"]}: ${cell.sun_lvl}\n${
         languages[scene.game.globals.language]["rain"]
-      }: ${cell.rain_lvl}\nplant type: ${cell.plant_type}\ngrowth: ${cell.growth_lvl}`,
+      }: ${cell.rain_lvl}\n${
+        languages[scene.game.globals.language]["plant_type"]
+      }: ${cell.plant_type}\n${
+        languages[scene.game.globals.language]["growth"]
+      }: ${cell.growth_lvl}`,
     );
   }
 }
