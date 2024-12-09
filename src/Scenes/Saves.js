@@ -15,7 +15,7 @@ export class SavesScene extends Phaser.Scene {
   
     create() {
       // back to previous scene
-      this.backButton = this.makeButton(80, 30, "Back", {fontSize: "50px", fill: "#c2df48"});
+      this.backButton = this.makeButton(80, 30, languages[this.game.globals.language]["back"], {fontSize: "30px", fill: "#c2df48"});
       this.backButton.on('pointerup', () => {
           this.scene.run(this.previousScene);
           this.scene.stop();
@@ -23,7 +23,7 @@ export class SavesScene extends Phaser.Scene {
 
       // ten empty slots
       this.buttons = [];
-      this.emptyText = "[ empty slot ]";
+      this.emptyText = `[ ${languages[this.game.globals.language]["empty_save"]} ]`;
       const WIDTH = this.game.config.width;
       const HEIGHT = this.game.config.height - 100;
 
@@ -46,7 +46,7 @@ export class SavesScene extends Phaser.Scene {
         // replace empty slot text with save indices
         if (this.saveFiles.length > 0) {
           for (let i = 0; i < this.saveFiles.length; i++) {
-            if(this.saveFiles[i]) this.buttons[i].text = "Save " + String.fromCharCode(65 + i);
+            if(this.saveFiles[i]) this.buttons[i].text = `${languages[this.game.globals.language]["save_noun"]} ` + String.fromCharCode(65 + i);
           }
         }
       }
@@ -60,7 +60,7 @@ export class SavesScene extends Phaser.Scene {
         this.deleteToggle = this.add.rectangle(
           80, 100, 50, 50, 0xFFFFFF)
           .setOrigin(0.5);
-        const deleteText = this.add.text(this.deleteToggle.x, this.deleteToggle.y + 50, "delete saves", {
+        const deleteText = this.add.text(this.deleteToggle.x, this.deleteToggle.y + 50, languages[this.game.globals.language]["delete_saves"], {
           fontSize: 16,
           color: "#c2df48",
         }).setOrigin(0.5);
@@ -105,7 +105,7 @@ export class SavesScene extends Phaser.Scene {
               if(this.buttons[i].text === this.emptyText){
                 this.addSave(i);
               } else {
-                const proceed = window.confirm("This will overwrite your saved data. Proceed?");
+                const proceed = window.confirm(languages[this.game.globals.language]["overwrite_saves"]);
                 if(proceed === true) this.addSave(i);
               }
               break;
@@ -127,7 +127,7 @@ export class SavesScene extends Phaser.Scene {
     }
 
     addSave(i){
-      this.buttons[i].text = "Save " + (i + 1);
+      this.buttons[i].text = `${languages[this.game.globals.language]["save_noun"]} ` + (i + 1);
       this.saveFiles[i] = this.saveData;
       localStorage.setItem('saveFiles', JSON.stringify(this.saveFiles));
 

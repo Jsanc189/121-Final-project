@@ -1,4 +1,5 @@
 import "phaser";
+import { languages } from "../Scripts/Text.js";
 
 export class EndingScene extends Phaser.Scene {
     constructor() {

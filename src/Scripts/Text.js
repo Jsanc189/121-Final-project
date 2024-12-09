@@ -28,6 +28,7 @@ const eng = {
     corn: "Corn needed", // [x] more corn needed to fulfill win conditions
     you_win: "You win!", // win messsage
     main_menu: "Main Menu", // main menu
+    overwrite_saves: "This will overwrite your saved data. Proceed?", // this will overwrite your saves, proceed?
 }
 
 const swe = {
@@ -59,6 +60,7 @@ const swe = {
     corn: "Majs behövs", // [x] more corn needed to fulfill win conditions
     you_win: "Du vinner!", // win messsage
     main_menu: "Menyn", // main menu
+    overwrite_saves: "Detta kommer att skriva över dina sparfilar. Fortsätt?", // this will overwrite your saves, proceed?
 };
 
 const hebr = {
@@ -90,6 +92,7 @@ const hebr = {
     corn: "תירס לקציר", // [x] more corn needed to fulfill win conditions
     you_win: "אתה מנצח", // win messsage
     main_menu: "תפריט ראשי", // main menu
+    overwrite_saves: "פעולה זו תחליף את הנתונים השמורים שלך. ממשיך" + "?", // this will overwrite your saves, proceed?
 }
 
 const chi = {
@@ -121,6 +124,7 @@ const chi = {
     corn: "需要_玉米", // [x] more corn needed to fulfill win conditions
     you_win: "勝利", // win messsage
     main_menu: "主畫面", // go back to main menu
+    overwrite_saves: "舊資料將會被刪除，確認？", // this will overwrite your saves, proceed?
 }
 
 export const languages = {"eng": eng, "swe": swe, "hebr": hebr, "chi": chi};

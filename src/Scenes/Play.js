@@ -178,7 +178,7 @@ export class PlayScene extends Phaser.Scene {
 
   allCountsSatisfied() {
     for (const id in this.counts) {
-      if (this.counts[id] !== this.winCounts[id]) return false;
+      if (this.counts[id] <= this.winCounts[id]) return false;
     }
     return true;
   }

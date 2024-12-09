@@ -224,7 +224,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit, moveUp, moveD
   scene.wrappedCarrot = wrapText(
     `${
       languages[scene.game.globals.language]["carrots"]
-    }: ${10 - scene.counts["carrot"]}`,
+    }: ${Math.max(0, (10 - scene.counts["carrot"]))}`,
     buttonWidth,
     10,
   );
@@ -232,7 +232,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit, moveUp, moveD
   scene.wrappedTomato = wrapText(
     `${
       languages[scene.game.globals.language]["tomatoes"]
-    }: ${10 - scene.counts["tomato"]}`,
+    }: ${Math.max(0, (10 - scene.counts["tomato"]))}`,
     buttonWidth,
     10,
   );
@@ -240,7 +240,7 @@ export function initUIX(scene, undo, redo, endDay, saveFile, quit, moveUp, moveD
   scene.wrappedCorn = wrapText(
     `${
       languages[scene.game.globals.language]["corn"]
-    }: ${10 - scene.counts["corn"]}`,
+    }: ${Math.max(0, (10 - scene.counts["corn"]))}`,
     buttonWidth,
     10,
   );
@@ -351,11 +351,11 @@ export function cellPreview(scene, ptr) {
 export function plantSidebarUpdate(scene) {
   // update text 
   scene.wrappedCarrot.text = `${languages[scene.game.globals.language]["carrots"]
-    }: ${10 - scene.counts["carrot"]}`;
+    }: ${Math.max(0, (10 - scene.counts["carrot"]))}`;
   scene.wrappedTomato.text = `${languages[scene.game.globals.language]["tomatoes"]
-    }: ${10 - scene.counts["tomato"]}`;
+    }: ${Math.max(0, (10 - scene.counts["tomato"]))}`;
   scene.wrappedCorn.text = `${languages[scene.game.globals.language]["corn"]
-    }: ${10 - scene.counts["corn"]}`;
+    }: ${Math.max(0, (10 - scene.counts["corn"]))}`;
   
   // set text
   scene.carrotText.setText(scene.wrappedCarrot.text);
