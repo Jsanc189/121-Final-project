@@ -3,7 +3,8 @@
 ## Introducing the team
 Tools Lead: Elliot Ahlstroem  
 Engine Lead: Raven Cruz  
-Design Lead: Liza Gitelman & Jackie Sanchez  
+Design Lead: Liza Gitelman 
+Production Lead: Jackie Sanchez  
 
 ## Tools and materials
 The team will be developing a webgame using JavaScript.  This engine used will be the Phaser3 Engine.  We are choosing this engine because we are most comfortable with the libraries and capabilities of Phaser3.  Javasript is utilized in Phaser3, thus why we are using it.  
