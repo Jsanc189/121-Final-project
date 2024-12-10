@@ -76,7 +76,7 @@ export class PlayScene extends Phaser.Scene {
         }
 
         // UI setup
-        UIX.initPlayUIX(this, undo, redo, this.endDay, saveFile, this.quit, this.player.moveUp, this.player.moveDown, this.player.moveLeft, this.player.moveRight);
+        UIX.initPlayUIX(this, undo, redo, this.endDay, saveFile, this.quit, this.moveUp, this.moveDown, this.moveLeft, this.moveRight);
         if (this.toggles.autosave === true) {
         this.toggles.autosave = !this.toggles.autosave;
         this.autosaveToggle.emit("pointerup");
