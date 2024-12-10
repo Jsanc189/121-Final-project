@@ -1,6 +1,6 @@
 {
-  "name": "Plant Harvest: 121 Final Project",
-  "short_name": "Plant Harvest",
+  "name": "Farm Game",
+  "short_name": "Farm",
   "description": "A fun little game where you plant & reap crops.",
   "start_url": "/index.html",
   "display": "fullscreen",
