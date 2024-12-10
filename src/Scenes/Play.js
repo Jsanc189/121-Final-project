@@ -136,10 +136,13 @@ export class PlayScene extends Phaser.Scene {
         this.keyboardInput();
         }
 
-    update() {
-        if (!this.gameStates.gameOver) {
-        //check if end conditions are met
-        this.checkWin();
+  update() {
+    this.player.update(this);
+    if (!this.gameStates.gameOver) {
+      // udpate sidebar text
+      UIX.plantSidebarUpdate(this);
+      //check if end conditions are met
+      this.checkWin();
 
         //check plants for growth in each tile
         if (this.gameStates.eod) {
@@ -160,12 +163,12 @@ export class PlayScene extends Phaser.Scene {
         }
     }
 
-    allCountsSatisfied() {
-        for (const id in this.counts) {
-        if (this.counts[id] !== this.winCounts[id]) return false;
-        }
-        return true;
+  allCountsSatisfied() {
+    for (const id in this.counts) {
+      if (this.counts[id] <= this.winCounts[id]) return false;
     }
+    return true;
+  }
 
     makeGridLines() {
         let drawToWidth = this.grid_dims.scale * this.grid_dims.tile_size *

@@ -23,9 +23,12 @@ const eng = {
     rain: "rain", // rain level per tile
     plant_type: "plant", // the type of plant - carrot, corn, or tomato
     growth: "growth", // growth level from 1-3
-    carrots: "carrots needed", // [x] more carrots needed to fulfill win conditions
-    tomatoes: "tomatoes needed", // [x] more tomatoes needed to fulfill win conditions
-    corn: "corn needed", // [x] more corn needed to fulfill win conditions
+    carrots: "Carrots needed", // [x] more carrots needed to fulfill win conditions
+    tomatoes: "Tomatoes needed", // [x] more tomatoes needed to fulfill win conditions
+    corn: "Corn needed", // [x] more corn needed to fulfill win conditions
+    you_win: "You win!", // win messsage
+    main_menu: "Main Menu", // main menu
+    overwrite_saves: "This will overwrite your saved data. Proceed?", // this will overwrite your saves, proceed?
 }
 
 const swe = {
@@ -49,7 +52,15 @@ const swe = {
     autosave: "Autospara", // toggle autosave functions
     weather_layer: "Visa väder", // show the weather layer overlay
     sun: "sol", // sun level per tile
-    rain: "regn" // rain level per tile
+    rain: "regn", // rain level per tile
+    plant_type: "växttyp", // the type of plant - carrot, corn, or tomato
+    growth: "tillväxtnivå", // growth level from 1-3
+    carrots: "Morötter behövs", // [x] more carrots needed to fulfill win conditions
+    tomatoes: "Tomater behövs", // [x] more tomatoes needed to fulfill win conditions
+    corn: "Majs behövs", // [x] more corn needed to fulfill win conditions
+    you_win: "Du vinner!", // win messsage
+    main_menu: "Menyn", // main menu
+    overwrite_saves: "Detta kommer att skriva över dina sparfilar. Fortsätt?", // this will overwrite your saves, proceed?
 };
 
 const hebr = {
@@ -73,7 +84,15 @@ const hebr = {
     autosave: "שמירה אוטומטית", // toggle autosave functions
     weather_layer: "מראה את מזג האוויר", // show the weather layer overlay
     sun: "שמש", // sun level per tile
-    rain: "גשם" // rain level per tile
+    rain: "גשם", // rain level per tile
+    plant_type: "צמח", // the type of plant - carrot, corn, or tomato
+    growth: "רמת הצמיחה", // growth level from 1-3
+    carrots: "גזרים לקציר", // [x] more carrots needed to fulfill win conditions
+    tomatoes: "עגבניות לקציר", // [x] more tomatoes needed to fulfill win conditions
+    corn: "תירס לקציר", // [x] more corn needed to fulfill win conditions
+    you_win: "אתה מנצח", // win messsage
+    main_menu: "תפריט ראשי", // main menu
+    overwrite_saves: "פעולה זו תחליף את הנתונים השמורים שלך. ממשיך" + "?", // this will overwrite your saves, proceed?
 }
 
 const chi = {
@@ -97,7 +116,15 @@ const chi = {
     autosave: "自動儲存", // toggle autosave functions
     weather_layer: "氣候層次", // show the weather layer overlay
     sun: "太陽", // sun level per tile
-    rain: "雨" // rain level per tile
+    rain: "雨", // rain level per tile
+    plant_type: "植物", // the type of plant - carrot, corn, or tomato
+    growth: "生長程度a", // growth level from 1-3
+    carrots: "需要_蘿蔔", // [x] more carrots needed to fulfill win conditions
+    tomatoes: "需要_番茄", // [x] more tomatoes needed to fulfill win conditions
+    corn: "需要_玉米", // [x] more corn needed to fulfill win conditions
+    you_win: "勝利", // win messsage
+    main_menu: "主畫面", // go back to main menu
+    overwrite_saves: "舊資料將會被刪除，確認？", // this will overwrite your saves, proceed?
 }
 
 export const languages = {"eng": eng, "swe": swe, "hebr": hebr, "chi": chi};

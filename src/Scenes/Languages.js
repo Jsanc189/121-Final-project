@@ -3,17 +3,26 @@ import { languages } from "../Scripts/Text.js";
 import * as UIX from "../Scripts/UIX.js";
 
 export class LanguagesScene extends Phaser.Scene {
-    constructor() {
-      super("languagesScene");
-    }
-  
-    create() {
-        // back to previous scene
-        this.backButton = UIX.makeMenuButton(this, 80, 30, languages[this.game.globals.language]["back"], {fontSize: "30px", fill: "#c2df48"});
-        this.backButton.on('pointerup', () => {
-            this.scene.run("menuScene");
-            this.scene.stop();
-        });
+  constructor() {
+    super("languagesScene");
+  }
+
+  create() {
+    // back to previous scene
+    let fontSizePX = "30px";
+    let fontColor1 = "#c2df48";
+
+    this.backButton = UIX.makeMenuButton(
+        this,
+        80,
+        30,
+        languages[this.game.globals.language]["back"],
+        { fontSize: fontSizePX, fill: fontColor1 },
+    );
+    this.backButton.on("pointerup", () => {
+      this.scene.run("menuScene");
+      this.scene.stop();
+    });
 
         // english button
         this.engButton = UIX.makeMenuButton(
@@ -21,7 +30,7 @@ export class LanguagesScene extends Phaser.Scene {
             this.game.config.width / 2,
             (this.game.config.height - 600),
             languages[this.game.globals.language]["eng"],
-            { fontSize: '30px', fill: '#c2df48' }
+            { fontSize: fontSizePX, fill: fontColor1 }
         )
         this.engButton.on('pointerup', () => {
             // set language to english
@@ -35,7 +44,7 @@ export class LanguagesScene extends Phaser.Scene {
             this.game.config.width / 2,
             (this.game.config.height - 550),
             languages[this.game.globals.language]["swe"],
-            { fontSize: '30px', fill: '#c2df48' }
+            { fontSize: fontSizePX, fill: fontColor1 }
         )
         this.sweButton.on('pointerup', () => {
             // set language to swedish
@@ -49,7 +58,7 @@ export class LanguagesScene extends Phaser.Scene {
             this.game.config.width / 2,
             (this.game.config.height - 500),
             languages[this.game.globals.language]["hebr"],
-            { fontSize: '30px', fill: '#c2df48' }
+            { fontSize: fontSizePX, fill: fontColor1 }
         )
         this.hebrButton.on('pointerup', () => {
             // set language to hebrew
@@ -63,7 +72,7 @@ export class LanguagesScene extends Phaser.Scene {
             this.game.config.width / 2,
             (this.game.config.height - 450),
             languages[this.game.globals.language]["chi"],
-            { fontSize: '30px', fill: '#c2df48' }
+            { fontSize: fontSizePX, fill: fontColor1 }
         )
         this.chiButton.on('pointerup', () => {
             // set language to chinese
