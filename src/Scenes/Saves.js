@@ -1,5 +1,5 @@
 import "phaser";
-import { languages } from "../Scripts/Text.js";
+import * as UIX from "../Scripts/UIX.js";
 
 export class SavesScene extends Phaser.Scene {
     constructor() {
@@ -15,7 +15,7 @@ export class SavesScene extends Phaser.Scene {
   
     create() {
       // back to previous scene
-      this.backButton = this.makeButton(80, 30, "Back", {fontSize: "50px", fill: "#c2df48"});
+      this.backButton = UIX.makeMenuButton(this, 80, 30, "Back", {fontSize: "50px", fill: "#c2df48"});
       this.backButton.on('pointerup', () => {
           this.scene.run(this.previousScene);
           this.scene.stop();
@@ -28,7 +28,8 @@ export class SavesScene extends Phaser.Scene {
       const HEIGHT = this.game.config.height - 100;
 
       for (let i = 0; i < this.MAX_SAVES; i++) {
-        const button = this.makeButton(
+        const button = UIX.makeMenuButton(
+            this,
             WIDTH / 2, 
             HEIGHT / this.MAX_SAVES + i * HEIGHT / this.MAX_SAVES,
             this.emptyText, 
@@ -134,21 +135,5 @@ export class SavesScene extends Phaser.Scene {
       this.scene.start('playScene', {load: true, load_index: i});
       this.scene.stop();
     }
-
-    makeButton(x, y, text, style, colors=[ { fill: "#b18b1c" }, { fill: '#c2df48' } ]) {
-      const button = this.add.text(x, y, text, style)
-        .setOrigin(0.5, 0.5)
-        .setStyle(colors[1]);
-
-      button.setInteractive();
-
-      button.on("pointerover", () => {
-        button.setStyle(colors[0]);
-      });
-      button.on("pointerout", () => {
-        button.setStyle(colors[1]);
-      });
-      return button;
-    }
-  }
+}
   

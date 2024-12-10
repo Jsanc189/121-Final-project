@@ -40,14 +40,12 @@ export class EndingScene extends Phaser.Scene {
         const button = this.add.text(x, y, text, style).setOrigin(0.5, 0.5);
         button.setInteractive();
         button.on("pointerover", () => {
-          button.setStyle(colors[0]);
+            button.setStyle(colors[0]);
         });
         button.on("pointerout", () => {
-          button.setStyle(colors[1]);
+            button.setStyle(colors[1]);
         });
         return button;
     }
-
-
 }
 
