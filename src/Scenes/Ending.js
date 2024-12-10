@@ -1,5 +1,6 @@
 import "phaser";
 import { languages } from "../Scripts/Text.js";
+import * as UIX from "../Scripts/UIX.js";
 
 export class EndingScene extends Phaser.Scene {
     constructor() {
@@ -15,7 +16,8 @@ export class EndingScene extends Phaser.Scene {
             { fontSize: "100px", fill: "#c2df48" },
         ).setOrigin(0.5, 0.5);
 
-        this.restartButton = this.makeButton(
+        this.restartButton = UIX.makeMenuButton(
+            this,
             this.game.config.width / 2,
             this.game.config.height / 3 + 60,
             languages[this.game.globals.language]["new_game"],
@@ -25,7 +27,8 @@ export class EndingScene extends Phaser.Scene {
             this.scene.start('playScene')
         });
 
-        this.mainMenuButton = this.makeButton(
+        this.mainMenuButton = UIX.makeMenuButton(
+            this,
             this.game.config.width / 2,
             this.game.config.height / 3 + 120,
             languages[this.game.globals.language]["main_menu"],
@@ -35,18 +38,6 @@ export class EndingScene extends Phaser.Scene {
             this.scene.start('menuScene')
         });
 
-    }
-
-    makeButton(x, y, text, style, colors=[ { fill: "#b18b1c" }, { fill: '#c2df48' } ]) {
-        const button = this.add.text(x, y, text, style).setOrigin(0.5, 0.5);
-        button.setInteractive();
-        button.on("pointerover", () => {
-            button.setStyle(colors[0]);
-        });
-        button.on("pointerout", () => {
-            button.setStyle(colors[1]);
-        });
-        return button;
     }
 }
 
